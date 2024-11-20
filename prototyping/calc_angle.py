@@ -10,4 +10,6 @@ def calculate_angle(start, middle, end):
     angle_rad = np.arccos(np.clip(cos_angle, -1.0, 1.0))
     angle_deg = np.degrees(angle_rad)
 
+    angle_deg = 180 - angle_deg
+
     return angle_deg
