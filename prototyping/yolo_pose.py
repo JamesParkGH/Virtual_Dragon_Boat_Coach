@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter 
+from scipy.ndimage import gaussian_filter1d
 
 from calc_angle import *
 
@@ -17,23 +19,20 @@ class PoseEstimation:
         desired_fps = 10
         self.skip_factor = current_fps // desired_fps
 
-    def analyze_pose(self,show_angle=False):
+    def analyze_pose(self, show_angle=False):
         if show_angle:
             plt.ion()
-            fig, axs = plt.subplots(2,2)
-            bottom_elbow_angle = 0
-            hinge_angle = 0
-            spine_angle = 0
+            fig, axs = plt.subplots(2, 2)
+            fig.suptitle("Angle Plot After Applying Gaussian Filter", fontsize=16)
             bottom_elbow_angles = []
             hinge_angles = []
             spine_angles = []
             time = []
 
         frame_count = 0
-        frame_arm_only = 126
-        color1 = (255,255,0)
-        color2 = (255,0,255)
-        color3 = (0,0,255)
+        color1 = (255, 255, 0)
+        color2 = (255, 0, 255)
+        color3 = (0, 0, 255)
 
         cv2.namedWindow("Keypoints", cv2.WINDOW_NORMAL)
         cap = cv2.VideoCapture(self.video_path)
@@ -44,100 +43,91 @@ class PoseEstimation:
                 break
 
             frame_count += 1
-            # if frame_count % self.skip_factor != 0:
-            #     continue
-
-            # height, width, _ = frame.shape
-            # window_width = int(frame.shape[1]* self.scale)
-            # window_height = int(frame.shape[0]* self.scale)
-            # cv2.resizeWindow("KeyPoints", window_width, window_height)
+            if frame_count % self.skip_factor != 0:
+                continue
 
             results = self.model(frame)
             keypoints = results[0].keypoints.xy.cpu().numpy()[0]
 
-            ## Draw points
-            ## Edit for drawing distinct lines
-            for i in range(len(self.bottom_arm_keypoints)-1):
+            # Draw keypoints and lines
+            for i in range(len(self.bottom_arm_keypoints) - 1):
                 pt1 = tuple(keypoints[self.bottom_arm_keypoints[i]].astype(int))
-                pt2 = tuple(keypoints[self.bottom_arm_keypoints[i+1]].astype(int))
+                pt2 = tuple(keypoints[self.bottom_arm_keypoints[i + 1]].astype(int))
                 cv2.line(frame, pt1, pt2, color1, 3)
                 cv2.circle(frame, pt1, 5, color1, -1)
-            
-            for i in range(len(self.hinge_keypoints)-1):
+
+            for i in range(len(self.hinge_keypoints) - 1):
                 pt1 = tuple(keypoints[self.hinge_keypoints[i]].astype(int))
-                pt2 = tuple(keypoints[self.hinge_keypoints[i+1]].astype(int))
+                pt2 = tuple(keypoints[self.hinge_keypoints[i + 1]].astype(int))
                 cv2.line(frame, pt1, pt2, color2, 3)
                 cv2.circle(frame, pt1, 5, color2, -1)
 
             for i in range(1):
                 pt1 = tuple(keypoints[self.spine_keypoints[i]].astype(int))
-                pt2 = tuple(keypoints[self.spine_keypoints[i+1]].astype(int))
+                pt2 = tuple(keypoints[self.spine_keypoints[i + 1]].astype(int))
                 cv2.line(frame, pt1, pt2, color3, 3)
                 cv2.circle(frame, pt1, 5, color3, -1)
 
             if show_angle:
-                bottom_elbow_angle = calculate_angle(keypoints[self.bottom_arm_keypoints[0]],keypoints[self.bottom_arm_keypoints[1]],keypoints[self.bottom_arm_keypoints[2]])
-                hinge_angle = calculate_angle(keypoints[self.hinge_keypoints[0]],keypoints[self.hinge_keypoints[1]],keypoints[self.hinge_keypoints[2]])
-                spine_angle = calculate_angle(keypoints[self.spine_keypoints[0]],keypoints[self.spine_keypoints[1]],keypoints[self.spine_keypoints[2]])
-                # cv2.putText(frame, f"{round(bottom_elbow_angle)}", (270,1500), cv2.FONT_HERSHEY_SIMPLEX, 5, color1, 5, cv2.LINE_AA)
-                # cv2.putText(frame, f"{round(hinge_angle)}", (270,1500), cv2.FONT_HERSHEY_SIMPLEX, 5, color2, 5, cv2.LINE_AA)
+                bottom_elbow_angle = calculate_angle(
+                    keypoints[self.bottom_arm_keypoints[0]],
+                    keypoints[self.bottom_arm_keypoints[1]],
+                    keypoints[self.bottom_arm_keypoints[2]]
+                )
+                hinge_angle = calculate_angle(
+                    keypoints[self.hinge_keypoints[0]],
+                    keypoints[self.hinge_keypoints[1]],
+                    keypoints[self.hinge_keypoints[2]]
+                )
+                spine_angle = calculate_angle(
+                    keypoints[self.spine_keypoints[0]],
+                    keypoints[self.spine_keypoints[1]],
+                    keypoints[self.spine_keypoints[2]]
+                )
 
                 bottom_elbow_angles.append(bottom_elbow_angle)
                 hinge_angles.append(hinge_angle)
                 spine_angles.append(spine_angle)
                 time.append(frame_count)
-                ## Elbow plot
-                axs[0,0].plot(time, bottom_elbow_angles, color="blue")
-                axs[0,0].axhline(y = 150, color = 'cyan', linestyle = '-')
-                axs[0,0].axhline(y = 110, color = 'cyan', linestyle = '-')
 
-                ## Hinge plot
-                axs[0,1].plot(time, hinge_angles, color="orange")
-                axs[0,1].axhline(y = 80, color = 'r', linestyle = '-')
-
-                ## Spine/Neck plot
-                axs[1,0].plot(time, spine_angles, color="magenta")
-                axs[1,0].axhline(y = 120, color = 'r', linestyle = '-')
-
-                
-                # plt.axhline(y = 150, color = 'cyan', linestyle = '-')
-                # plt.axhline(y = 110, color = 'cyan', linestyle = '-')
-                # plt.xlabel('Time')
-                # plt.ylabel('Angle')
-                # plt.title('Angle vs. Time')
-                plt.draw()
-                plt.pause(.05)
-        
-            cv2.imshow("KeyPoints", frame)
+            cv2.imshow("Keypoints", frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+        # # Smooth the data using Savitzky-Golay filter
+        # bottom_elbow_angles_smooth = savgol_filter(bottom_elbow_angles, window_length=11, polyorder=2)
+        # hinge_angles_smooth = savgol_filter(hinge_angles, window_length=11, polyorder=2)
+        # spine_angles_smooth = savgol_filter(spine_angles, window_length=11, polyorder=2)
+
+        # Smooth the data using Gaussian filter
+        bottom_elbow_angles_smooth = gaussian_filter1d(bottom_elbow_angles, sigma=2)
+        hinge_angles_smooth = gaussian_filter1d(hinge_angles, sigma=2)
+        spine_angles_smooth = gaussian_filter1d(spine_angles, sigma=2)
+
         plt.ioff()
-        axs[0,0].plot(time, bottom_elbow_angles, color="blue", label="Elbow angle")
-        axs[0,0].axhline(y = 150, color = 'cyan', linestyle = '-')
-        axs[0,0].axhline(y = 110, color = 'cyan', linestyle = '-')
-        axs[0,0].set_title("Elbow Angle vs. Time")
 
+        # Plot smoothed data
+        axs[0, 0].plot(time[:len(bottom_elbow_angles_smooth)], bottom_elbow_angles_smooth, color="blue")
+        axs[0, 0].axhline(y=150, color='cyan', linestyle='-', label='Upper Threshold for Elbow Angle')
+        axs[0, 0].axhline(y=110, color='cyan', linestyle='-', label='Lower Threshold for Elbow Angle')
+        axs[0, 0].set_title("Elbow Angle vs. Time")
+        axs[0, 0].legend()
 
-        ## Hinge plot
-        axs[0,1].plot(time, hinge_angles, color="orange", label="Hinge angle")
-        axs[0,1].axhline(y = 80, color = 'r', linestyle = '-')
-        axs[0,1].set_title("Hinge Angle vs. Time")
+        axs[0, 1].plot(time[:len(hinge_angles_smooth)], hinge_angles_smooth, color="orange")
+        axs[0, 1].axhline(y=80, color='red', linestyle='-', label='Upper Threshold for Hinge Angle')
+        axs[0, 1].set_title("Hinge Angle vs. Time")
+        axs[0, 1].legend()
 
-        ## Spine/Neck plot
-        axs[1,0].plot(time, spine_angles, color="magenta", label="Neck angle")
-        axs[1,0].axhline(y = 120, color = 'r', linestyle = '-')
-        axs[1,0].set_title("Neck Angle vs. Time")
+        axs[1, 0].plot(time[:len(spine_angles_smooth)], spine_angles_smooth, color="magenta")
+        axs[1, 0].axhline(y=120, color='red', linestyle='-', label='Upper Threshold for Neck Angle')
+        axs[1, 0].set_title("Neck Angle vs. Time")
+        axs[1, 0].legend()
 
-        # plt.xlabel('Time')
-        # plt.ylabel('Angle')
-        # plt.title('Angles vs. Time')
-        # plt.legend()
         plt.show()
 
         cap.release()
         cv2.destroyAllWindows()
-
 
 
 def run_analyze_pose(show_angle):
