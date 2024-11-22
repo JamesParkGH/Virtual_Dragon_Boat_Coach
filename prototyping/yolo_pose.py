@@ -108,18 +108,18 @@ class PoseEstimation:
         plt.ioff()
 
         # Plot smoothed data
-        axs[0, 0].plot(time[:len(bottom_elbow_angles_smooth)], bottom_elbow_angles_smooth, color="blue")
-        axs[0, 0].axhline(y=150, color='cyan', linestyle='-', label='Upper Threshold for Elbow Angle')
-        axs[0, 0].axhline(y=110, color='cyan', linestyle='-', label='Lower Threshold for Elbow Angle')
+        axs[0, 0].plot(time[:len(bottom_elbow_angles_smooth)], bottom_elbow_angles_smooth, color="cyan")
+        axs[0, 0].axhline(y=150, color='red', linestyle='-', label='Upper Threshold for Elbow Angle')
+        axs[0, 0].axhline(y=110, color='blue', linestyle='-', label='Lower Threshold for Elbow Angle')
         axs[0, 0].set_title("Elbow Angle vs. Time")
         axs[0, 0].legend()
 
-        axs[0, 1].plot(time[:len(hinge_angles_smooth)], hinge_angles_smooth, color="orange")
+        axs[0, 1].plot(time[:len(hinge_angles_smooth)], hinge_angles_smooth, color="magenta")
         axs[0, 1].axhline(y=80, color='red', linestyle='-', label='Upper Threshold for Hinge Angle')
         axs[0, 1].set_title("Hinge Angle vs. Time")
         axs[0, 1].legend()
 
-        axs[1, 0].plot(time[:len(spine_angles_smooth)], spine_angles_smooth, color="magenta")
+        axs[1, 0].plot(time[:len(spine_angles_smooth)], spine_angles_smooth, color="red")
         axs[1, 0].axhline(y=120, color='red', linestyle='-', label='Upper Threshold for Neck Angle')
         axs[1, 0].set_title("Neck Angle vs. Time")
         axs[1, 0].legend()
