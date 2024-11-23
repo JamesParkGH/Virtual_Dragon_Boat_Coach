@@ -1,3 +1,4 @@
+# pip install ultralytics
 import cv2
 import numpy as np
 from ultralytics import YOLO
@@ -6,6 +7,7 @@ from scipy.signal import savgol_filter
 from scipy.ndimage import gaussian_filter1d
 
 from calc_angle import *
+from download_video import *
 
 class PoseEstimation:
     def __init__(self,video_name):
@@ -131,8 +133,11 @@ class PoseEstimation:
 
 
 def run_analyze_pose(show_angle):
-    estimation = PoseEstimation('test_paddle_hunch.mp4')
-    estimation.analyze_pose(show_angle=show_angle)
+    video_name = input("Enter the name of the video to download and process: ")
+    output_file_path = f"{video_name}.mp4"
+    download_video(video_name, output_file_path)
+    estimation = PoseEstimation(output_file_path)
+    estimation.analyze_pose(show_angle=True)
 
 if __name__ == '__main__':
     run_analyze_pose(show_angle=True)
