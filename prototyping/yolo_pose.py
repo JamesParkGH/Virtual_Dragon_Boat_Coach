@@ -8,9 +8,9 @@ from calc_angle import *
 class PoseEstimation:
     def __init__(self,video_name):
         self.model = YOLO('yolov8n-pose.pt')
-        self.bottom_arm_keypoints = [5,7,9]
-        self.hinge_keypoints = [5,11,13]
-        self.spine_keypoints = [3,5,11]
+        self.bottom_arm_keypoints = [6,8,10]
+        self.hinge_keypoints = [6,12,14]
+        self.spine_keypoints = [4,6,12]
         self.video_path = video_name
         self.scale = 1/2
         current_fps = 30
@@ -141,7 +141,7 @@ class PoseEstimation:
 
 
 def run_analyze_pose(show_angle):
-    estimation = PoseEstimation('test_paddle_hunch.mp4')
+    estimation = PoseEstimation('test_paddle8.mp4')
     estimation.analyze_pose(show_angle=show_angle)
 
 if __name__ == '__main__':
