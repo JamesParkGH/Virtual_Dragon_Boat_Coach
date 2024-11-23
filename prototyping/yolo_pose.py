@@ -3,7 +3,6 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 import matplotlib.pyplot as plt
-from scipy.signal import savgol_filter 
 from scipy.ndimage import gaussian_filter1d
 
 from calc_angle import *
