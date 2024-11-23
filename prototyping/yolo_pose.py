@@ -96,11 +96,6 @@ class PoseEstimation:
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-        # # Smooth the data using Savitzky-Golay filter
-        # bottom_elbow_angles_smooth = savgol_filter(bottom_elbow_angles, window_length=11, polyorder=2)
-        # hinge_angles_smooth = savgol_filter(hinge_angles, window_length=11, polyorder=2)
-        # spine_angles_smooth = savgol_filter(spine_angles, window_length=11, polyorder=2)
-
         # Smooth the data using Gaussian filter
         bottom_elbow_angles_smooth = gaussian_filter1d(bottom_elbow_angles, sigma=2)
         hinge_angles_smooth = gaussian_filter1d(hinge_angles, sigma=2)
