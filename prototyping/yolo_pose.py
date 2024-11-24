@@ -12,7 +12,8 @@ class PoseEstimation:
     def __init__(self,video_name):
         self.model = YOLO('yolov8n-pose.pt')
         self.bottom_arm_keypoints = [5,7,9]
-        self.hinge_keypoints = [5,11,13]
+        self.top_arm_keypoints = [6,8,10]
+        self.top_shoulder_keypoints = [8,6,12]
         self.spine_keypoints = [3,5,11]
         self.video_path = video_name
         self.scale = 1/2
@@ -26,7 +27,8 @@ class PoseEstimation:
             fig, axs = plt.subplots(2, 2)
             fig.suptitle("Angle Plot After Applying Gaussian Filter", fontsize=16)
             bottom_elbow_angles = []
-            hinge_angles = []
+            top_elbow_angles = []
+            top_shoulder_angles = []
             spine_angles = []
             time = []
 
@@ -34,6 +36,7 @@ class PoseEstimation:
         color1 = (255, 255, 0)
         color2 = (255, 0, 255)
         color3 = (0, 0, 255)
+        color4 = (0, 165, 255)
 
         cv2.namedWindow("Keypoints", cv2.WINDOW_NORMAL)
         cap = cv2.VideoCapture(self.video_path)
@@ -57,9 +60,15 @@ class PoseEstimation:
                 cv2.line(frame, pt1, pt2, color1, 3)
                 cv2.circle(frame, pt1, 5, color1, -1)
 
-            for i in range(len(self.hinge_keypoints) - 1):
-                pt1 = tuple(keypoints[self.hinge_keypoints[i]].astype(int))
-                pt2 = tuple(keypoints[self.hinge_keypoints[i + 1]].astype(int))
+            for i in range(len(self.top_arm_keypoints) - 1):
+                pt1 = tuple(keypoints[self.top_arm_keypoints[i]].astype(int))
+                pt2 = tuple(keypoints[self.top_arm_keypoints[i + 1]].astype(int))
+                cv2.line(frame, pt1, pt2, color4, 3)
+                cv2.circle(frame, pt1, 5, color4, -1)
+
+            for i in range(len(self.top_shoulder_keypoints) - 1):
+                pt1 = tuple(keypoints[self.top_shoulder_keypoints[i]].astype(int))
+                pt2 = tuple(keypoints[self.top_shoulder_keypoints[i + 1]].astype(int))
                 cv2.line(frame, pt1, pt2, color2, 3)
                 cv2.circle(frame, pt1, 5, color2, -1)
 
@@ -75,10 +84,15 @@ class PoseEstimation:
                     keypoints[self.bottom_arm_keypoints[1]],
                     keypoints[self.bottom_arm_keypoints[2]]
                 )
-                hinge_angle = calculate_angle(
-                    keypoints[self.hinge_keypoints[0]],
-                    keypoints[self.hinge_keypoints[1]],
-                    keypoints[self.hinge_keypoints[2]]
+                top_elbow_angle = calculate_angle(
+                    keypoints[self.top_arm_keypoints[0]],
+                    keypoints[self.top_arm_keypoints[1]],
+                    keypoints[self.top_arm_keypoints[2]]
+                )
+                top_shoulder_angle = calculate_angle(
+                    keypoints[self.top_shoulder_keypoints[0]],
+                    keypoints[self.top_shoulder_keypoints[1]],
+                    keypoints[self.top_shoulder_keypoints[2]]
                 )
                 spine_angle = calculate_angle(
                     keypoints[self.spine_keypoints[0]],
@@ -87,7 +101,8 @@ class PoseEstimation:
                 )
 
                 bottom_elbow_angles.append(bottom_elbow_angle)
-                hinge_angles.append(hinge_angle)
+                top_elbow_angles.append(top_elbow_angle)
+                top_shoulder_angles.append(top_shoulder_angle)
                 spine_angles.append(spine_angle)
                 time.append(frame_count)
 
@@ -98,7 +113,8 @@ class PoseEstimation:
 
         # Smooth the data using Gaussian filter
         bottom_elbow_angles_smooth = gaussian_filter1d(bottom_elbow_angles, sigma=2)
-        hinge_angles_smooth = gaussian_filter1d(hinge_angles, sigma=2)
+        top_elbow_angles_smooth = gaussian_filter1d(top_elbow_angles, sigma=2)
+        top_shoulder_angles_smooth = gaussian_filter1d(top_shoulder_angles, sigma=2)
         spine_angles_smooth = gaussian_filter1d(spine_angles, sigma=2)
 
         plt.ioff()
@@ -107,18 +123,34 @@ class PoseEstimation:
         axs[0, 0].plot(time[:len(bottom_elbow_angles_smooth)], bottom_elbow_angles_smooth, color="cyan")
         axs[0, 0].axhline(y=150, color='red', linestyle='-', label='Upper Threshold for Elbow Angle')
         axs[0, 0].axhline(y=110, color='blue', linestyle='-', label='Lower Threshold for Elbow Angle')
-        axs[0, 0].set_title("Elbow Angle vs. Time")
+        # axs[0, 0].axhspan(110, 150, color="green", alpha=0.5)
+        axs[0, 0].set_title("Bottom Elbow Angle vs. Time")
         axs[0, 0].legend()
 
-        axs[0, 1].plot(time[:len(hinge_angles_smooth)], hinge_angles_smooth, color="magenta")
-        axs[0, 1].axhline(y=80, color='red', linestyle='-', label='Upper Threshold for Hinge Angle')
-        axs[0, 1].set_title("Hinge Angle vs. Time")
+        axs[0, 1].plot(time[:len(top_elbow_angles_smooth)], top_elbow_angles_smooth, color="orange")
+        axs[0, 1].axhline(y=170, color='red', linestyle='-', label='Upper Threshold for Elbow Angle')
+        axs[0, 1].axhline(y=150, color='blue', linestyle='-', label='Lower Threshold for Elbow Angle')
+        axs[0, 1].set_title("Top Elbow Angle vs. Time")
         axs[0, 1].legend()
+
+        axs[1, 1].plot(time[:len(top_shoulder_angles_smooth)], top_shoulder_angles_smooth, color="magenta")
+        axs[1, 1].axhline(y=140, color='red', linestyle='-', label='Upper Threshold for Top Shoulder Angle')
+        axs[1, 1].axhline(y=80, color='blue', linestyle='-', label='Lower Threshold for Top Shoulder Angle')
+        axs[1, 1].set_title("Top Shoulder Angle vs. Time")
+        axs[1, 1].legend()
 
         axs[1, 0].plot(time[:len(spine_angles_smooth)], spine_angles_smooth, color="red")
         axs[1, 0].axhline(y=120, color='red', linestyle='-', label='Upper Threshold for Neck Angle')
         axs[1, 0].set_title("Neck Angle vs. Time")
         axs[1, 0].legend()
+
+        ## Overlay top elbow and top shoulder
+        fig1, ax1 = plt.subplots()
+        ax1.plot(time[:len(top_shoulder_angles_smooth)], top_shoulder_angles_smooth, color="magenta")
+        ax1.plot(time[:len(top_elbow_angles_smooth)], top_elbow_angles_smooth, color="orange")
+        ax1.fill_between(time[:len(top_shoulder_angles_smooth)], 170, where=(top_elbow_angles_smooth < 160) & (top_shoulder_angles_smooth > 100), alpha=0.5)
+        ax1.set_title("Top Elbow and Shoulder Angle vs. Time")
+
 
         plt.show()
 
