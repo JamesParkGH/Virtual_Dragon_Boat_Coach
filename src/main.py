@@ -1,6 +1,6 @@
 import os
-from src.pose.pose_estimation import PoseEstimation
-from src.video.video_handler import upload_photo, download_video
+from pose.pose_estimation import PoseEstimation
+from video.video_handler import upload_photo, download_video
 
 def main():
     while True:

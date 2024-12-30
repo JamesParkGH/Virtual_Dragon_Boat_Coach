@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
 
 from .angle_calculator import *  # Same directory
-from ..video.video_handler import * 
+from video.video_handler import * 
 
 class PoseEstimation:
     def __init__(self,video_name):
