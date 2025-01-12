@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="home-section">
+    <h1>Welcome to VDBC</h1>
+    <p>Upload your paddling video to analyze your technique and get actionable feedback.</p>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept="video/*">
+        <button type="submit">Upload</button>
+    </form>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% elif success %}
+        <p class="success">{{ success }}</p>
+    {% endif %}
+</section>
+{% endblock %}
