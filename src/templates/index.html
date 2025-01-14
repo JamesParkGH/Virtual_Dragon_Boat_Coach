@@ -3,15 +3,26 @@
 {% block content %}
 <section class="home-section">
     <h1>Welcome to VDBC</h1>
-    <p>Upload your paddling video to analyze your technique and get actionable feedback.</p>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept="video/*">
-        <button type="submit">Upload</button>
+    <p>Upload your files to analyze your technique and get actionable feedback.</p>
+    <form action="/process-files" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="marker-data">Marker Data (.trc):</label>
+            <input type="file" id="marker-data" name="marker_data" accept=".trc">
+        </div>
+        <div class="form-group">
+            <label for="model">Model (.osim):</label>
+            <input type="file" id="model" name="model" accept=".osim">
+        </div>
+        <div class="form-group">
+            <label for="motion">Motion File (.mot):</label>
+            <input type="file" id="motion" name="motion" accept=".mot">
+        </div>
+        <button type="submit">Submit</button>
     </form>
     {% if error %}
-        <p class="error">{{ error }}</p>
+        <p class="alert alert-error">{{ error }}</p>
     {% elif success %}
-        <p class="success">{{ success }}</p>
+        <p class="alert alert-success">{{ success }}</p>
     {% endif %}
 </section>
 {% endblock %}
