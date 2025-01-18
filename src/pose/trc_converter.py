@@ -21,12 +21,12 @@ def trc_to_csv(trc_file_path, csv_file_path):
                     is_data_section = True
             else:
                 # Write numerical data rows into CSV
-                csv_writer.writerow(line.strip().split("\t"))
+                csv_writer.writerow(line.split("\t"))
     
     print(f"Converted {trc_file_path} to {csv_file_path} successfully.")
 
 # File paths
-trc_file_path = r"C:\Users\parkj\Downloads\OpenCap\OpenCap\MarkerData\paddling1.trc"
+trc_file_path = r"D:\McMaster\Year 5\5P06A\data\2025-01-13 Session\MarkerData\IainDBAC1.trc"
 csv_file_path = trc_file_path.replace('.trc', '.csv')
 
 # Convert .trc to .csv
