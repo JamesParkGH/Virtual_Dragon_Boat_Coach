@@ -1,49 +1,50 @@
 import csv
 
-file_path = r"D:\McMaster\Year 5\5P06A\data\2025-01-13 Session\MarkerData\IainDBAC1.csv"
+def phase_identification(csv_file_path):
+    #csv_file_path = r"D:\McMaster\Year 5\5P06A\data\2025-01-13 Session\MarkerData\IainDBAC1.csv"
 
-with open(file_path, 'r') as file:
-    reader = csv.reader(file)
-    rows = list(reader)
+    with open(csv_file_path, 'r') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
 
-#Extract metadata, headers, sub-headers and data
-metadata = rows[:3]
-headers = rows[3]
-print(headers)
-sub_headers = rows[4]
-data = rows[6:]
+    #Extract metadata, headers, sub-headers and data
+    metadata = rows[:3]
+    headers = rows[3]
+    sub_headers = rows[4]
+    data = rows[6:]
 
-#Identify indices
-RWrist_x_index = headers.index("RWrist")
-RWrist_y_index = headers.index("RWrist") + 1
-RWrist_z_index = headers.index("RWrist") + 2
+    #Identify indices (y and z not used for now)
+    RWrist_x_index = headers.index("RWrist")
+    RWrist_y_index = headers.index("RWrist") + 1
+    RWrist_z_index = headers.index("RWrist") + 2
 
-phase = "None"
+    phase = "None"
 
-for i in range(len(data)-1):
-    if float(data[i][RWrist_x_index]) - float(data[i+1][RWrist_x_index]) > 0.015:
-        if phase != "pull":
-            phase = "pull"
-            print("phase changed to pull at: ", data[i][1], " second")
-            print(data[i][RWrist_x_index])
-            print(data[i+1][RWrist_x_index])
-    elif abs(float(data[i][RWrist_x_index]) - float(data[i+1][RWrist_x_index])) > 0.015:
-        if phase != "relax":
-            phase = "relax"
-            print("phase changed to relax at: ", data[i][1], " second")
-    else:
-        pass
-    data[i].append(phase)
+    for i in range(1,len(data)):
+        #Compare the x value between the data points
+        if float(data[i-1][RWrist_x_index]) - float(data[i][RWrist_x_index]) > 0.015:
+            if phase != "pull":
+                phase = "pull"
+                print("phase changed to pull at: ", data[i][1], " second")
+        elif abs(float(data[i-1][RWrist_x_index]) - float(data[i][RWrist_x_index])) > 0.015:
+            if phase != "relax":
+                phase = "relax"
+                print("phase changed to relax at: ", data[i][1], " second")
+        else:
+            pass
+        data[i].append(phase)
 
-headers.append("")
-headers.append("")
-headers.append("Phase")
+    headers.append("")
+    headers.append("")
+    headers.append("Phase")
 
-output_file = "phased_data.csv"
-with open(output_file, 'w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerows(metadata)
-    writer.writerow(headers)
-    writer.writerow(sub_headers)
-    writer.writerows(data)
-    
+    #Write the new output file with phase
+    output_file = "phased_data.csv"
+    with open(output_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(metadata)
+        writer.writerow(headers)
+        writer.writerow(sub_headers)
+        writer.writerows(data)
+
+#phase_identification(r"D:\McMaster\Year 5\5P06A\data\2025-01-13 Session\MarkerData\IainDBAC1.csv")
