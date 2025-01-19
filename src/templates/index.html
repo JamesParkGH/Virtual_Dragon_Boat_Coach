@@ -3,19 +3,11 @@
 {% block content %}
 <section class="home-section">
     <h1>Welcome to VDBC</h1>
-    <p>Upload your files to analyze your technique and get actionable feedback.</p>
-    <form action="/process-files" method="POST" enctype="multipart/form-data">
+    <p>Enter the session URL to download and process the corresponding session data.</p>
+    <form action="/process-files" method="POST">
         <div class="form-group">
-            <label for="marker-data">Marker Data (.trc):</label>
-            <input type="file" id="marker-data" name="marker_data" accept=".trc">
-        </div>
-        <div class="form-group">
-            <label for="model">Model (.osim):</label>
-            <input type="file" id="model" name="model" accept=".osim">
-        </div>
-        <div class="form-group">
-            <label for="motion">Motion File (.mot):</label>
-            <input type="file" id="motion" name="motion" accept=".mot">
+            <label for="session-url">Session URL:</label>
+            <input type="text" id="session-url" name="session_url" placeholder="Enter the session URL">
         </div>
         <button type="submit">Submit</button>
     </form>
