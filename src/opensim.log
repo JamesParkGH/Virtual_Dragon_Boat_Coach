@@ -20697,3 +20697,9 @@
 [2025-01-12 18:09:51.479] [info] Storage: read data file = uploads\Squats_radians.mot (nr=945 nc=34)
 [2025-01-12 18:14:51.625] [info] Loaded model LaiUhlrich2022_scaled from file C:\Users\parkj\Downloads\OpenCap\OpenCap\OpenSimData\Model\LaiUhlrich2022_scaled.osim
 [2025-01-12 18:14:52.183] [info] Storage: read data file = uploads\Squats_radians.mot (nr=945 nc=34)
+[2025-02-01 16:31:41.794] [info] Loaded model LaiUhlrich2022_scaled from file C:\Users\parkj\Downloads\OpenCap\OpenCap\OpenSimData\Model\LaiUhlrich2022_scaled.osim
+[2025-02-01 16:31:43.266] [info] Storage: read data file = C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\OpenCapData_3ce579ba-5b72-44b4-9aba-211ca34c71a1\OpenSimData\Kinematics\James_1_radians.mot (nr=949 nc=34)
+[2025-02-01 16:42:34.036] [info] Loaded model LaiUhlrich2022_scaled from file C:\Users\parkj\Downloads\OpenCap\OpenCap\OpenSimData\Model\LaiUhlrich2022_scaled.osim
+[2025-02-01 16:42:34.413] [info] Storage: read data file = C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\OpenCapData_3ce579ba-5b72-44b4-9aba-211ca34c71a1\OpenSimData\Kinematics\James_1_radians.mot (nr=949 nc=34)
+[2025-02-01 16:49:08.704] [info] Loaded model LaiUhlrich2022_scaled from file C:\Users\parkj\Downloads\OpenCap\OpenCap\OpenSimData\Model\LaiUhlrich2022_scaled.osim
+[2025-02-01 16:49:09.270] [info] Storage: read data file = C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\OpenCapData_3ce579ba-5b72-44b4-9aba-211ca34c71a1\OpenSimData\Kinematics\James_1_radians.mot (nr=949 nc=34)

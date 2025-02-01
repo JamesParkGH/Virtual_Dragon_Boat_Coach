@@ -64,15 +64,25 @@ def process_files():
         return redirect(url_for('login'))
 
     session_url = request.form.get('session_url')
+    trial_name = request.form.get('trial_name')
 
     if not session_url or session_url.strip() == '':
         return render_template("index.html", error="Please enter a valid session URL.")
+    
+    if not trial_name or trial_name.strip() == '':
+        return render_template("index.html", error="Please enter a trial name.")
     
     try:
         subprocess.run([
             'python', 'batchDownload.py',
             session_url.strip(),
             session['token']  # Pass token to the script
+        ], check=True)
+
+        subprocess.run([
+            'python', 'runOpensim.py',
+            session_url.strip().split('/')[-1],  # Extract session ID from URL
+            trial_name.strip()  # Pass trial name to runOpensim
         ], check=True)
 
         return render_template("index.html", success="Files downloaded and processed successfully!")

@@ -4,17 +4,31 @@
 <section class="home-section">
     <h1>Welcome to VDBC</h1>
     <p>Enter the session URL to download and process the corresponding session data.</p>
-    <form action="/process-files" method="POST">
+    <form action="/process-files" method="POST" id="processForm">
         <div class="form-group">
             <label for="session-url">Session URL:</label>
             <input type="text" id="session-url" name="session_url" placeholder="Enter the session URL">
         </div>
+        <div class="form-group">
+            <label for="trial-name">Trial Name:</label>
+            <input type="text" id="trial-name" name="trial_name" placeholder="Enter the trial name">
+        </div>
         <button type="submit">Submit</button>
     </form>
+    <div id="loadingMessage" style="display:none;">
+        <p>Processing... Please wait.</p>
+    </div>
     {% if error %}
         <p class="alert alert-error">{{ error }}</p>
     {% elif success %}
         <p class="alert alert-success">{{ success }}</p>
     {% endif %}
 </section>
+
+<script>
+    // Show loading message when the form is submitted
+    document.getElementById('processForm').onsubmit = function() {
+        document.getElementById('loadingMessage').style.display = 'block';
+    }
+</script>
 {% endblock %}

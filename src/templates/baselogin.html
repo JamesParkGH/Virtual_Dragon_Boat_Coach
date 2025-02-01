@@ -10,12 +10,6 @@
     <header>
         <nav>
             <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('about') }}">About</a></li>
-                <li><a href="{{ url_for('resources') }}">Resources</a></li>
-                {% if 'token' in session %}
-                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
-                {% endif %}
             </ul>
         </nav>
     </header>
