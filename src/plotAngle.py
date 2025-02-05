@@ -11,7 +11,7 @@ def plot_angle(csv_file_path, angle, output_dir):
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
             time.append(float(row['time']))
-            angle_data.append(float(row[angle]))
+            angle_data.append(180 - float(row[angle]))
 
     plt.figure()
     plt.plot(time, angle_data, label=angle)
