@@ -79,7 +79,7 @@ def process_files():
     try:
         # Download session data
         subprocess.run([
-            'python', 'batchDownload.py',
+            'python', 'BatchDownload.py',
             session_url.strip(),
             session['token']  # Pass token to the script
         ], check=True)
