@@ -6,7 +6,7 @@ from decouple import config
 from utilsAPI import get_api_url
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Change this to a secure key
+app.secret_key = 'your_secret_key'  # Required for session management
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -65,6 +65,7 @@ def process_files():
 
     session_url = request.form.get('session_url')
     trial_name = request.form.get('trial_name')
+    angle_name = request.form.get('angle_name')
 
     if not session_url or session_url.strip() == '':
         return render_template("index.html", error="Please enter a valid session URL.")
@@ -72,22 +73,42 @@ def process_files():
     if not trial_name or trial_name.strip() == '':
         return render_template("index.html", error="Please enter a trial name.")
     
+    if not angle_name or angle_name.strip() == '':
+        return render_template("index.html", error="Please select an angle name.")
+    
     try:
+        # Download session data
         subprocess.run([
             'python', 'batchDownload.py',
             session_url.strip(),
             session['token']  # Pass token to the script
         ], check=True)
 
+        # Run OpenSim processing
         subprocess.run([
             'python', 'runOpensim.py',
             session_url.strip().split('/')[-1],  # Extract session ID from URL
             trial_name.strip()  # Pass trial name to runOpensim
         ], check=True)
 
+        # Convert .mot to .csv
+        subprocess.run([
+            'python', 'convertCSV.py',
+            session_url.strip().split('/')[-1],  # Extract session ID from URL
+            trial_name.strip()  # Pass trial name to convertCSV
+        ], check=True)
+
+        # Plot the angle
+        subprocess.run([
+            'python', 'plotAngle.py',
+            session_url.strip().split('/')[-1],  # Extract session ID from URL
+            trial_name.strip(),  # Pass trial name to plotAngle
+            angle_name.strip()  # Pass angle name to plotAngle
+        ], check=True)
+
         return render_template("index.html", success="Files downloaded and processed successfully!")
-    except subprocess.CalledProcessError:
-        return render_template("index.html", error="There was an error processing the session URL.")
+    except subprocess.CalledProcessError as e:
+        return render_template("index.html", error=f"There was an error processing the session URL: {str(e)}")
 
 def get_token(username, password):
     try:

@@ -16,13 +16,13 @@ trial_name = sys.argv[2].strip()
 data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session_id}')
 
 # Define file paths dynamically using the trial name
-model_file = r'C:\Users\parkj\Downloads\OpenCap\OpenCap\OpenSimData\Model\LaiUhlrich2022_scaled.osim'
-#model_file = os.path.join(data_folder, 'OpenSimData', 'Model', 'LaiUhlrich2022_scaled.osim')
+#model_file = r'C:\Users\parkj\Downloads\OpenCap\OpenCap\OpenSimData\Model\LaiUhlrich2022_scaled.osim'
+model_file = os.path.join(os.getcwd(), 'Data', 'LaiUhlrich2022_scaled.osim')
 marker_data_file = os.path.join(data_folder, 'MarkerData', f'{trial_name}.trc')  # Use trial name here
 motion_file = os.path.join(data_folder, 'OpenSimData', 'Kinematics', f'{trial_name}.mot')  # Use trial name here
 
 # Ensure required files exist before proceeding
-for file in [model_file, marker_data_file, motion_file]:
+for file in [marker_data_file, motion_file]:
     if not os.path.isfile(file):
         print(f"Error: Required file not found: {file}")
         sys.exit(1)

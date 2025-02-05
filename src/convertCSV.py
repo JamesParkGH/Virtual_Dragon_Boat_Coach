@@ -1,5 +1,17 @@
 import csv
 import numpy as np
+import os
+import sys
+
+if len(sys.argv) != 3:
+    print("Usage: python convertCSV.py <session_id> <trial_name>")
+    sys.exit(1)
+
+session_id = sys.argv[1].strip()
+trial_name = sys.argv[2].strip()
+
+# Define base data folder where files are downloaded
+data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session_id}')
 
 def parse_mot_file(mot_file_path):
     """
@@ -47,7 +59,7 @@ def mot_to_csv(mot_file_path, csv_file_path):
             csv_writer.writerow(row)
 
 # File paths
-mot_file_path = r"C:\Users\richa\OneDrive\Desktop\FinalYear\Fall\5P06\github\Virtual_Dragon_Boat_Coach\src\Data\OpenCapData_4c352cef-dc9b-4f3b-92ec-70846d8633cc\OpenSimData\Kinematics\IainDBAC1.mot"
+mot_file_path = os.path.join(data_folder, 'OpenSimData', 'Kinematics', f'{trial_name}.mot')
 csv_file_path = mot_file_path.replace('.mot', '.csv')
 
 # Convert .mot to .csv
