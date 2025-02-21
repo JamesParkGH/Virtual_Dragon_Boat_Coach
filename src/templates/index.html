@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="home-split">
+    <section class="session-upload">
+        <h1>Welcome to VDBC</h1>
+        <p>Enter the session URL to download and process the corresponding session data.</p>
+        <form action="/process-files" method="POST">
+            <div class="form-group">
+                <label for="session-url">Session URL:</label>
+                <input type="text" id="session-url" name="session_url" placeholder="Enter the session URL">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        {% if error %}
+            <p class="alert alert-error">{{ error }}</p>
+        {% elif success %}
+            <p class="alert alert-success">{{ success }}</p>
+        {% endif %}
+    </section>
+    <section class="club-image">
+        <img src="https://static.wixstatic.com/media/90c0a3_dd99891d45784696aec677c261b7b019~mv2.jpg" style="width: 150%; height: auto;">
+    </section>
+</div>
+{% endblock %}

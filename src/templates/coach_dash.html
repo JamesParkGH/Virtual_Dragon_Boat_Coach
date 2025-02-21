@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="main-content">
+    <h1>Welcome, Coach!</h1>
+    <p>Here you can manage requests and provide feedback to paddlers.</p>
+</section>
+<a href="{{ url_for('logout') }}">Logout</a>
+{% endblock %}
