@@ -4,6 +4,28 @@
 <section class="main-content">
     <h1>Welcome, Coach!</h1>
     <p>Here you can manage requests and provide feedback to paddlers.</p>
-</section>
+
+    {% if all_sessions %}
+    <p>Following are member's practice sessions that is not reviewed</p>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>URL</th>
+                    <th>Trial Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in all_sessions %}
+                    <tr>
+                        <td>{{ all_session.URL }}</td>
+                        <td>{{ all_session.trial_name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No sessions available at this moment :)</p>
+    {% endif %}
 <a href="{{ url_for('logout') }}">Logout</a>
 {% endblock %}
+</section>

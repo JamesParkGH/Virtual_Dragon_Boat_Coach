@@ -44,6 +44,7 @@ main {
 
 .split-container {
     display: flex;
+    align-items: center;
     height: 100vh;
     width: 100%;
 }
@@ -51,7 +52,6 @@ main {
 .home-section-login {
     background: white;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 2rem;
     flex: 1;
     display: flex;
@@ -67,7 +67,21 @@ main {
     display: flex;
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.feedback-text {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 h1 {

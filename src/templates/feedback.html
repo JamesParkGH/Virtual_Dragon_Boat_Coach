@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="split-container">
+    <div class="feedback-image">
+        <img src="{{ url_for('static', filename=image_file) }}" alt="Feedback Image">
+    </div>
+    <div class="feedback-text">
+        <h2>Feedback</h2>
+        <p>Textual feedback.</p>
+    </div>
+</div>
+{% endblock %}
