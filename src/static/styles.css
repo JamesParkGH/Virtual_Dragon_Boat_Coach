@@ -42,12 +42,32 @@ main {
     margin: 0 auto;
 }
 
-.home-section {
+.split-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+.home-section-login {
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 2rem;
-    margin-top: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 45rem;
+    margin-left: -17rem;
+}
+
+.boat-image {
+    flex: 1;
+    display: flex;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
