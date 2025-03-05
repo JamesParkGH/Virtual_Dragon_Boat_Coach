@@ -15,37 +15,33 @@ def stroke_count(csv_file_path):
     RWrist_x_index = headers.index("RWrist")
     RWrist_y_index = headers.index("RWrist") + 1
     RWrist_z_index = headers.index("RWrist") + 2
-    RHeel_x_index = headers.index("RAnkle")
+    RAnkle_x_index = headers.index("RAnkle")
+    Time_index = headers.index("Time")
 
     stroke_time_stamp = {}
-    print(data)
+    stroke_number = 0
+    stroke_interval = 0
+    stroke_counted = False
 
-    for i in range(len(data)):
-        #Compare the x value between the data points
-        starting_stroke = data[i][RWrist_x_index] > data[i+1][RWrist_x_index] and data[i+1][RWrist_x_index] > data[i+2][RWrist_x_index] and data[i+2][RWrist_x_index] > data[i+3][RWrist_x_index]
-        if () > 0.015:
-            if phase != "pull":
-                phase = "pull"
-                print("phase changed to pull at: ", data[i][1], " second")
-        elif abs(float(data[i-1][RWrist_x_index]) - float(data[i][RWrist_x_index])) > 0.015:
-            if phase != "relax":
-                phase = "relax"
-                print("phase changed to relax at: ", data[i][1], " second")
+    for i in range(len(data)-3):
+        pulling = data[i][RWrist_x_index] > data[i+1][RWrist_x_index] and data[i+1][RWrist_x_index] > data[i+2][RWrist_x_index] and data[i+2][RWrist_x_index] > data[i+3][RWrist_x_index]
+        starting = float(data[i][RWrist_x_index]) > float(data[i][RAnkle_x_index])
+
+        if pulling and starting and not stroke_counted:
+            stroke_counted = True
+            stroke_number += 1
+            stroke_info = {stroke_number:data[i][Time_index]}
+            stroke_time_stamp.update(stroke_info)
+            stroke_interval = 40
+            print("marking stroke ", stroke_number, " at time: ", data[i][Time_index], " seconds")
+        elif stroke_interval > 0:
+            stroke_interval -= 1
+            if stroke_interval == 0:
+                stroke_counted = False
         else:
             pass
-        data[i].append(phase)
+    
+    print(stroke_time_stamp)
+    return stroke_time_stamp
 
-    headers.append("")
-    headers.append("")
-    headers.append("Phase")
-
-    #Write the new output file with phase
-    output_file = "phased_data.csv"
-    with open(output_file, 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(metadata)
-        writer.writerow(headers)
-        writer.writerow(sub_headers)
-        writer.writerows(data)
-
-stroke_count(r"D:\McMaster University\Year 5\5P06A\Virtual_Dragon_Boat_Coach\phased_data.csv")
+stroke_count(r"C:\5P06A\git\Virtual_Dragon_Boat_Coach\data\OpenCapData_358018a7-1cc4-4b1c-bb03-982c74c17c49\MarkerData\Ed_paddling.csv")

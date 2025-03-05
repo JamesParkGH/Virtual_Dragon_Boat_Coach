@@ -47,4 +47,4 @@ def phase_identification(csv_file_path):
         writer.writerow(sub_headers)
         writer.writerows(data)
 
-#phase_identification(r"D:\McMaster\Year 5\5P06A\data\2025-01-13 Session\MarkerData\IainDBAC1.csv")
+phase_identification(r"C:\5P06A\git\Virtual_Dragon_Boat_Coach\data\OpenCapData_358018a7-1cc4-4b1c-bb03-982c74c17c49\MarkerData\Ed_paddling.csv")

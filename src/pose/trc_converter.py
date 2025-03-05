@@ -26,7 +26,7 @@ def trc_to_csv(trc_file_path, csv_file_path):
     print(f"Converted {trc_file_path} to {csv_file_path} successfully.")
 
 # File paths
-trc_file_path = r"D:\McMaster\Year 5\5P06A\data\2025-01-13 Session\MarkerData\IainDBAC1.trc"
+trc_file_path = r"C:\5P06A\git\Virtual_Dragon_Boat_Coach\data\OpenCapData_358018a7-1cc4-4b1c-bb03-982c74c17c49\MarkerData\Ed_paddling.trc"
 csv_file_path = trc_file_path.replace('.trc', '.csv')
 
 # Convert .trc to .csv
