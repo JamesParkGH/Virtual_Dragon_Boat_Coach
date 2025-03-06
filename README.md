@@ -6,7 +6,7 @@ A smart coach application that analyzes dragon boat paddling technique using pos
 The `capstone_sa.json` credential file is required for Google Drive functionality. This file contains sensitive API credentials and is not included in the repository. Please contact one of the following authors to obtain access:
 - James Park (parkg10@mcmaster.ca)
 - Iain Slim (slimi@mcmaster.ca)
-- Logan Yuan ()yuanq10@mcmaster.ca
+- Logan Yuan (yuanq10@mcmaster.ca)
 - Richard Park (parks110@mcmaster.ca)
 
 

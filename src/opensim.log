@@ -6,3 +6,7 @@
 [2025-02-05 15:37:32.992] [info] Storage: read data file = C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\OpenCapData_4c352cef-dc9b-4f3b-92ec-70846d8633cc\OpenSimData\Kinematics\IainDBAC1_radians.mot (nr=704 nc=34)
 [2025-02-05 15:53:39.421] [info] Loaded model LaiUhlrich2022_scaled from file C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\LaiUhlrich2022_scaled.osim
 [2025-02-05 15:53:39.919] [info] Storage: read data file = C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\OpenCapData_4c352cef-dc9b-4f3b-92ec-70846d8633cc\OpenSimData\Kinematics\IainDBAC1_radians.mot (nr=704 nc=34)
+[2025-02-22 22:02:59.919] [info] Loaded model LaiUhlrich2022_scaled from file C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\LaiUhlrich2022_scaled.osim
+[2025-02-22 22:03:02.047] [info] Storage: read data file = C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\OpenCapData_358018a7-1cc4-4b1c-bb03-982c74c17c49\OpenSimData\Kinematics\Ed_paddling_radians.mot (nr=651 nc=34)
+[2025-02-22 22:06:56.236] [info] Loaded model LaiUhlrich2022_scaled from file C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\LaiUhlrich2022_scaled.osim
+[2025-02-22 22:06:56.720] [info] Storage: read data file = C:\Users\parkj\Desktop\School\Year 5\Capstone\Virtual_Dragon_Boat_Coach\src\Data\OpenCapData_56151f48-53d9-4549-a4b6-8fd3a23e9b07\OpenSimData\Kinematics\Frank_paddling_radians.mot (nr=811 nc=34)
