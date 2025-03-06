@@ -8,7 +8,7 @@ def trc_to_csv(trc_file_path, csv_file_path):
     :param trc_file_path: Path to the input .trc file
     :param csv_file_path: Path to the output .csv file
     """
-    with open(trc_file_path, 'r', encoding='utf-8') as trc_file, open(csv_file_path, 'w', newline='') as csv_file:
+    with open(trc_file_path, 'r', encoding='utf-8') as trc_file, open(csv_file_path, 'w', newline='', index_col=0) as csv_file:
         # trc_lines = trc_file.readlines()
         csv_writer = csv.writer(csv_file, delimiter=',')
         
@@ -29,7 +29,7 @@ def trc_to_csv(trc_file_path, csv_file_path):
     print(f"Converted {trc_file_path} to {csv_file_path} successfully.")
 
 # File paths
-trc_file_path = "IainDBAC1.trc"
+trc_file_path = "Frank_paddling.trc"
 csv_file_path = trc_file_path.replace('.trc', '.csv')
 
 # Convert .trc to .csv

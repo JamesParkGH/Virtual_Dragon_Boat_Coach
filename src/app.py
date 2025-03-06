@@ -93,7 +93,7 @@ def process_files():
 
         # Convert .mot to .csv
         subprocess.run([
-            'python', 'convertCSV.py',
+            'python', 'motCoverter.py',
             session_url.strip().split('/')[-1],  # Extract session ID from URL
             trial_name.strip()  # Pass trial name to convertCSV
         ], check=True)
