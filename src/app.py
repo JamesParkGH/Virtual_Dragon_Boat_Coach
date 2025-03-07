@@ -58,23 +58,19 @@ def logout():
     session.pop('token', None)  # Remove token from session
     return redirect(url_for('login'))
 
-@app.route('/process-files', methods=['POST'])
-def process_files():
+@app.route('/start-analyze', methods=['POST'])
+def start_analyze():
     if 'token' not in session:
         return redirect(url_for('login'))
 
     session_url = request.form.get('session_url')
     trial_name = request.form.get('trial_name')
-    angle_name = request.form.get('angle_name')
 
     if not session_url or session_url.strip() == '':
         return render_template("index.html", error="Please enter a valid session URL.")
     
     if not trial_name or trial_name.strip() == '':
         return render_template("index.html", error="Please enter a trial name.")
-    
-    if not angle_name or angle_name.strip() == '':
-        return render_template("index.html", error="Please select an angle name.")
     
     try:
         # Download session data
@@ -84,31 +80,79 @@ def process_files():
             session['token']  # Pass token to the script
         ], check=True)
 
-        # Run OpenSim processing
-        subprocess.run([
-            'python', 'runOpensim.py',
-            session_url.strip().split('/')[-1],  # Extract session ID from URL
-            trial_name.strip()  # Pass trial name to runOpensim
-        ], check=True)
+        # Store session_id and trial_name in session
+        session['session_id'] = session_url.strip().split('/')[-1]  # Assuming session_id is part of the URL
+        session['trial_name'] = trial_name.strip()
 
-        # Convert .mot to .csv
         subprocess.run([
             'python', 'convertCSV.py',
             session_url.strip().split('/')[-1],  # Extract session ID from URL
             trial_name.strip()  # Pass trial name to convertCSV
         ], check=True)
 
+        # Run technique analysis and capture the output
+        result = subprocess.run([
+            'python', 'techniqueAnalyzer.py',
+            session['session_id'],
+            session['trial_name']
+        ], check=True, capture_output=True, text=True)
+
+        # Store the image filename in the session
+        session['image_filename'] = result.stdout.strip()
+
+        return redirect(url_for('feedback'))
+    except subprocess.CalledProcessError as e:
+        return render_template("index.html", error=f"There was an error processing the session URL: {str(e)}")
+
+@app.route('/feedback')
+def feedback():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    # Read the image filename from the session
+    image_filename = session.get('image_filename', '')
+
+    return render_template("feedback.html", image_filename=image_filename)
+
+@app.route('/generate-graph', methods=['POST'])
+def generate_graph():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    angle_name = request.form.get('angle_name')
+
+    if not angle_name or angle_name.strip() == '':
+        return render_template("feedback.html", error="Please select an angle name.")
+    
+    try:
         # Plot the angle
         subprocess.run([
             'python', 'plotAngle.py',
-            session_url.strip().split('/')[-1],  # Extract session ID from URL
-            trial_name.strip(),  # Pass trial name to plotAngle
+            session['session_id'],  # Use session ID stored in session
+            session['trial_name'],  # Use trial name stored in session
             angle_name.strip()  # Pass angle name to plotAngle
         ], check=True)
-
-        return render_template("index.html", success="Files downloaded and processed successfully!")
     except subprocess.CalledProcessError as e:
-        return render_template("index.html", error=f"There was an error processing the session URL: {str(e)}")
+        return render_template("feedback.html", error=f"There was an error generating the graph: {str(e)}")
+
+    return redirect(url_for('feedback'))
+
+@app.route('/run-opensim', methods=['POST'])
+def run_opensim():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        # Run OpenSim processing
+        subprocess.run([
+            'python', 'runOpensim.py',
+            session['session_id'],  # Use session ID stored in session
+            session['trial_name']  # Use trial name stored in session
+        ], check=True)
+    except subprocess.CalledProcessError as e:
+        flash(f"There was an error running OpenSim: {str(e)}")
+
+    return redirect(url_for('feedback'))
 
 def get_token(username, password):
     try:
