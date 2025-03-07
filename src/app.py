@@ -2,8 +2,10 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import subprocess
 import requests
+import ast
 from decouple import config
 from utilsAPI import get_api_url
+from feedbackCompiler import compile_feedback
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
@@ -98,8 +100,8 @@ def start_analyze():
 
         # Define file paths for techniqueAnalyzer
         data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session["session_id"]}')
-        mot_file_path = os.path.join(data_folder, 'OpenSimData', 'Kinematics', f'{trial_name}.csv')
         trc_file_path = os.path.join(data_folder, 'MarkerData', f'{trial_name}.csv')
+        mot_file_path = os.path.join(data_folder, 'OpenSimData', 'Kinematics', f'{trial_name}.csv')
 
         # Run technique analysis and capture the output
         result = subprocess.run([
@@ -109,7 +111,18 @@ def start_analyze():
         ], check=True, capture_output=True, text=True)
 
         # Store the analysis result in the session
-        session['analysis_result'] = result.stdout.strip()
+        scores_str = result.stdout.strip()
+        session['analysis_result'] = scores_str
+        
+        try:
+            # Convert string representation of list to actual list
+            scores = ast.literal_eval(scores_str)
+            
+            # Generate feedback based on scores
+            feedback_data = compile_feedback(scores)
+            session['feedback'] = feedback_data
+        except Exception as e:
+            flash(f"Warning: Could not generate feedback: {str(e)}")
 
         return redirect(url_for('feedback'))
     except subprocess.CalledProcessError as e:
@@ -122,8 +135,11 @@ def feedback():
 
     # Read the analysis result from the session
     analysis_result = session.get('analysis_result', '')
+    
+    # Get the feedback from the session
+    feedback_data = session.get('feedback', None)
 
-    return render_template("feedback.html", analysis_result=analysis_result)
+    return render_template("feedback.html", analysis_result=analysis_result, feedback=feedback_data)
 
 @app.route('/generate-graph', methods=['POST'])
 def generate_graph():
@@ -143,8 +159,15 @@ def generate_graph():
             session['trial_name'],  # Use trial name stored in session
             angle_name.strip()  # Pass angle name to plotAngle
         ], check=True)
+        
+        # Add the graph to the session
+        session['graph_filename'] = f"{session['trial_name']}_{angle_name.strip()}.png"
+        
     except subprocess.CalledProcessError as e:
-        return render_template("feedback.html", error=f"There was an error generating the graph: {str(e)}")
+        return render_template("feedback.html", 
+                              error=f"There was an error generating the graph: {str(e)}",
+                              feedback=session.get('feedback', None),
+                              analysis_result=session.get('analysis_result', ''))
 
     return redirect(url_for('feedback'))
 

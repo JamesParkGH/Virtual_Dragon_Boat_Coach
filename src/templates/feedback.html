@@ -42,10 +42,10 @@
                 <option value="pro_sup_l">Pro Sup Left</option>
             </select>
         </div>
-        <button type="submit">Generate Graph</button>
+        <button type="submit" class="btn btn-primary">Generate Graph</button>
     </form>
     <form action="/run-opensim" method="POST" id="opensimForm">
-        <button type="submit">Run Opensim</button>
+        <button type="submit" class="btn btn-secondary">Run Opensim</button>
     </form>
 
     {% if error %}
@@ -55,7 +55,208 @@
     {% if image_filename %}
         <div class="analysis-results">
             <h2>Technique Analysis Results</h2>
-            <img src="{{ url_for('static', filename='Feedback/' ~ image_filename) }}" alt="Analysis Result Image">
+            <img src="{{ url_for('static', filename='Feedback/' ~ image_filename) }}" alt="Analysis Result Image" class="img-fluid">
+        </div>
+    {% endif %}
+
+    <!-- Feedback Results -->
+    {% if feedback %}
+        <div class="feedback-results">
+            <h2>Technique Feedback</h2>
+            
+            <!-- Top Arm Feedback -->
+            <div class="feedback-category card">
+                <div class="card-header">
+                    <h3>Top Arm: {{ feedback.top_arm.rating }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="main-points">
+                        {% for point in feedback.top_arm.main_points %}
+                            <p>{{ point }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if feedback.top_arm.rating != 'Good' %}
+                        <div class="improvement-points">
+                            <h4>Improvement Points</h4>
+                            
+                            <h5>Limiting Factors:</h5>
+                            <ul>
+                                {% for factor in feedback.top_arm.improvement_points.limiting_factors %}
+                                    <li>{{ factor }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Potential Injuries:</h5>
+                            <ul>
+                                {% for injury in feedback.top_arm.improvement_points.potential_injuries %}
+                                    <li>{{ injury }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Technical Feedback:</h5>
+                            <ul>
+                                {% for tip in feedback.top_arm.improvement_points.technical_feedback %}
+                                    <li>{{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Corrective Exercises:</h5>
+                            <ul>
+                                {% for exercise in feedback.top_arm.improvement_points.corrective_exercises %}
+                                    <li>{{ exercise }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Bottom Arm Feedback -->
+            <div class="feedback-category card">
+                <div class="card-header">
+                    <h3>Bottom Arm: {{ feedback.bottom_arm.rating }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="main-points">
+                        {% for point in feedback.bottom_arm.main_points %}
+                            <p>{{ point }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if feedback.bottom_arm.rating != 'Good' %}
+                        <div class="improvement-points">
+                            <h4>Improvement Points</h4>
+                            
+                            <h5>Limiting Factors:</h5>
+                            <ul>
+                                {% for factor in feedback.bottom_arm.improvement_points.limiting_factors %}
+                                    <li>{{ factor }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Potential Injuries:</h5>
+                            <ul>
+                                {% for injury in feedback.bottom_arm.improvement_points.potential_injuries %}
+                                    <li>{{ injury }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Technical Feedback:</h5>
+                            <ul>
+                                {% for tip in feedback.bottom_arm.improvement_points.technical_feedback %}
+                                    <li>{{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Corrective Exercises:</h5>
+                            <ul>
+                                {% for exercise in feedback.bottom_arm.improvement_points.corrective_exercises %}
+                                    <li>{{ exercise }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Posture Feedback -->
+            <div class="feedback-category card">
+                <div class="card-header">
+                    <h3>Posture: {{ feedback.posture.rating }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="main-points">
+                        {% for point in feedback.posture.main_points %}
+                            <p>{{ point }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if feedback.posture.rating != 'Good' %}
+                        <div class="improvement-points">
+                            <h4>Improvement Points</h4>
+                            
+                            <h5>Limiting Factors:</h5>
+                            <ul>
+                                {% for factor in feedback.posture.improvement_points.limiting_factors %}
+                                    <li>{{ factor }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Potential Injuries:</h5>
+                            <ul>
+                                {% for injury in feedback.posture.improvement_points.potential_injuries %}
+                                    <li>{{ injury }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Technical Feedback:</h5>
+                            <ul>
+                                {% for tip in feedback.posture.improvement_points.technical_feedback %}
+                                    <li>{{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Corrective Exercises:</h5>
+                            <ul>
+                                {% for exercise in feedback.posture.improvement_points.corrective_exercises %}
+                                    <li>{{ exercise }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Paddle Angle Feedback -->
+            <div class="feedback-category card">
+                <div class="card-header">
+                    <h3>Paddle Angle: {{ feedback.paddle_angle.rating }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="main-points">
+                        {% for point in feedback.paddle_angle.main_points %}
+                            <p>{{ point }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if feedback.paddle_angle.rating != 'Good' %}
+                        <div class="improvement-points">
+                            <h4>Improvement Points</h4>
+                            
+                            <h5>Limiting Factors:</h5>
+                            <ul>
+                                {% for factor in feedback.paddle_angle.improvement_points.limiting_factors %}
+                                    <li>{{ factor }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            {% if feedback.paddle_angle.improvement_points.potential_injuries %}
+                                <h5>Potential Injuries:</h5>
+                                <ul>
+                                    {% for injury in feedback.paddle_angle.improvement_points.potential_injuries %}
+                                        <li>{{ injury }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            
+                            <h5>Technical Feedback:</h5>
+                            <ul>
+                                {% for tip in feedback.paddle_angle.improvement_points.technical_feedback %}
+                                    <li>{{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <h5>Corrective Exercises:</h5>
+                            <ul>
+                                {% for exercise in feedback.paddle_angle.improvement_points.corrective_exercises %}
+                                    <li>{{ exercise }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     {% endif %}
 </section>
