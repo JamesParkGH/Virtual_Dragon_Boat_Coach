@@ -1,30 +1,27 @@
-{% extends "base.html" %}
+{% extends "baselogin.html" %}
 
 {% block content %}
-<div class="split-container">
-    <section class="home-section-login">
-        <h1>Login to VDBC</h1>
-        <p>Please enter your username and password to sign in.</p>
+<div class="login-form-container">
+    <div class="container">
+        <h1>Welcome Back</h1>
+        <p>Please enter your credentials to access your account.</p>
         <form action="/login" method="POST">
             <div class="form-group">
-                <label for="username">Username:</label>
+                <label for="username"><i class="fas fa-user"></i> Username</label>
                 <input type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
             <div class="form-group">
-                <label for="password">Password:</label>
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
             </div>
-            <button type="submit">Sign In</button>
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> Sign In</button>
         </form>
-        <p>Don't have an account? <a href="https://app.opencap.ai/register-nmbl" class="button">Create an Account</a></p>
+        <p class="text-center" style="margin-top: 1.5rem;">Don't have an account? <a href="https://app.opencap.ai/register-nmbl" style="color: var(--primary-color); font-weight: 600;">Create an Account</a></p>
         {% if error %}
-            <p class="alert alert-error">{{ error }}</p>
+            <p class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
         {% elif success %}
-            <p class="alert alert-success">{{ success }}</p>
+            <p class="alert alert-success"><i class="fas fa-check-circle"></i> {{ success }}</p>
         {% endif %}
-    </section>
-    <section class="club-image">
-        <img src="https://static.wixstatic.com/media/90c0a3_dd99891d45784696aec677c261b7b019~mv2.jpg" alt="Boat Club Image" width="150%" height="auto">
-    </section>
+    </div>
 </div>
 {% endblock %}

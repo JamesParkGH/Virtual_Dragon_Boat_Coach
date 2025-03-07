@@ -2,9 +2,10 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import subprocess
 import requests
-import json
+import ast
 from decouple import config
 from utilsAPI import get_api_url
+from feedbackCompiler import compile_feedback
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
@@ -35,33 +36,6 @@ def about():
 def resources():
     return render_template("resources.html")
 
-@app.route('/coach', methods=['GET', 'POST'])
-def coach():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        credentials = load_credentials()
-
-        if username in credentials and credentials[username] == password:
-            session['coach'] = username
-            return redirect(url_for('coach_dashboard'))
-        else:
-            return render_template('coach.html', error="Invalid username or password")
-
-    return render_template('coach.html')
-
-@app.route('/coach/dashboard')
-def coach_dashboard():
-    if 'coach' not in session:
-        return redirect(url_for('coach_login'))
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    all_sessions_file = os.path.join(base_dir, "sessions.json")
-    with open(all_sessions_file,'r+') as file:
-        all_sessions = json.load(file)
-    return render_template('coach_dash.html', coach=session['coach'])
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -84,17 +58,15 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('token', None)  # Remove token from session
-    session.pop('coach', None)
     return redirect(url_for('login'))
 
-@app.route('/process-files', methods=['POST'])
-def process_files():
+@app.route('/start-analyze', methods=['POST'])
+def start_analyze():
     if 'token' not in session:
         return redirect(url_for('login'))
 
     session_url = request.form.get('session_url')
     trial_name = request.form.get('trial_name')
-    angle_name = request.form.get('angle_name')
 
     if not session_url or session_url.strip() == '':
         return render_template("index.html", error="Please enter a valid session URL.")
@@ -102,55 +74,119 @@ def process_files():
     if not trial_name or trial_name.strip() == '':
         return render_template("index.html", error="Please enter a trial name.")
     
-    if not angle_name or angle_name.strip() == '':
-        return render_template("index.html", error="Please select an angle name.")
-
     try:
         # Download session data
         subprocess.run([
-            'python', 'BatchDownload.py',
+            'python', 'batchDownload.py',
             session_url.strip(),
             session['token']  # Pass token to the script
         ], check=True)
 
-        # Run OpenSim processing
-        subprocess.run([
-            'python', 'runOpensim.py',
-            session_url.strip().split('/')[-1],  # Extract session ID from URL
-            trial_name.strip()  # Pass trial name to runOpensim
-        ], check=True)
+        # Store session_id and trial_name in session
+        session['session_id'] = session_url.strip().split('/')[-1]  # Assuming session_id is part of the URL
+        session['trial_name'] = trial_name.strip()
 
-        # Convert .mot to .csv
         subprocess.run([
-            'python', 'convertCSV.py',
+            'python', 'motConverter.py',
             session_url.strip().split('/')[-1],  # Extract session ID from URL
             trial_name.strip()  # Pass trial name to convertCSV
         ], check=True)
 
-        # Plot the angle
         subprocess.run([
-            'python', 'plotAngle.py',
+            'python', 'trcConverter.py',
             session_url.strip().split('/')[-1],  # Extract session ID from URL
-            trial_name.strip(),  # Pass trial name to plotAngle
-            angle_name.strip()  # Pass angle name to plotAngle
+            trial_name.strip()  # Pass trial name to trcConverter
         ], check=True)
 
-        save_sessions(session_url,trial_name)
+        # Define file paths for techniqueAnalyzer
+        data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session["session_id"]}')
+        trc_file_path = os.path.join(data_folder, 'MarkerData', f'{trial_name}.csv')
+        mot_file_path = os.path.join(data_folder, 'OpenSimData', 'Kinematics', f'{trial_name}.csv')
 
-        return render_template("index.html", success="Files downloaded and processed successfully!")
+        # Run technique analysis and capture the output
+        result = subprocess.run([
+            'python', 'techniqueAnalyzer.py',
+            trc_file_path,
+            mot_file_path
+        ], check=True, capture_output=True, text=True)
+
+        # Store the analysis result in the session
+        scores_str = result.stdout.strip()
+        session['analysis_result'] = scores_str
+        
+        try:
+            # Convert string representation of list to actual list
+            scores = ast.literal_eval(scores_str)
+            
+            # Generate feedback based on scores
+            feedback_data = compile_feedback(scores)
+            session['feedback'] = feedback_data
+        except Exception as e:
+            flash(f"Warning: Could not generate feedback: {str(e)}")
+
+        return redirect(url_for('feedback'))
     except subprocess.CalledProcessError as e:
         return render_template("index.html", error=f"There was an error processing the session URL: {str(e)}")
 
-@app.route('/feedbacks')
-def feedbacks():
+@app.route('/feedback')
+def feedback():
     if 'token' not in session:
         return redirect(url_for('login'))
+
+    # Read the analysis result from the session
+    analysis_result = session.get('analysis_result', '')
     
-    image_file = ""
+    # Get the feedback from the session
+    feedback_data = session.get('feedback', None)
 
-    text_feedback = ""
+    return render_template("feedback.html", analysis_result=analysis_result, feedback=feedback_data)
 
-    return render_template('feedback.html')
+@app.route('/generate-graph', methods=['POST'])
+def generate_graph():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    angle_name = request.form.get('angle_name')
+
+    if not angle_name or angle_name.strip() == '':
+        return render_template("feedback.html", error="Please select an angle name.")
+    
+    try:
+        # Plot the angle
+        subprocess.run([
+            'python', 'plotAngle.py',
+            session['session_id'],  # Use session ID stored in session
+            session['trial_name'],  # Use trial name stored in session
+            angle_name.strip()  # Pass angle name to plotAngle
+        ], check=True)
+        
+        # Add the graph to the session
+        session['graph_filename'] = f"{session['trial_name']}_{angle_name.strip()}.png"
+        
+    except subprocess.CalledProcessError as e:
+        return render_template("feedback.html", 
+                              error=f"There was an error generating the graph: {str(e)}",
+                              feedback=session.get('feedback', None),
+                              analysis_result=session.get('analysis_result', ''))
+
+    return redirect(url_for('feedback'))
+
+@app.route('/run-opensim', methods=['POST'])
+def run_opensim():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        # Run OpenSim processing
+        subprocess.run([
+            'python', 'runOpensim.py',
+            session['session_id'],  # Use session ID stored in session
+            session['trial_name']  # Use trial name stored in session
+        ], check=True)
+    except subprocess.CalledProcessError as e:
+        flash(f"There was an error running OpenSim: {str(e)}")
+
+    return redirect(url_for('feedback'))
 
 def get_token(username, password):
     try:
@@ -166,28 +202,5 @@ def get_token(username, password):
     except requests.exceptions.RequestException:
         raise Exception("Login failed: incorrect username or password.")
 
-def load_credentials():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    credentials_file = os.path.join(base_dir, "credentials.txt")
-    creds = {}
-    if os.path.exists(credentials_file):
-        with open(credentials_file, "r") as file:
-            for line in file:
-                username, password = line.strip().split(",")
-                creds[username] = password
-    return creds
-
-def save_sessions(URL, trial_name):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    new_session = {URL: trial_name}
-    all_sessions_file = os.path.join(base_dir, "sessions.json")
-    with open(all_sessions_file,'r+') as file:
-        existing_sessions = json.load(file)  
-        existing_sessions.update(new_session)
-        file.seek(0)
-        json.dump(existing_sessions, file, indent=4)
-
-    return
-    
 if __name__ == "__main__":
     app.run(debug=True)
