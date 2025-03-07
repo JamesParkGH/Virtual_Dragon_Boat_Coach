@@ -117,7 +117,7 @@ def techniqueAnalyzer(trc_file, mot_file):
     posture_score = 0
     paddle_angle_score = paddle_angle_count/stroke_count
 
-    return
+    return [top_arm_upper_score, top_arm_lower_score, bottom_elbow_upper_score, bottom_elbow_lower_score, posture_score, paddle_angle_score]
 
 mot_file = "Frank_paddling_mot.csv"
 trc_file = "Frank_paddling_trc.csv"
