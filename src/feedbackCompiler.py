@@ -172,13 +172,14 @@ def generate_paddle_angle_feedback(score):
         }
     }
     
-    if score <= 0.3:
+    # Updated thresholds as specified
+    if score > 0.1:
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
             'You are maintaining a positive angle very well throughout your stroke.',
             'This means that the force you are producing will be effectively applied when moving the boat.'
         ]
-    elif score <= 0.7:
+    elif score >= 0.085:
         feedback['rating'] = 'Moderate'
         feedback['main_points'] = [
             'Your paddle angle is positive for part of your stroke but becomes negative a little too soon.',
@@ -214,7 +215,8 @@ def add_paddle_angle_improvement_points(feedback):
     ]
 
 def compile_feedback(scores):
-    top_arm_upper_score, top_arm_lower_score, bottom_elbow_upper_score, bottom_elbow_lower_score, posture_score, paddle_angle_score = scores
+    # Updated to accept 4 scores instead of 6
+    top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score = scores
     
     # Update to include all four feedback categories
     feedback = {
@@ -228,10 +230,10 @@ def compile_feedback(scores):
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) != 7:
-        print("Usage: python feedbackCompiler.py <top_arm_upper_score> <top_arm_lower_score> <bottom_elbow_upper_score> <bottom_elbow_lower_score> <posture_score> <paddle_angle_score>")
+    if len(sys.argv) != 5:  # Changed from 7 to 5 (program name + 4 scores)
+        print("Usage: python feedbackCompiler.py <top_arm_score> <bottom_elbow_score> <posture_score> <paddle_angle_score>")
         sys.exit(1)
         
-    scores = [float(score) for score in sys.argv[1:7]]
+    scores = [float(score) for score in sys.argv[1:5]]
     feedback = compile_feedback(scores)
     print(feedback)
