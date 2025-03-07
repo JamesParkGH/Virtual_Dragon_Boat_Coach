@@ -5,6 +5,7 @@ import re
 import math
 from identifyPaddlingSide import identifyPaddlingSide
 from strokeCounter import strokeCounter
+from identifyPhase import identifyPhase
 
 def techniqueAnalyzer(trc_file, mot_file):
     right_side = identifyPaddlingSide(trc_file)
@@ -28,6 +29,8 @@ def techniqueAnalyzer(trc_file, mot_file):
     # need elapsed number of strokes
     stroke_count, stroke_frames = strokeCounter(trc_file)
     stroke_count -= 1   # Gives intervals instead of end markers
+
+    stroke_phases = identifyPhase(trc_file)
 
     # Cannot exceed curr_stroke
     top_arm_count = 0
@@ -56,7 +59,7 @@ def techniqueAnalyzer(trc_file, mot_file):
         top_wrist_y_index = trc_df.iloc[:,12]
 
     positive_frames = 0
-    paddle_angle_count = 0
+    paddle_angle_ratios = []
 
 
     curr_stroke = 0
@@ -74,9 +77,12 @@ def techniqueAnalyzer(trc_file, mot_file):
             posture_count = False
 
             # Check positive frame ratio
-            if curr_stroke > 0 and positive_frames/(stroke_frames[curr_stroke]-stroke_frames[curr_stroke-1]) < 0:   # UPDATE THRESHOLD
-                paddle_angle_count += 1
-                # Keep ratio data
+            if frame > stroke_frames[0]:
+                paddle_angle_ratios.append(positive_frames/(stroke_frames[curr_stroke]-stroke_frames[curr_stroke-1]))
+
+            # if curr_stroke > 0 and positive_frames/(stroke_frames[curr_stroke]-stroke_frames[curr_stroke-1]) < 0:   # UPDATE THRESHOLD
+            #     paddle_angle_count += 1
+            #     # Keep ratio data
             positive_frames = 0
 
             # inc stroke count
@@ -84,40 +90,46 @@ def techniqueAnalyzer(trc_file, mot_file):
 
 
     # Top arm UPPER threshold check (top flex, top add, top rot)
-        if top_arm_updated==False and df['arm_flex_top'].values[frame] > 0 and df['arm_add_top'].values[frame] > 0 and df['arm_rot_top'].values[frame] > 0:
+        if top_arm_updated==False and df['arm_flex_top'].values[frame] > 50 and df['arm_add_top'].values[frame] < 170 and df['arm_rot_top'].values[frame] > 160:
             top_arm_count += 1
             top_arm_updated = True
 
     # Top arm LOWER threshold check (top flex, top add, top rot)
 
     # Bottom arm UPPER threshold check (bottom elbow)
-        if bottom_elbow_updated==False and df['elbow_flex_bottom'].values[frame] > 0:
+        if bottom_elbow_updated==False and df['elbow_flex_bottom'].values[frame] < 75:
             bottom_elbow_count += 1
 
     # Bottom arm LOWER threshold check (bottom elbow)
 
 
     # Spine posture threshold check (lumbar extension, bending)
+        if posture_count_updated==False and df['lumbar_extension'].values[frame] > 240 and df['arm_add_top'].values[frame] < 180:
+            posture_count += 1
+            posture_count_updated = True
 
     # Paddle angle threshold check (trc_file: top/bottom wrist x+y components)
     # Duration of angle being positive (time ratio between positive_frames:total_frames)
         x_diff = top_wrist_x_index.iloc[frame] - bottom_wrist_x_index.iloc[frame]
         y_diff = top_wrist_y_index.iloc[frame] - bottom_wrist_y_index.iloc[frame]
-        theta = math.atan(y_diff/x_diff)
-        if theta <= math.pi/2:
+        theta = math.degrees(math.atan(y_diff/x_diff))
+        if theta <= 10 and stroke_phases[frame]=="pull":
             positive_frames += 1
 
     ##############################################################
     # Analysis
     ##############################################################
     top_arm_upper_score = top_arm_count/stroke_count
-    top_arm_lower_score = 0
+    # top_arm_lower_score = 0
     bottom_elbow_upper_score = bottom_elbow_count/stroke_count
-    bottom_elbow_lower_score = 0
-    posture_score = 0
-    paddle_angle_score = paddle_angle_count/stroke_count
+    # bottom_elbow_lower_score = 0
+    posture_score = posture_count/stroke_count
 
-    return [top_arm_upper_score, top_arm_lower_score, bottom_elbow_upper_score, bottom_elbow_lower_score, posture_score, paddle_angle_score]
+    paddle_angle_score = sum[stroke_phases]/stroke_count
+
+
+    print(paddle_angle_ratios)
+    return [top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score]
 
 mot_file = "Frank_paddling_mot.csv"
 trc_file = "Frank_paddling_trc.csv"

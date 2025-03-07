@@ -8,8 +8,8 @@ def plot_angle(csv_file_path):
     angle1_data = []
     angle2_data = []
 
-    angle1 = 'arm_rot_l'
-    angle2 = 'elbow_flex_l'
+    angle1 = 'hip_flexion_r'
+    angle2 = 'knee_angle_r'
 
     with open(csv_file_path, 'r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
