@@ -139,8 +139,13 @@ def feedback():
     # Get the feedback from the session
     feedback_data = session.get('feedback', None)
 
-    return render_template("feedback.html", analysis_result=analysis_result, feedback=feedback_data)
+    opencap_url = f"https://app.opencap.ai/session/{session.get('session_id', '')}"
 
+    return render_template("feedback.html", 
+                          analysis_result=analysis_result, 
+                          feedback=feedback_data,
+                          opencap_url=opencap_url)
+                          
 @app.route('/generate-graph', methods=['POST'])
 def generate_graph():
     if 'token' not in session:
