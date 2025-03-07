@@ -66,7 +66,7 @@ def techniqueAnalyzer(trc_file, mot_file):
     
     # loop through df
     # Start at first full stroke (stroke_frames[0])
-    for frame in range(stroke_frames[0], df.shape[0]):
+    for frame in range(stroke_frames[0], stroke_frames[-1]):
 
     # track timeframe of threshold violations (start and stop)
         if frame in stroke_frames:
@@ -90,21 +90,22 @@ def techniqueAnalyzer(trc_file, mot_file):
 
 
     # Top arm UPPER threshold check (top flex, top add, top rot)
-        if top_arm_updated==False and df['arm_flex_top'].values[frame] > 50 and df['arm_add_top'].values[frame] < 170 and df['arm_rot_top'].values[frame] > 160:
+        if top_arm_updated==False and 180-df['arm_flex_top'].values[frame] > 50 and 180-df['arm_add_top'].values[frame] < 170 and 180-df['arm_rot_top'].values[frame] > 160:
             top_arm_count += 1
             top_arm_updated = True
 
     # Top arm LOWER threshold check (top flex, top add, top rot)
 
     # Bottom arm UPPER threshold check (bottom elbow)
-        if bottom_elbow_updated==False and df['elbow_flex_bottom'].values[frame] < 75:
+        if bottom_elbow_updated==False and 180-df['elbow_flex_bottom'].values[frame] < 75:
             bottom_elbow_count += 1
+            bottom_elbow_updated = True
 
     # Bottom arm LOWER threshold check (bottom elbow)
 
 
     # Spine posture threshold check (lumbar extension, bending)
-        if posture_count_updated==False and df['lumbar_extension'].values[frame] > 240 and df['arm_add_top'].values[frame] < 180:
+        if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > 230 and 180-df['arm_add_top'].values[frame] > 176:
             posture_count += 1
             posture_count_updated = True
 
@@ -125,10 +126,10 @@ def techniqueAnalyzer(trc_file, mot_file):
     # bottom_elbow_lower_score = 0
     posture_score = posture_count/stroke_count
 
-    paddle_angle_score = sum[stroke_phases]/stroke_count
+    paddle_angle_score = sum(paddle_angle_ratios)/stroke_count
 
-
-    print(paddle_angle_ratios)
+    # print(df['elbow_flex_bottom'].values)
+    print([top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score])
     return [top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score]
 
 mot_file = "Frank_paddling_mot.csv"

@@ -8,7 +8,7 @@ def plot_angle(csv_file_path):
     angle1_data = []
     angle2_data = []
 
-    angle1 = 'hip_flexion_r'
+    angle1 = 'elbow_flex_r'
     angle2 = 'knee_angle_r'
 
     with open(csv_file_path, 'r') as csv_file:
@@ -29,4 +29,4 @@ def plot_angle(csv_file_path):
     # Show the plot
     plt.show()
 
-plot_angle("Ed_paddling_mot.csv")
+plot_angle("Frank_paddling_mot.csv")
