@@ -1,70 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="home-section">
-    <h1>Welcome to VDBC</h1>
-    <p>Enter the session URL to download and process the corresponding session data.</p>
+<div class="container">
+    <h1>Welcome to Virtual Dragon Boat Coach</h1>
+    <p>Analyze your paddling technique and get personalized feedback to improve your performance.</p>
     
-    <form action="/process-files" method="POST" id="processForm">
+    <form action="/start-analyze" method="POST" id="processForm">
         <div class="form-group">
-            <label for="session-url">Session URL:</label>
-            <input type="text" id="session-url" name="session_url" placeholder="Enter the session URL" required>
+            <label for="session-url"><i class="fas fa-link"></i> Session URL</label>
+            <input type="text" id="session-url" name="session_url" placeholder="Enter the OpenCap session URL" required>
         </div>
         <div class="form-group">
-            <label for="trial-name">Trial Name:</label>
-            <input type="text" id="trial-name" name="trial_name" placeholder="Enter the trial name" required>
+            <label for="trial-name"><i class="fas fa-tag"></i> Trial Name</label>
+            <input type="text" id="trial-name" name="trial_name" placeholder="Enter a name for this analysis" required>
         </div>
-        <div class="form-group">
-            <label for="angle-name">Angle Name:</label>
-            <select id="angle-name" name="angle_name" required>
-                <option value="pelvis_tilt">Pelvis Tilt</option>
-                <option value="pelvis_list">Pelvis List</option>
-                <option value="pelvis_rotation">Pelvis Rotation</option>
-                <option value="pelvis_tx">Pelvis TX</option>
-                <option value="pelvis_ty">Pelvis TY</option>
-                <option value="pelvis_tz">Pelvis TZ</option>
-                <option value="hip_flexion_r">Hip Flexion Right</option>
-                <option value="hip_adduction_r">Hip Adduction Right</option>
-                <option value="hip_rotation_r">Hip Rotation Right</option>
-                <option value="knee_angle_r">Knee Angle Right</option>
-                <option value="ankle_angle_r">Ankle Angle Right</option>
-                <option value="subtalar_angle_r">Subtalar Angle Right</option>
-                <option value="mtp_angle_r">MTP Angle Right</option>
-                <option value="hip_flexion_l">Hip Flexion Left</option>
-                <option value="hip_adduction_l">Hip Adduction Left</option>
-                <option value="hip_rotation_l">Hip Rotation Left</option>
-                <option value="knee_angle_l">Knee Angle Left</option>
-                <option value="ankle_angle_l">Ankle Angle Left</option>
-                <option value="subtalar_angle_l">Subtalar Angle Left</option>
-                <option value="mtp_angle_l">MTP Angle Left</option>
-                <option value="lumbar_extension">Lumbar Extension</option>
-                <option value="lumbar_bending">Lumbar Bending</option>
-                <option value="lumbar_rotation">Lumbar Rotation</option>
-                <option value="arm_flex_r">Arm Flex Right</option>
-                <option value="arm_add_r">Arm Add Right</option>
-                <option value="arm_rot_r">Arm Rot Right</option>
-                <option value="elbow_flex_r">Elbow Flex Right</option>
-                <option value="pro_sup_r">Pro Sup Right</option>
-                <option value="arm_flex_l">Arm Flex Left</option>
-                <option value="arm_add_l">Arm Add Left</option>
-                <option value="arm_rot_l">Arm Rot Left</option>
-                <option value="elbow_flex_l">Elbow Flex Left</option>
-                <option value="pro_sup_l">Pro Sup Left</option>
-            </select>
-        </div>
-        <button type="submit">Submit</button>
+        <button type="submit"><i class="fas fa-play"></i> Start Analysis</button>
     </form>
 
     <div id="loadingMessage" style="display:none;">
-        <p>Processing... Please wait.</p>
+        <div style="text-align: center; margin-top: 2rem;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
+            <p style="margin-top: 1rem;">Processing your paddling technique... Please wait.</p>
+        </div>
     </div>
 
     {% if error %}
-        <p class="alert alert-error">{{ error }}</p>
+        <p class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
     {% elif success %}
-        <p class="alert alert-success">{{ success }}</p>
+        <p class="alert alert-success"><i class="fas fa-check-circle"></i> {{ success }}</p>
     {% endif %}
-</section>
+</div>
+
+<div class="container">
+    <h2>How It Works</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 1.5rem;">
+        <div style="flex: 1; min-width: 250px;">
+            <h3><i class="fas fa-upload"></i> 1. Upload Session</h3>
+            <p>Enter your OpenCap session URL and give it a name.</p>
+        </div>
+        <div style="flex: 1; min-width: 250px;">
+            <h3><i class="fas fa-chart-line"></i> 2. Analyze Technique</h3>
+            <p>Our system analyzes your paddling biomechanics.</p>
+        </div>
+        <div style="flex: 1; min-width: 250px;">
+            <h3><i class="fas fa-comments"></i> 3. Get Feedback</h3>
+            <p>Receive personalized feedback to improve your technique.</p>
+        </div>
+    </div>
+</div>
 
 <script>
     // Show loading message when the form is submitted
