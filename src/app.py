@@ -96,15 +96,20 @@ def start_analyze():
             trial_name.strip()  # Pass trial name to trcConverter
         ], check=True)
 
+        # Define file paths for techniqueAnalyzer
+        data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session["session_id"]}')
+        mot_file_path = os.path.join(data_folder, 'OpenSimData', 'Kinematics', f'{trial_name}.csv')
+        trc_file_path = os.path.join(data_folder, 'MarkerData', f'{trial_name}.csv')
+
         # Run technique analysis and capture the output
         result = subprocess.run([
             'python', 'techniqueAnalyzer.py',
-            session['session_id'],
-            session['trial_name']
+            trc_file_path,
+            mot_file_path
         ], check=True, capture_output=True, text=True)
 
-        # Store the image filename in the session
-        session['image_filename'] = result.stdout.strip()
+        # Store the analysis result in the session
+        session['analysis_result'] = result.stdout.strip()
 
         return redirect(url_for('feedback'))
     except subprocess.CalledProcessError as e:
@@ -115,10 +120,10 @@ def feedback():
     if 'token' not in session:
         return redirect(url_for('login'))
 
-    # Read the image filename from the session
-    image_filename = session.get('image_filename', '')
+    # Read the analysis result from the session
+    analysis_result = session.get('analysis_result', '')
 
-    return render_template("feedback.html", image_filename=image_filename)
+    return render_template("feedback.html", analysis_result=analysis_result)
 
 @app.route('/generate-graph', methods=['POST'])
 def generate_graph():
