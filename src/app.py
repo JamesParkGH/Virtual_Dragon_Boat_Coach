@@ -85,9 +85,15 @@ def start_analyze():
         session['trial_name'] = trial_name.strip()
 
         subprocess.run([
-            'python', 'convertCSV.py',
+            'python', 'motConverter.py',
             session_url.strip().split('/')[-1],  # Extract session ID from URL
             trial_name.strip()  # Pass trial name to convertCSV
+        ], check=True)
+
+        subprocess.run([
+            'python', 'trcConverter.py',
+            session_url.strip().split('/')[-1],  # Extract session ID from URL
+            trial_name.strip()  # Pass trial name to trcConverter
         ], check=True)
 
         # Run technique analysis and capture the output
