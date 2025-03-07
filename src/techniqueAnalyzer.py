@@ -74,7 +74,7 @@ def techniqueAnalyzer(trc_file, mot_file):
             # Reset update indicators on each stroke
             top_arm_updated = False
             bottom_elbow_updated = False
-            posture_count = False
+            posture_count_updated = False
 
             # Check positive frame ratio
             if frame > stroke_frames[0]:
@@ -105,7 +105,7 @@ def techniqueAnalyzer(trc_file, mot_file):
 
 
     # Spine posture threshold check (lumbar extension, bending)
-        if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > 230 and 180-df['arm_add_top'].values[frame] > 176:
+        if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > 235 and 180-df['lumbar_bending'].values[frame] < 170:
             posture_count += 1
             posture_count_updated = True
 
@@ -128,7 +128,7 @@ def techniqueAnalyzer(trc_file, mot_file):
 
     paddle_angle_score = sum(paddle_angle_ratios)/stroke_count
 
-    # print(df['elbow_flex_bottom'].values)
+    print(180-df['lumbar_extension'].values)
     print([top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score])
     return [top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score]
 
