@@ -3,6 +3,7 @@ import os
 import pandas as pd
 
 def identifyPaddlingSide(trc_file_path):
+<<<<<<< HEAD
 
     # Read through .trc to find which side is the top vs bottom (get avg y_value)
     df = pd.read_csv(trc_file_path, sep=",", engine="python", header=None, index_col=0)
@@ -17,6 +18,24 @@ def identifyPaddlingSide(trc_file_path):
 
     return right_side
 
+=======
+    try:
+        # Read through .trc to find which side is the top vs bottom (get avg y_value)
+        df = pd.read_csv(trc_file_path, sep=",", engine="python", header=None, index_col=0)
+
+        right_wrist = df.iloc[:, 11]
+        left_wrist = df.iloc[:, 20]
+
+        avg_right = right_wrist.sum() / len(right_wrist)
+        avg_left = left_wrist.sum() / len(left_wrist)
+
+        right_side = avg_right < avg_left  # Check calibration
+
+        return right_side
+    except Exception as e:
+        print(f"Error reading or processing file {trc_file_path}: {e}")
+        sys.exit(1)
+>>>>>>> 7b57ca5064415b11ba27b24675b693591248473a
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -30,5 +49,11 @@ if __name__ == "__main__":
         print(f"Error: CSV file not found: {trc_file_path}")
         sys.exit(1)
 
+<<<<<<< HEAD
     # Plot the specified angle and save the plot
     identifyPaddlingSide(trc_file_path)
+=======
+    # Identify paddling side
+    right_side = identifyPaddlingSide(trc_file_path)
+    print(f"Paddling on the right side: {right_side}")
+>>>>>>> 7b57ca5064415b11ba27b24675b693591248473a

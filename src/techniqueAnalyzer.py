@@ -127,6 +127,7 @@ def techniqueAnalyzer(trc_file, mot_file):
     posture_score = posture_count/stroke_count
 
     paddle_angle_score = sum(paddle_angle_ratios)/stroke_count
+<<<<<<< HEAD
 
     print(180-df['lumbar_extension'].values)
     print([top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score])
@@ -136,3 +137,17 @@ mot_file = "Frank_paddling_mot.csv"
 trc_file = "Frank_paddling_trc.csv"
 
 techniqueAnalyzer(trc_file, mot_file)
+=======
+    return [top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score]
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python techniqueAnalyzer.py <trc_file> <mot_file>")
+        sys.exit(1)
+
+    trc_file = sys.argv[1]
+    mot_file = sys.argv[2]
+
+    scores = techniqueAnalyzer(trc_file, mot_file)
+    print(scores)
+>>>>>>> 7b57ca5064415b11ba27b24675b693591248473a
