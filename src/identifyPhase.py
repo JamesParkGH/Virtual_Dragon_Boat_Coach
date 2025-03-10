@@ -1,42 +1,10 @@
-<<<<<<< HEAD
-import csv
-=======
 import sys
 import os
->>>>>>> 7b57ca5064415b11ba27b24675b693591248473a
 import pandas as pd
 from identifyPaddlingSide import identifyPaddlingSide
+from strokeCounter import strokeCounter
 
 def identifyPhase(trc_file_path):
-<<<<<<< HEAD
-    df = pd.read_csv(trc_file_path, sep=",", engine="python", header=None)
-
-    #Identify indices (y and z not used for now)
-    if identifyPaddlingSide(trc_file_path):
-        bottom_wrist_x_index = df.iloc[:,11]    #right wrist
-    else:
-        bottom_wrist_x_index = df.iloc[:,20]    #left wrist
-
-
-    phase = "None"
-    phase_list = []
-
-    for i in range(1,df.shape[0]):
-        #Compare the x value between the data points
-        if float(bottom_wrist_x_index[i-1]) - float(bottom_wrist_x_index[i]) > 0.015:
-            if phase != "pull":
-                phase = "pull"
-        elif abs(float(bottom_wrist_x_index[i-1]) - float(bottom_wrist_x_index[i])) > 0.015:
-            if phase != "recovery":
-                phase = "recovery"
-        else:
-            pass
-        if len(phase_list)==0:
-            phase_list.append(phase)
-        phase_list.append(phase)
-
-    return phase_list
-=======
     """
     Identify the phase (pull or recovery) for each frame in the TRC file.
     
@@ -56,6 +24,8 @@ def identifyPhase(trc_file_path):
         else:
             bottom_wrist_x_index = df.iloc[:,20]    # left wrist
         
+        stroke_count, stroke_frames = strokeCounter(trc_file_path)
+
         phase = "None"
         phase_list = []
         
@@ -74,6 +44,15 @@ def identifyPhase(trc_file_path):
             # If no significant change, keep the current phase
             
             phase_list.append(phase)
+
+        # for i in range(1, stroke_count):
+        #     # Split up range of each stroke
+        #     for frame in range(stroke_frames[i-1], stroke_frames[i]):
+        #     # Split pulling frames
+        #         curr_stroke = 
+        #         halfway = (stroke_frames[i] - stroke_frames[i-1])/2 + stroke_frames[i-1]
+        #         if frame <= halfway:
+        #             phase_list
         
         return phase_list
     
@@ -95,4 +74,3 @@ if __name__ == "__main__":
         sys.exit(1)
         
     phases = identifyPhase(trc_file_path)
->>>>>>> 7b57ca5064415b11ba27b24675b693591248473a

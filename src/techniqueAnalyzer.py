@@ -6,6 +6,7 @@ import math
 from identifyPaddlingSide import identifyPaddlingSide
 from strokeCounter import strokeCounter
 from identifyPhase import identifyPhase
+from constants import *
 
 def techniqueAnalyzer(trc_file, mot_file):
     right_side = identifyPaddlingSide(trc_file)
@@ -40,7 +41,9 @@ def techniqueAnalyzer(trc_file, mot_file):
     bottom_elbow_updated = False
 
     posture_count = 0
+    hip_hinge_count = 0
     posture_count_updated = False
+    hip_hinge_updated = False
 
 
     # Paddle angle
@@ -59,6 +62,7 @@ def techniqueAnalyzer(trc_file, mot_file):
         top_wrist_y_index = trc_df.iloc[:,12]
 
     positive_frames = 0
+    pull_frames = 0
     paddle_angle_ratios = []
 
 
@@ -78,26 +82,26 @@ def techniqueAnalyzer(trc_file, mot_file):
 
             # Check positive frame ratio
             if frame > stroke_frames[0]:
-                paddle_angle_ratios.append(positive_frames/(stroke_frames[curr_stroke]-stroke_frames[curr_stroke-1]))
+                paddle_angle_ratios.append(positive_frames/pull_frames)
 
-            # if curr_stroke > 0 and positive_frames/(stroke_frames[curr_stroke]-stroke_frames[curr_stroke-1]) < 0:   # UPDATE THRESHOLD
-            #     paddle_angle_count += 1
-            #     # Keep ratio data
             positive_frames = 0
+            pull_frames = 0
 
             # inc stroke count
             curr_stroke += 1
 
 
     # Top arm UPPER threshold check (top flex, top add, top rot)
-        if top_arm_updated==False and 180-df['arm_flex_top'].values[frame] > 50 and 180-df['arm_add_top'].values[frame] < 170 and 180-df['arm_rot_top'].values[frame] > 160:
+        if top_arm_updated==False and 180-df['arm_flex_top'].values[frame] > TOP_ARM_FLEX_THRESHOLD and 180-df['arm_add_top'].values[frame] < TOP_ARM_ADD_THRESHOLD and 180-df['arm_rot_top'].values[frame] > TOP_ARM_ROT_THRESHOLD and 180-df['elbow_flex_top'].values[frame] < TOP_ELBOW_THRESHOLD:
             top_arm_count += 1
             top_arm_updated = True
 
+    # and stroke_phases[frame]=="recovery"
+    # and 180-df['elbow_flex_top'].values[frame] < 100
     # Top arm LOWER threshold check (top flex, top add, top rot)
 
     # Bottom arm UPPER threshold check (bottom elbow)
-        if bottom_elbow_updated==False and 180-df['elbow_flex_bottom'].values[frame] < 75:
+        if bottom_elbow_updated==False and 180-df['elbow_flex_bottom'].values[frame] < BOTTOM_ELBOW_THRESHOLD:
             bottom_elbow_count += 1
             bottom_elbow_updated = True
 
@@ -105,10 +109,17 @@ def techniqueAnalyzer(trc_file, mot_file):
 
 
     # Spine posture threshold check (lumbar extension, bending)
-        if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > 235 and 180-df['lumbar_bending'].values[frame] < 170:
+    # Incorporate hip hinge -> should get lower than 70 degrees
+        if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > LUMBAR_EXTENSION_THRESHOLD and 180-df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
+            if hip_hinge_updated==False and 180-df['hip_flexion_top'].values[frame] < 70 and 180-df['hip_flexion_bottom'].values[frame] < 70:
+                hip_hinge_count += 1
+                hip_hinge_updated = True
             posture_count += 1
             posture_count_updated = True
 
+    # Track number of pulling frames
+        if stroke_phases[frame] == "pull":
+            pull_frames += 1
     # Paddle angle threshold check (trc_file: top/bottom wrist x+y components)
     # Duration of angle being positive (time ratio between positive_frames:total_frames)
         x_diff = top_wrist_x_index.iloc[frame] - bottom_wrist_x_index.iloc[frame]
@@ -127,17 +138,6 @@ def techniqueAnalyzer(trc_file, mot_file):
     posture_score = posture_count/stroke_count
 
     paddle_angle_score = sum(paddle_angle_ratios)/stroke_count
-<<<<<<< HEAD
-
-    print(180-df['lumbar_extension'].values)
-    print([top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score])
-    return [top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score]
-
-mot_file = "Frank_paddling_mot.csv"
-trc_file = "Frank_paddling_trc.csv"
-
-techniqueAnalyzer(trc_file, mot_file)
-=======
     return [top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score]
 
 if __name__ == "__main__":
@@ -150,4 +150,3 @@ if __name__ == "__main__":
 
     scores = techniqueAnalyzer(trc_file, mot_file)
     print(scores)
->>>>>>> 7b57ca5064415b11ba27b24675b693591248473a
