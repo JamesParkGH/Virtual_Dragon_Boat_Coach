@@ -343,9 +343,9 @@
                         </div>
                     </div>
                 </form>
-                <form action="/run-opensim" method="POST" id="opensimForm">
-                    <button type="submit" class="btn btn-secondary control-btn"><i class="fas fa-play"></i> Run Opensim</button>
-                </form>
+                <a href="{{ opencap_url }}" target="_blank" id="opencapLink" class="btn btn-secondary control-btn">
+                    <i class="fas fa-external-link-alt"></i> Run Opencap
+                </a>
             </div>
         </div>
     </div>
@@ -513,15 +513,14 @@
         flex: none;
     }
     
-    #opensimForm {
+    #opencapLink {
         display: flex;
-        align-items: flex-end;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
         height: 48px;
-    }
-    
-    #opensimForm .btn {
-        height: 48px;
-        width: 180px; /* Same width as the other button */
+        width: 180px;
+        margin-bottom: 0;
     }
     
     /* Analysis results */

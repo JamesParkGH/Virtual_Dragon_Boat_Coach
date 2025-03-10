@@ -393,6 +393,11 @@ footer {
   margin-top: auto;
 }
 
+footer p {
+    color: #fff;
+    margin-bottom: 0;  
+  }
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .header-content {
