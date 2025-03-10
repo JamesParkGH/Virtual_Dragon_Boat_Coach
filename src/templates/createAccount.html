@@ -1,0 +1,34 @@
+{% extends "baselogin.html" %}
+
+{% block content %}
+<div class="login-form-container">
+    <div class="container">
+        <h1>Create Coach Account</h1>
+        <p>Please enter your details to create a coach account.</p>
+        
+        <form action="/create-coach-account" method="POST">
+            <div class="form-group">
+                <label for="vdbc_username"><i class="fas fa-user"></i> VDBC Username</label>
+                <input type="text" id="vdbc_username" name="vdbc_username" placeholder="Choose a username" required>
+            </div>
+            <div class="form-group">
+                <label for="vdbc_password"><i class="fas fa-lock"></i> VDBC Password</label>
+                <input type="password" id="vdbc_password" name="vdbc_password" placeholder="Choose a password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+            </div>
+            <button type="submit"><i class="fas fa-user-plus"></i> Create Account</button>
+        </form>
+        
+        {% if error %}
+        <div class="error-message" style="color: red; margin-top: 1rem;">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <p class="text-center" style="margin-top: 1.5rem;">Already have an account? <a href="{{ url_for('coach_login') }}" style="color: var(--primary-color); font-weight: 600;">Login</a></p>
+    </div>
+</div>
+{% endblock %}

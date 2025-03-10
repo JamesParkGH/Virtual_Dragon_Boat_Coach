@@ -55,6 +55,58 @@ def login():
 
     return render_template("login.html")
 
+@app.route('/coach-login', methods=['GET', 'POST'])
+def coach_login():
+    success = request.args.get('success')
+    
+    if request.method == 'POST':
+        vdbc_username = request.form.get('username')
+        vdbc_password = request.form.get('password')
+
+        if not vdbc_username or not vdbc_password:
+            return render_template("coachLogin.html", error="Please enter both username and password.")
+
+        user = verify_vdbc_credentials(vdbc_username, vdbc_password)
+        if user and user['position'] == 'coach':
+            session['token'] = user['token']  # Store token in session
+            session['position'] = user['position']  # Store user position in session
+            return redirect(url_for('coach_dashboard'))
+        else:
+            return render_template("coachLogin.html", error="Login failed: incorrect username or password or you are not registered as a coach.")
+
+    return render_template("coachLogin.html", success=success)
+
+@app.route('/create-coach-account', methods=['GET', 'POST'])
+def create_coach_account():
+    if request.method == 'POST':
+        vdbc_username = request.form.get('vdbc_username')
+        vdbc_password = request.form.get('vdbc_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        # Check if username already exists
+        users = session.get('users', {})
+        if vdbc_username in users:
+            return render_template("createAccount.html", error="Username already exists. Please choose another.")
+        
+        # Verify passwords match
+        if vdbc_password != confirm_password:
+            return render_template("createAccount.html", error="Passwords do not match.")
+
+        # Create a token for the new coach (for simplicity, using username as token)
+        user_token = vdbc_username
+
+        # Store coach data (for simplicity, storing in session; in production, use a database)
+        session['users'] = session.get('users', {})
+        session['users'][vdbc_username] = {
+            'vdbc_password': vdbc_password,
+            'position': 'coach',
+            'token': user_token
+        }
+
+        # Redirect with success message
+        return redirect(url_for('coach_login', success="Coach account created successfully! You can now log in."))
+
+    return render_template("createAccount.html")
 @app.route('/logout')
 def logout():
     session.pop('token', None)  # Remove token from session
@@ -206,6 +258,15 @@ def get_token(username, password):
         return token
     except requests.exceptions.RequestException:
         raise Exception("Login failed: incorrect username or password.")
+
+def verify_vdbc_credentials(username, password):
+    users = session.get('users', {})
+    user = users.get(username)
+    
+    if user and user.get('vdbc_password') == password:
+        return user
+    
+    return None
 
 if __name__ == "__main__":
     app.run(debug=True)
