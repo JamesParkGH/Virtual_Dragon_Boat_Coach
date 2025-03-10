@@ -2,6 +2,7 @@ def generate_top_arm_feedback(score):
     feedback = {
         'category': 'Top Arm',
         'rating': '',
+        'score': score,  
         'main_points': [],
         'improvement_points': {
             'limiting_factors': [],
@@ -57,6 +58,7 @@ def generate_bottom_arm_feedback(score):
     feedback = {
         'category': 'Bottom Arm',
         'rating': '',
+        'score': score,  
         'main_points': [],
         'improvement_points': {
             'limiting_factors': [],
@@ -103,11 +105,11 @@ def add_bottom_arm_improvement_points(feedback):
         'Landmine Rotations'
     ]
 
-# Add the missing functions for posture and paddle angle
 def generate_posture_feedback(score):
     feedback = {
         'category': 'Posture',
         'rating': '',
+        'score': score, 
         'main_points': [],
         'improvement_points': {
             'limiting_factors': [],
@@ -163,6 +165,7 @@ def generate_paddle_angle_feedback(score):
     feedback = {
         'category': 'Paddle Angle',
         'rating': '',
+        'score': score, 
         'main_points': [],
         'improvement_points': {
             'limiting_factors': [],
@@ -172,7 +175,6 @@ def generate_paddle_angle_feedback(score):
         }
     }
     
-    # Updated thresholds as specified
     if score > 0.1:
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
@@ -215,10 +217,8 @@ def add_paddle_angle_improvement_points(feedback):
     ]
 
 def compile_feedback(scores):
-    # Updated to accept 4 scores instead of 6
     top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score = scores
     
-    # Update to include all four feedback categories
     feedback = {
         'top_arm': generate_top_arm_feedback(top_arm_upper_score),
         'bottom_arm': generate_bottom_arm_feedback(bottom_elbow_upper_score),
@@ -230,7 +230,7 @@ def compile_feedback(scores):
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) != 5:  # Changed from 7 to 5 (program name + 4 scores)
+    if len(sys.argv) != 5:  
         print("Usage: python feedbackCompiler.py <top_arm_score> <bottom_elbow_score> <posture_score> <paddle_angle_score>")
         sys.exit(1)
         

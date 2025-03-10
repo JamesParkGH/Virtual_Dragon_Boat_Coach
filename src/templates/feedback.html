@@ -38,7 +38,7 @@
                 <div class="feedback-category card">
                     <div class="card-header" data-rating="{{ feedback.top_arm.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-hand-point-up"></i> Top Arm</h3>
+                            <h3><i class="fas fa-hand-point-up"></i> Top Arm <span class="score-badge">{{ ((1 - feedback.top_arm.score) * 100)|int }}%</span></h3>
                             <span class="rating rating-{{ feedback.top_arm.rating|lower }}">{{ feedback.top_arm.rating }}</span>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                 <div class="feedback-category card">
                     <div class="card-header" data-rating="{{ feedback.bottom_arm.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-hand-point-down"></i> Bottom Arm</h3>
+                            <h3><i class="fas fa-hand-point-down"></i> Bottom Arm <span class="score-badge">{{ ((1 - feedback.bottom_arm.score) * 100)|int }}%</span></h3>
                             <span class="rating rating-{{ feedback.bottom_arm.rating|lower }}">{{ feedback.bottom_arm.rating }}</span>
                         </div>
                     </div>
@@ -160,7 +160,7 @@
                 <div class="feedback-category card">
                     <div class="card-header" data-rating="{{ feedback.posture.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-user"></i> Posture</h3>
+                            <h3><i class="fas fa-user"></i> Posture <span class="score-badge">{{ ((1 - feedback.posture.score) * 100)|int }}%</span></h3>
                             <span class="rating rating-{{ feedback.posture.rating|lower }}">{{ feedback.posture.rating }}</span>
                         </div>
                     </div>
@@ -221,7 +221,7 @@
                 <div class="feedback-category card">
                     <div class="card-header" data-rating="{{ feedback.paddle_angle.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-ruler-combined"></i> Paddle Angle</h3>
+                            <h3><i class="fas fa-ruler-combined"></i> Paddle Angle <span class="score-badge">{{ (feedback.paddle_angle.score * 100)|int }}%</span></h3>
                             <span class="rating rating-{{ feedback.paddle_angle.rating|lower }}">{{ feedback.paddle_angle.rating }}</span>
                         </div>
                     </div>
@@ -306,32 +306,32 @@
                                     <option value="pelvis_tz">Pelvis TZ</option>
                                 </optgroup>
                                 <optgroup label="Right Side">
-                                    <option value="hip_flexion_r">Hip Flexion Right</option>
-                                    <option value="hip_adduction_r">Hip Adduction Right</option>
-                                    <option value="hip_rotation_r">Hip Rotation Right</option>
-                                    <option value="knee_angle_r">Knee Angle Right</option>
-                                    <option value="ankle_angle_r">Ankle Angle Right</option>
-                                    <option value="subtalar_angle_r">Subtalar Angle Right</option>
-                                    <option value="mtp_angle_r">MTP Angle Right</option>
-                                    <option value="arm_flex_r">Arm Flex Right</option>
-                                    <option value="arm_add_r">Arm Add Right</option>
-                                    <option value="arm_rot_r">Arm Rot Right</option>
-                                    <option value="elbow_flex_r">Elbow Flex Right</option>
-                                    <option value="pro_sup_r">Pro Sup Right</option>
+                                    <option value="hip_flexion_r">Right Hip Flexion</option>
+                                    <option value="hip_adduction_r">Right Hip Adduction</option>
+                                    <option value="hip_rotation_r">Right Hip Rotation</option>
+                                    <option value="knee_angle_r">Right Knee Angle</option>
+                                    <option value="ankle_angle_r">Right Ankle Angle</option>
+                                    <option value="subtalar_angle_r">Right Subtalar Angle</option>
+                                    <option value="mtp_angle_r">Right MTP Angle</option>
+                                    <option value="arm_flex_r">Right Arm Flexion</option>
+                                    <option value="arm_add_r">Right Arm Adduction</option>
+                                    <option value="arm_rot_r">Right Arm Rotation</option>
+                                    <option value="elbow_flex_r">Right Elbow Flexion</option>
+                                    <option value="pro_sup_r">Right Pro Sup</option>
                                 </optgroup>
                                 <optgroup label="Left Side">
-                                    <option value="hip_flexion_l">Hip Flexion Left</option>
-                                    <option value="hip_adduction_l">Hip Adduction Left</option>
-                                    <option value="hip_rotation_l">Hip Rotation Left</option>
-                                    <option value="knee_angle_l">Knee Angle Left</option>
-                                    <option value="ankle_angle_l">Ankle Angle Left</option>
-                                    <option value="subtalar_angle_l">Subtalar Angle Left</option>
-                                    <option value="mtp_angle_l">MTP Angle Left</option>
-                                    <option value="arm_flex_l">Arm Flex Left</option>
-                                    <option value="arm_add_l">Arm Add Left</option>
-                                    <option value="arm_rot_l">Arm Rot Left</option>
-                                    <option value="elbow_flex_l">Elbow Flex Left</option>
-                                    <option value="pro_sup_l">Pro Sup Left</option>
+                                    <option value="hip_flexion_l">Left Hip Flexion</option>
+                                    <option value="hip_adduction_l">Left Hip Adduction</option>
+                                    <option value="hip_rotation_l">Left Hip Rotation</option>
+                                    <option value="knee_angle_l">Left Knee Angle</option>
+                                    <option value="ankle_angle_l">Left Ankle Angle</option>
+                                    <option value="subtalar_angle_l">Left Subtalar Angle</option>
+                                    <option value="mtp_angle_l">Left MTP Angle</option>
+                                    <option value="arm_flex_l">Left Arm Flexion</option>
+                                    <option value="arm_add_l">Left Arm Addion</option>
+                                    <option value="arm_rot_l">Left Arm Rotation</option>
+                                    <option value="elbow_flex_l">Left Elbow Flexion</option>
+                                    <option value="pro_sup_l">Left Pro Sup</option>
                                 </optgroup>
                                 <optgroup label="Spine">
                                     <option value="lumbar_extension">Lumbar Extension</option>
@@ -370,7 +370,7 @@
     .page-header h1 {
         font-size: 2.2rem;
         font-weight: 600;
-        color: #8B0000; /* Maroon color matching logo */
+        color: #8B0000; 
         margin-bottom: 0.5rem;
     }
     
@@ -509,7 +509,7 @@
         height: 48px;
         white-space: nowrap;
         padding: 0 15px;
-        width: 180px; /* Fixed width for both buttons */
+        width: 180px; 
         flex: none;
     }
     

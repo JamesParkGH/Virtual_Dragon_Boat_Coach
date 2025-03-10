@@ -434,3 +434,29 @@ footer p {
     gap: 0.5rem;
   }
 }
+
+.score-badge {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.card-header[data-rating="good"] .score-badge {
+    background-color: rgba(255, 255, 255, 0.4);
+    color: white;
+}
+
+.card-header[data-rating="moderate"] .score-badge {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+.card-header[data-rating="bad"] .score-badge {
+    background-color: rgba(255, 255, 255, 0.4);
+    color: white;
+}
