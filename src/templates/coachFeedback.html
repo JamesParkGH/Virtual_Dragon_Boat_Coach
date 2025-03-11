@@ -25,40 +25,7 @@
         </div>
     </header>
     <main>
-        <div class="container">
-            <h1>Coach Dashboard</h1>
-            <p>Welcome to the coach dashboard. Here, you can view and manage your members</p>
-            
-            <!-- Button to clear the database
-            <form action="{{ url_for('clear_database') }}" method="POST" style="margin-bottom: 20px;">
-                <button type="submit" class="btn btn-danger">Clear Database</button>
-            </form>
-             -->
-
-            <!-- Placeholder for members -->
-            {% if grouped_sessions %}
-                <div>
-                    {% for username, sessions in grouped_sessions.items() %}
-                        <div class="container">
-                            <h3>{{ username }}</h3>
-                            {% for session in sessions %}
-                                <p>Email: {{ session.email }}</p>
-                                <p>Session URL: {{ session.session_url }}</p>
-                                <p>Trial Name: {{ session.trial_name }}</p>
-                            {% endfor %}
-                            <form action="{{ url_for('coach_view_analysis') }}" method="POST">
-                                <button type="submit" class="btn-view">
-                                <i class="fas fa-chart-bar"></i> View Analysis
-                            </button>
-                            </form>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p>No data shared yet.</p>
-            {% endif %}
-        </div>
-        <!-- Remove this feedback container, should be in coachFeedback.html -->
+        <!-- # TODO: feedback and analysis page, but with analysis generated from coach_view_analysis(): -->
         <div class="container feedback-container">
             <h2>Provide Feedback</h2>
             <p>Enter your additional feedback for this paddler. This feedback will be sent to their email.</p>

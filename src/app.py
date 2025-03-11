@@ -188,6 +188,22 @@ def start_analyze():
     except subprocess.CalledProcessError as e:
         return render_template("index.html", error=f"There was an error processing the session URL: {str(e)}")
 
+
+@app.route('/coach-view-analysis', methods=['POST'])
+def coach_view_analysis():
+    
+    session_url = request.form.get('session_url')
+    trial_name = request.form.get('trial_name')
+    
+    if not session_url or not trial_name:
+        flash("Missing session URL or trial name")
+        return redirect(url_for('coach_dashboard'))
+    
+    # use sessionurl and trial name to run the analysis the same way, and direct them to coachFeedback.html, with the feedback container.
+    
+    return 
+    
+
 @app.route('/share-data', methods=['POST'])
 def share_data():
     if 'token' not in session:
@@ -274,23 +290,6 @@ def coach_dashboard():
     
     return render_template("coachDashboard.html", grouped_sessions=grouped_sessions)
 
-@app.route('/coach-view-analysis', methods=['POST'])
-def coach_view_analysis():
-    
-    session_url = request.form.get('session_url')
-    trial_name = request.form.get('trial_name')
-    email = request.form.get('email')
-    
-    if not session_url or not trial_name:
-        flash("Missing session URL or trial name")
-        return redirect(url_for('coach_dashboard'))
-    
-    # Just print out the details for now
-    details = f"Email: {email}<br>Session URL: {session_url}<br>Trial Name: {trial_name}"
-    flash(details)
-    
-    return redirect(url_for('coach_dashboard'))
-    
 @app.route('/clear-database', methods=['POST'])
 def clear_database():
     if 'token' not in session or session.get('position') != 'coach':
