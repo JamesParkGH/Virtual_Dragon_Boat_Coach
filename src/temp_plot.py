@@ -8,7 +8,7 @@ def plot_angle(csv_file_path):
     angle1_data = []
     angle2_data = []
 
-    angle1 = 'lumbar_extension'
+    angle1 = 'hip_flexion_l'
     angle2 = 'lumbar_bending'
 
     with open(csv_file_path, 'r') as csv_file:

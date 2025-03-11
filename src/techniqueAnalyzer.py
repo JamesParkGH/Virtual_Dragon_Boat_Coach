@@ -41,9 +41,11 @@ def techniqueAnalyzer(trc_file, mot_file):
     bottom_elbow_updated = False
 
     posture_count = 0
-    hip_hinge_count = 0
+    hinge_lower_count = False
+    hinge_upper_count = False
     posture_count_updated = False
-    hip_hinge_updated = False
+    hinge_lower_updated = False
+    hinge_upper_updated = False
 
 
     # Paddle angle
@@ -78,7 +80,13 @@ def techniqueAnalyzer(trc_file, mot_file):
             # Reset update indicators on each stroke
             top_arm_updated = False
             bottom_elbow_updated = False
-            posture_count_updated = False
+
+            # Posture/hinge check
+            if hinge_lower_count and hinge_upper_count:
+                posture_count += 1
+
+            hinge_lower_count = False
+            hinge_upper_count = False
 
             # Check positive frame ratio
             if frame > stroke_frames[0]:
@@ -110,12 +118,19 @@ def techniqueAnalyzer(trc_file, mot_file):
 
     # Spine posture threshold check (lumbar extension, bending)
     # Incorporate hip hinge -> should get lower than 70 degrees
-        if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > LUMBAR_EXTENSION_THRESHOLD and 180-df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
-            if hip_hinge_updated==False and 180-df['hip_flexion_top'].values[frame] < 70 and 180-df['hip_flexion_bottom'].values[frame] < 70:
-                hip_hinge_count += 1
-                hip_hinge_updated = True
-            posture_count += 1
-            posture_count_updated = True
+        # if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > LUMBAR_EXTENSION_THRESHOLD and 180-df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
+        #     # if hip_hinge_updated==False and 180-df['hip_flexion_top'].values[frame] < 70 and 180-df['hip_flexion_bottom'].values[frame] < 70:
+        #     #     hip_hinge_count += 1
+        #     #     hip_hinge_updated = True
+        #     posture_count += 1
+        #     posture_count_updated = True
+        
+        if hinge_lower_updated==False and 180-df['hip_flexion_top'].values[frame] < HIP_FLEXION_THRESHOLD and 180-df['hip_flexion_bottom'].values[frame] < HIP_FLEXION_THRESHOLD and 180-df['lumbar_bending'].values[frame] > LUMBAR_BENDING_THRESHOLD:
+            hinge_lower_count = True
+
+        if hinge_upper_updated==False and 180-df['hip_flexion_top'].values[frame] > 105 and 180-df['hip_flexion_bottom'].values[frame] > 105:# and 180-df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
+            hinge_upper_count = True
+
 
     # Track number of pulling frames
         if stroke_phases[frame] == "pull":
@@ -132,10 +147,10 @@ def techniqueAnalyzer(trc_file, mot_file):
     # Analysis
     ##############################################################
     top_arm_upper_score = top_arm_count/stroke_count
-    # top_arm_lower_score = 0
+    
     bottom_elbow_upper_score = bottom_elbow_count/stroke_count
-    # bottom_elbow_lower_score = 0
-    posture_score = posture_count/stroke_count
+    
+    posture_score = (stroke_count-posture_count)/stroke_count
 
     paddle_angle_score = sum(paddle_angle_ratios)/stroke_count
     return [top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score]
