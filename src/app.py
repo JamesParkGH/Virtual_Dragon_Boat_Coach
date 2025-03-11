@@ -1,4 +1,6 @@
 import os
+import re
+import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import subprocess
 import requests
@@ -6,9 +8,42 @@ import ast
 from decouple import config
 from utilsAPI import get_api_url
 from feedbackCompiler import compile_feedback
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
+
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vdbc.db')
+EMAIL_CONFIG = {
+    'SMTP_SERVER': "smtp.gmail.com",  # Change as needed
+    'SMTP_PORT': 587,  # For TLS
+    'SENDER_EMAIL': "your-app-email@example.com",  # Replace with your app's email
+    'SENDER_PASSWORD': "your-app-password"  # Replace with app password
+}
+
+def init_db():
+    """Initialize the database with minimal tables."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Create a simple table for shared data
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS shared_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        session_url TEXT NOT NULL,
+        trial_name TEXT NOT NULL,
+        email TEXT NOT NULL
+    )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+# Call this function when the app starts
+init_db()
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -49,6 +84,7 @@ def login():
             token = get_token(username, password)
             if token:
                 session['token'] = token  # Store token in session
+                session['username'] = username  # Store username in session
                 return redirect(url_for('home'))
         except Exception:
             return render_template("login.html", error="Login failed: incorrect username or password.")
@@ -59,6 +95,10 @@ def login():
 def coach_login():
     success = request.args.get('success')
     
+    # Hardcoded coach credentials
+    COACH_USERNAME = "coach"
+    COACH_PASSWORD = "coach"
+    
     if request.method == 'POST':
         vdbc_username = request.form.get('username')
         vdbc_password = request.form.get('password')
@@ -66,47 +106,15 @@ def coach_login():
         if not vdbc_username or not vdbc_password:
             return render_template("coachLogin.html", error="Please enter both username and password.")
 
-        user = verify_vdbc_credentials(vdbc_username, vdbc_password)
-        if user and user['position'] == 'coach':
-            session['token'] = user['token']  # Store token in session
-            session['position'] = user['position']  # Store user position in session
+        if vdbc_username == COACH_USERNAME and vdbc_password == COACH_PASSWORD:
+            session['token'] = "coach_token"  # Store a hardcoded token in session
+            session['position'] = 'coach'  # Store user position in session
             return redirect(url_for('coach_dashboard'))
         else:
-            return render_template("coachLogin.html", error="Login failed: incorrect username or password or you are not registered as a coach.")
+            return render_template("coachLogin.html", error="Login failed: This does not match coach credentials.")
 
     return render_template("coachLogin.html", success=success)
 
-@app.route('/create-coach-account', methods=['GET', 'POST'])
-def create_coach_account():
-    if request.method == 'POST':
-        vdbc_username = request.form.get('vdbc_username')
-        vdbc_password = request.form.get('vdbc_password')
-        confirm_password = request.form.get('confirm_password')
-        
-        # Check if username already exists
-        users = session.get('users', {})
-        if vdbc_username in users:
-            return render_template("createAccount.html", error="Username already exists. Please choose another.")
-        
-        # Verify passwords match
-        if vdbc_password != confirm_password:
-            return render_template("createAccount.html", error="Passwords do not match.")
-
-        # Create a token for the new coach (for simplicity, using username as token)
-        user_token = vdbc_username
-
-        # Store coach data (for simplicity, storing in session; in production, use a database)
-        session['users'] = session.get('users', {})
-        session['users'][vdbc_username] = {
-            'vdbc_password': vdbc_password,
-            'position': 'coach',
-            'token': user_token
-        }
-
-        # Redirect with success message
-        return redirect(url_for('coach_login', success="Coach account created successfully! You can now log in."))
-
-    return render_template("createAccount.html")
 @app.route('/logout')
 def logout():
     session.pop('token', None)  # Remove token from session
@@ -180,6 +188,126 @@ def start_analyze():
     except subprocess.CalledProcessError as e:
         return render_template("index.html", error=f"There was an error processing the session URL: {str(e)}")
 
+@app.route('/share-data', methods=['POST'])
+def share_data():
+    if 'token' not in session:
+        return redirect(url_for('login'))
+    
+    email = request.form.get('email')
+    username = session.get('username', "Unknown User")
+    # session_url = session.get('session_url')
+    # trial_name = session.get('trial_name')
+    
+     # Use arbitrary values for testing
+    session_url = "https://app.opencap.ai/session/test-session-123"
+    trial_name = "test-trial-paddler"
+    
+
+    # Email validation
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(email_regex, email):
+        return render_template("index.html", 
+                              error_share="Please enter a valid email address with proper domain (e.g., example@domain.com).")
+    
+    # Store in database
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+        # Check if an entry already exists for the user
+    cursor.execute("SELECT * FROM shared_sessions WHERE username = ?", (username,))
+    existing_entry = cursor.fetchone()
+    
+    if existing_entry:
+        # Update the existing entry
+        cursor.execute('''
+            UPDATE shared_sessions
+            SET session_url = ?, trial_name = ?, email = ?
+            WHERE username = ?
+        ''', (session_url, trial_name, email, username))
+    else:
+        # Add a new entry
+        cursor.execute('''
+            INSERT INTO shared_sessions (username, session_url, trial_name, email)
+            VALUES (?, ?, ?, ?)
+        ''', (username, session_url, trial_name, email))
+    
+    conn.commit()
+    conn.close()
+    
+    # Return to index with success data to display
+    return render_template("index.html", 
+                          success_info="Session shared successfully!",
+                          share_success=True)
+
+@app.route('/coach-dashboard')
+def coach_dashboard():
+    if 'token' not in session or session.get('position') != 'coach':
+        return redirect(url_for('coach_login'))
+    
+    # Get users who have shared sessions with emails from database
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row  # This enables column access by name
+    cursor = conn.cursor()
+    
+    # Only select sessions where email is not null
+    cursor.execute('''
+        SELECT username, session_url, trial_name, email
+        FROM shared_sessions
+        WHERE email IS NOT NULL
+    ''')
+    
+    shared_sessions = cursor.fetchall()
+    conn.close()
+    
+    # Group sessions by username
+    grouped_sessions = {}
+    for session_data in shared_sessions:
+        username = session_data['username']
+        if username not in grouped_sessions:
+            grouped_sessions[username] = []
+        
+        grouped_sessions[username].append({
+            'session_url': session_data['session_url'],
+            'trial_name': session_data['trial_name'],
+            'email': session_data['email']
+        })
+    
+    return render_template("coachDashboard.html", grouped_sessions=grouped_sessions)
+
+@app.route('/coach-view-analysis', methods=['POST'])
+def coach_view_analysis():
+    
+    session_url = request.form.get('session_url')
+    trial_name = request.form.get('trial_name')
+    email = request.form.get('email')
+    
+    if not session_url or not trial_name:
+        flash("Missing session URL or trial name")
+        return redirect(url_for('coach_dashboard'))
+    
+    # Just print out the details for now
+    details = f"Email: {email}<br>Session URL: {session_url}<br>Trial Name: {trial_name}"
+    flash(details)
+    
+    return redirect(url_for('coach_dashboard'))
+    
+@app.route('/clear-database', methods=['POST'])
+def clear_database():
+    if 'token' not in session or session.get('position') != 'coach':
+        return redirect(url_for('coach_login'))
+    
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Clear all entries from the shared_sessions table
+    cursor.execute('DELETE FROM shared_sessions')
+    
+    conn.commit()
+    conn.close()
+    
+    flash("Database cleared successfully.")
+    return redirect(url_for('coach_dashboard'))
+
 @app.route('/feedback')
 def feedback():
     if 'token' not in session:
@@ -197,6 +325,116 @@ def feedback():
                           analysis_result=analysis_result, 
                           feedback=feedback_data,
                           opencap_url=opencap_url)
+
+@app.route('/send-feedback', methods=['POST'])
+def send_feedback():
+    if 'token' not in session or session.get('position') != 'coach':
+        return redirect(url_for('coach_login'))
+    
+    # instead of request.form, need to get from session.
+    form_data = {
+        'recipient_email': request.form.get('recipient_email', '').strip(),
+        'recipient_username': request.form.get('recipient_username', '').strip(),
+        'feedback': request.form.get('feedback', '').strip(),
+        'focus_areas': request.form.get('focus_areas', '').strip()
+    }
+    
+    # Validate required fields
+    if not form_data['recipient_email'] or not form_data['feedback']:
+        flash("Email address and feedback message are required")
+        return redirect(url_for('coach_dashboard'))
+    
+    # Basic email validation
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(email_regex, form_data['recipient_email']):
+        flash("Please enter a valid email address")
+        return redirect(url_for('coach_dashboard'))
+    
+    # Pre-process the text replacements outside the f-string
+    feedback_html = form_data['feedback'].replace('\n', '<br>')
+    focus_areas_html = form_data['focus_areas'].replace('\n', '<br>') if form_data['focus_areas'] else ''
+    
+    # Create email content
+    subject = "Your Dragon Boat Paddling Feedback"
+    
+    html_content = f"""
+    <html>
+    <body>
+        <h2>Dragon Boat Technique Feedback</h2>
+        <p>Hello {form_data['recipient_username'] or 'Paddler'},</p>
+        <p>Your coach has provided the following feedback on your paddling technique:</p>
+        
+        <div style="background-color: #f5f5f5; padding: 15px; border-left: 4px solid #8B0000;">
+            <h3>Coach's Feedback:</h3>
+            <p>{feedback_html}</p>
+        </div>
+    """
+    
+    # Add focus areas section if provided
+    if focus_areas_html:
+        html_content += f"""
+        <div style="margin-top: 20px;">
+            <h3>Areas to Focus On:</h3>
+            <p>{focus_areas_html}</p>
+        </div>
+        """
+    
+    # Add footer
+    html_content += """
+        <p style="margin-top: 20px;">Keep up the good work!</p>
+        <p>Virtual Dragon Boat Coach Team</p>
+    </body>
+    </html>
+    """
+    
+    # Send email using helper function
+    success, message = send_email(
+        form_data['recipient_email'],
+        subject,
+        html_content
+    )
+    
+    if success:
+        flash(f"Feedback sent successfully to {form_data['recipient_username']} ({form_data['recipient_email']})")
+    else:
+        flash(f"Error sending email: {message}")
+    
+    return redirect(url_for('coach_dashboard'))
+
+def send_email(recipient_email, subject, html_content, sender_name="Virtual Dragon Boat Coach"):
+    """
+    Helper function to send emails
+    
+    Args:
+        recipient_email (str): Email address of the recipient
+        subject (str): Email subject line
+        html_content (str): HTML formatted email body
+        sender_name (str): Name to display as sender
+        
+    Returns:
+        tuple: (success, message) - success is boolean, message is error message if any
+    """
+    try:
+        # Create message container
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"{sender_name} <{EMAIL_CONFIG['SENDER_EMAIL']}>"
+        msg['To'] = recipient_email
+        
+        # Attach HTML content
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        # Connect to server and send
+        server = smtplib.SMTP(EMAIL_CONFIG['SMTP_SERVER'], EMAIL_CONFIG['SMTP_PORT'])
+        server.starttls()  # Secure the connection
+        
+        server.login(EMAIL_CONFIG['SENDER_EMAIL'], EMAIL_CONFIG['SENDER_PASSWORD'])
+        server.sendmail(EMAIL_CONFIG['SENDER_EMAIL'], recipient_email, msg.as_string())
+        server.quit()
+        
+        return True, "Email sent successfully"
+    except Exception as e:
+        return False, str(e)
                           
 @app.route('/generate-graph', methods=['POST'])
 def generate_graph():

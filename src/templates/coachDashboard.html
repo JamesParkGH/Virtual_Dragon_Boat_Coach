@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Dashboard - Virtual Dragon Boat Coach</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="https://static.wixstatic.com/media/90c0a3_82c43324b646429ea5117b9c10018156~mv2.png/v1/crop/x_0,y_0,w_8769,h_6859/fill/w_345,h_270,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/DB_Logo_2017_Maroon_LightBG%20(1).png" alt="VDBC Logo" class="logo">
+                <span class="site-title">Virtual Dragon Boat Coach</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li><a href="{{ url_for('resources') }}"><i class="fas fa-book"></i> Resources</a></li>
+                    <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <h1>Coach Dashboard</h1>
+            <p>Welcome to the coach dashboard. Here, you can view and manage your members</p>
+            
+            <!-- Button to clear the database
+            <form action="{{ url_for('clear_database') }}" method="POST" style="margin-bottom: 20px;">
+                <button type="submit" class="btn btn-danger">Clear Database</button>
+            </form>
+             -->
+
+            <!-- Placeholder for members -->
+            {% if grouped_sessions %}
+                <div>
+                    {% for username, sessions in grouped_sessions.items() %}
+                        <div class="container">
+                            <h3>{{ username }}</h3>
+                            {% for session in sessions %}
+                                <p>Email: {{ session.email }}</p>
+                                <p>Session URL: {{ session.session_url }}</p>
+                                <p>Trial Name: {{ session.trial_name }}</p>
+                            {% endfor %}
+                            <form action="{{ url_for('coach_view_analysis') }}" method="POST">
+                                <button type="submit" class="btn-view">
+                                <i class="fas fa-chart-bar"></i> View Analysis
+                            </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No data shared yet.</p>
+            {% endif %}
+        </div>
+        <div class="container feedback-container">
+            <h2>Provide Feedback</h2>
+            <p>Enter your additional feedback for this paddler. This feedback will be sent to their email.</p>
+            
+            <form action="{{ url_for('send_feedback') }}" method="POST">
+                <input type="hidden" name="recipient_email" value="{{ analysis_details.email if analysis_details else '' }}">
+                <input type="hidden" name="recipient_username" value="{{ analysis_details.username if analysis_details else '' }}">
+                
+                <div class="form-group">
+                    <label for="feedback-text"><strong>Feedback:</strong></label>
+                    <textarea id="feedback-text" name="feedback" class="feedback-textarea" placeholder="Enter your coaching feedback here..." rows="8"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-send">
+                        <i class="fas fa-paper-plane"></i> Send Feedback
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 Virtual Dragon Boat Coach. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -23,7 +23,6 @@
             </div>
             <button type="submit"><i class="fas fa-sign-in-alt"></i> Sign In</button>
         </form>
-        <p class="text-center" style="margin-top: 1.5rem;">Don't have a coach account? <a href="{{ url_for('create_coach_account') }}" style="color: var(--primary-color); font-weight: 600;">Create an Account</a></p>
         {% if error %}
             <p class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
         {% elif success %}
