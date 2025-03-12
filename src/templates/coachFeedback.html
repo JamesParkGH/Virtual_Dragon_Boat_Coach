@@ -46,6 +46,26 @@
                 </div>
             </form>
         </div>
+        <div class="container feedback-container">
+            <h2>Provide Feedback</h2>
+            <p>Enter your additional feedback for this paddler. This feedback will be sent to their email.</p>
+            
+            <form action="{{ url_for('send_feedback') }}" method="POST">
+                <input type="hidden" name="recipient_email" value="{{ analysis_details.email if analysis_details else '' }}">
+                <input type="hidden" name="recipient_username" value="{{ analysis_details.username if analysis_details else '' }}">
+                
+                <div class="form-group">
+                    <label for="feedback-text"><strong>Feedback:</strong></label>
+                    <textarea id="feedback-text" name="feedback" class="feedback-textarea" placeholder="Enter your coaching feedback here..." rows="8"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-send">
+                        <i class="fas fa-paper-plane"></i> Send Feedback
+                    </button>
+                </div>
+            </form>
+        </div>
     </main>
     <footer>
         <p>&copy; 2025 Virtual Dragon Boat Coach. All rights reserved.</p>

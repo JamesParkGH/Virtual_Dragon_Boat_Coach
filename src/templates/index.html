@@ -49,41 +49,6 @@
     </div>
 </div>
 
-<!-- Data Sharing Container -->
- <!-- Remove this later, it should be in the feedback page -->
-<div class="container">
-    <h2>Share Data with Coach</h3>
-    <p>Enter your email to receive feedback from a coach on your analysis.</p>
-    
-    <form action="/share-data" method="POST">
-        <div class="form-group">
-            <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email to receive feedback" required>
-            
-            <!-- Include hidden fields for session URL and trial name if they're already in the form -->
-            <input type="hidden" name="session_url" value="{{ request.form.get('session_url', '') }}">
-            <input type="hidden" name="trial_name" value="{{ request.form.get('trial_name', '') }}">
-        </div>
-        <button type="submit">
-            <i class="fas fa-share"></i> Share Data with Coach
-        </button>
-    </form>
-
-    <!-- Display error message -->
-    {% if error_share %}
-    <div class="alert-error">
-        <i class="fas fa-exclamation-circle"></i> {{ error_share }}
-    </div>
-    {% endif %}
-
-    <!-- Display success message with username and email -->
-    {% if share_success %}
-    <div class="alert-success">
-        <i class="fas fa-check-circle"></i> {{ success_info }}
-    </div>
-    {% endif %}
-</div>
-
 <script>
     // Show loading message when the form is submitted
     document.getElementById('processForm').onsubmit = function() {

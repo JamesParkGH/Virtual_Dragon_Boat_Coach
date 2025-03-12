@@ -211,12 +211,13 @@ def share_data():
     
     email = request.form.get('email')
     username = session.get('username', "Unknown User")
-    # session_url = session.get('session_url')
-    # trial_name = session.get('trial_name')
+    # session =.get after user runs start_analysis
+    session_url = request.form.get('session_url')
+    trial_name = request.form.get('trial_name')
     
-     # Use arbitrary values for testing
-    session_url = "https://app.opencap.ai/session/test-session-123"
-    trial_name = "test-trial-paddler"
+    #  # Use arbitrary values for testing
+    # session_url = "https://app.opencap.ai/session/test-session-123"
+    # trial_name = "test-trial-paddler"
     
 
     # Email validation
@@ -251,7 +252,7 @@ def share_data():
     conn.close()
     
     # Return to index with success data to display
-    return render_template("index.html", 
+    return render_template("feedback.html", 
                           success_info="Session shared successfully!",
                           share_success=True)
 
