@@ -54,18 +54,6 @@
                 {% endif %}
             {% endwith %}
 
-            {% if analysis_result and analysis_result != "No analysis data available" and analysis_result != "Error retrieving analysis" %}
-                <!-- Raw Analysis Results -->
-                <div class="panel analysis-results">
-                    <div class="panel-header">
-                        <h2><i class="fas fa-chart-line"></i> Analysis Results</h2>
-                    </div>
-                    <div class="panel-body">
-                        <pre>{{ analysis_result }}</pre>
-                    </div>
-                </div>
-            {% endif %}
-
             <!-- Feedback Results -->
             {% if feedback %}
                 <div class="feedback-dashboard">
@@ -80,7 +68,7 @@
                         <div class="feedback-category card">
                             <div class="card-header" data-rating="{{ feedback.top_arm.rating|lower }}">
                                 <div class="header-content">
-                                    <h3><i class="fas fa-hand-point-up"></i> Top Arm</h3>
+                                    <h3><i class="fas fa-hand-point-up"></i> Top Arm <span class="score-badge">{{ ((1 - feedback.top_arm.score) * 100)|int }}%</span></h3>
                                     <span class="rating rating-{{ feedback.top_arm.rating|lower }}">{{ feedback.top_arm.rating }}</span>
                                 </div>
                             </div>
@@ -141,7 +129,7 @@
                         <div class="feedback-category card">
                             <div class="card-header" data-rating="{{ feedback.bottom_arm.rating|lower }}">
                                 <div class="header-content">
-                                    <h3><i class="fas fa-hand-point-down"></i> Bottom Arm</h3>
+                                    <h3><i class="fas fa-hand-point-down"></i> Bottom Arm <span class="score-badge">{{ ((1 - feedback.bottom_arm.score) * 100)|int }}%</span></h3>
                                     <span class="rating rating-{{ feedback.bottom_arm.rating|lower }}">{{ feedback.bottom_arm.rating }}</span>
                                 </div>
                             </div>
@@ -202,7 +190,7 @@
                         <div class="feedback-category card">
                             <div class="card-header" data-rating="{{ feedback.posture.rating|lower }}">
                                 <div class="header-content">
-                                    <h3><i class="fas fa-user"></i> Posture</h3>
+                                    <h3><i class="fas fa-user"></i> Posture <span class="score-badge">{{ ((1 - feedback.posture.score) * 100)|int }}%</span></h3>
                                     <span class="rating rating-{{ feedback.posture.rating|lower }}">{{ feedback.posture.rating }}</span>
                                 </div>
                             </div>
@@ -263,7 +251,6 @@
                         <div class="feedback-category card">
                             <div class="card-header" data-rating="{{ feedback.paddle_angle.rating|lower }}">
                                 <div class="header-content">
-                                    <h3><i class="fas fa-ruler-combined"></i> Paddle Angle</h3>
                                     <span class="rating rating-{{ feedback.paddle_angle.rating|lower }}">{{ feedback.paddle_angle.rating }}</span>
                                 </div>
                             </div>
@@ -348,11 +335,6 @@
                         <div class="form-group">
                             <label for="feedback-text"><strong>Feedback:</strong></label>
                             <textarea id="feedback-text" name="feedback" class="feedback-textarea" placeholder="Enter your coaching feedback here..." rows="8"></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="focus-areas"><strong>Focus Areas:</strong></label>
-                            <textarea id="focus-areas" name="focus_areas" class="feedback-textarea" placeholder="Specific areas for the paddler to focus on..." rows="4"></textarea>
                         </div>
                         
                         <div class="form-actions">
@@ -620,6 +602,31 @@
         .feedback-grid {
             grid-template-columns: 1fr;
         }
+    }
+    .score-badge {
+        display: inline-block;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    .card-header[data-rating="good"] .score-badge {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .card-header[data-rating="moderate"] .score-badge {
+        background-color: rgba(0, 0, 0, 0.1);
+        color: #333;
+    }
+
+    .card-header[data-rating="bad"] .score-badge {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: white;
     }
     </style>
 </body>

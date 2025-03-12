@@ -38,7 +38,7 @@
                 <div class="feedback-category card">
                     <div class="card-header" data-rating="{{ feedback.top_arm.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-hand-point-up"></i> Top Arm</h3>
+                            <h3><i class="fas fa-hand-point-up"></i> Top Arm <span class="score-badge">{{ ((1 - feedback.top_arm.score) * 100)|int }}%</span></h3>
                             <span class="rating rating-{{ feedback.top_arm.rating|lower }}">{{ feedback.top_arm.rating }}</span>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                 <div class="feedback-category card">
                     <div class="card-header" data-rating="{{ feedback.bottom_arm.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-hand-point-down"></i> Bottom Arm</h3>
+                            <h3><i class="fas fa-hand-point-down"></i> Bottom Arm <span class="score-badge">{{ ((1 - feedback.bottom_arm.score) * 100)|int }}%</span></h3>
                             <span class="rating rating-{{ feedback.bottom_arm.rating|lower }}">{{ feedback.bottom_arm.rating }}</span>
                         </div>
                     </div>
@@ -160,7 +160,7 @@
                 <div class="feedback-category card">
                     <div class="card-header" data-rating="{{ feedback.posture.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-user"></i> Posture</h3>
+                            <h3><i class="fas fa-user"></i> Posture <span class="score-badge">{{ ((1 - feedback.posture.score) * 100)|int }}%</span></h3>
                             <span class="rating rating-{{ feedback.posture.rating|lower }}">{{ feedback.posture.rating }}</span>
                         </div>
                     </div>
@@ -221,7 +221,6 @@
                 <div class="feedback-category card">
                     <div class="card-header" data-rating="{{ feedback.paddle_angle.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-ruler-combined"></i> Paddle Angle</h3>
                             <span class="rating rating-{{ feedback.paddle_angle.rating|lower }}">{{ feedback.paddle_angle.rating }}</span>
                         </div>
                     </div>
@@ -352,7 +351,6 @@
 </div>
 
 <!-- Data Sharing Container -->
- <!-- Remove this later, it should be in the feedback page -->
  <div class="container">
     <h2>Share Data with Coach</h3>
     <p>Enter your email to receive feedback from a coach on your analysis.</p>
@@ -729,6 +727,31 @@
             width: 100%;
             flex: none;
         }
+    }
+    .score-badge {
+        display: inline-block;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    .card-header[data-rating="good"] .score-badge {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .card-header[data-rating="moderate"] .score-badge {
+        background-color: rgba(0, 0, 0, 0.1);
+        color: #333;
+    }
+
+    .card-header[data-rating="bad"] .score-badge {
+        background-color: rgba(255, 255, 255, 0.3);
+        color: white;
     }
     </style>
 {% endblock %}

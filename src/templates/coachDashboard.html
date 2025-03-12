@@ -29,10 +29,10 @@
             <h1>Coach Dashboard</h1>
             <p>Welcome to the coach dashboard. Here, you can view and manage your members</p>
             
-            <!-- Button to clear the database-->
+            <!-- Button to clear the database
             <form action="{{ url_for('clear_database') }}" method="POST" style="margin-bottom: 20px;">
                 <button type="submit" class="btn btn-danger">Clear Database</button>
-            </form> 
+            </form> -->
             
 
             <!-- Placeholder for members -->
@@ -45,8 +45,6 @@
                         {% for session in sessions %}
                             <div class="user-session">
                                 <p><strong>Email:</strong> {{ session.email }}</p>
-                                <p><strong>Session URL:</strong> {{ session.session_url }}</p>
-                                <p><strong>Trial Name:</strong> {{ session.trial_name }}</p>
                                 <form action="{{ url_for('coach_view_analysis') }}" method="POST">
                                     <input type="hidden" name="username" value="{{ username }}">
                                     <input type="hidden" name="user_email" value="{{ session.email }}">

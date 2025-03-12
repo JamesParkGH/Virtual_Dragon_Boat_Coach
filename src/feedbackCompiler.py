@@ -4,6 +4,7 @@ def generate_top_arm_feedback(score):
     feedback = {
         'category': 'Top Arm',
         'rating': '',
+        'score': score,
         'main_points': [],
         'improvement_points': {
             'limiting_factors': [],
@@ -59,6 +60,7 @@ def generate_bottom_arm_feedback(score):
     feedback = {
         'category': 'Bottom Arm',
         'rating': '',
+        'score': score,
         'main_points': [],
         'improvement_points': {
             'limiting_factors': [],
@@ -109,6 +111,7 @@ def generate_posture_feedback(score):
     feedback = {
         'category': 'Posture',
         'rating': '',
+        'score': score,
         'main_points': [],
         'improvement_points': {
             'limiting_factors': [],
@@ -164,6 +167,7 @@ def generate_paddle_angle_feedback(score):
     feedback = {
         'category': 'Paddle Angle',
         'rating': '',
+        'score': score,
         'main_points': [],
         'improvement_points': {
             'limiting_factors': [],

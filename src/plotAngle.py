@@ -2,39 +2,105 @@ import csv
 import matplotlib.pyplot as plt
 import sys
 import os
+import numpy as np
+from scipy.ndimage import gaussian_filter1d
 
-def plot_angle(csv_file_path, angle, output_dir):
+# Dictionary mapping angle values to display names
+ANGLE_DISPLAY_NAMES = {
+    "pelvis_tilt": "Pelvis Tilt",
+    "pelvis_list": "Pelvis List",
+    "pelvis_rotation": "Pelvis Rotation",
+    "pelvis_tx": "Pelvis TX",
+    "pelvis_ty": "Pelvis TY",
+    "pelvis_tz": "Pelvis TZ",
+    "hip_flexion_r": "Right Hip Flexion",
+    "hip_adduction_r": "Right Hip Adduction",
+    "hip_rotation_r": "Right Hip Rotation",
+    "knee_angle_r": "Right Knee Angle",
+    "ankle_angle_r": "Right Ankle Angle",
+    "subtalar_angle_r": "Right Subtalar Angle",
+    "mtp_angle_r": "Right MTP Angle",
+    "arm_flex_r": "Right Arm Flexion",
+    "arm_add_r": "Right Arm Adduction",
+    "arm_rot_r": "Right Arm Rotation",
+    "elbow_flex_r": "Right Elbow Flexion",
+    "pro_sup_r": "Right Pro Sup",
+    "hip_flexion_l": "Left Hip Flexion",
+    "hip_adduction_l": "Left Hip Adduction",
+    "hip_rotation_l": "Left Hip Rotation",
+    "knee_angle_l": "Left Knee Angle",
+    "ankle_angle_l": "Left Ankle Angle",
+    "subtalar_angle_l": "Left Subtalar Angle",
+    "mtp_angle_l": "Left MTP Angle",
+    "arm_flex_l": "Left Arm Flexion",
+    "arm_add_l": "Left Arm Addion",
+    "arm_rot_l": "Left Arm Rotation",
+    "elbow_flex_l": "Left Elbow Flexion",
+    "pro_sup_l": "Left Pro Sup",
+    "lumbar_extension": "Lumbar Extension",
+    "lumbar_bending": "Lumbar Bending",
+    "lumbar_rotation": "Lumbar Rotation"
+}
+
+def load_angle_data(csv_file_path, angle_name):
     time = []
     angle_data = []
 
     with open(csv_file_path, 'r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
-            time.append(float(row['time']))
-            angle_data.append(180 - float(row[angle]))
+            try:
+                time.append(float(row['time']))
+                angle_data.append(180 - float(row[angle_name]))
+            except (KeyError, ValueError) as e:
+                print(f"Error processing row: {e}")
+                continue
 
-    plt.figure()
-    plt.plot(time, angle_data, label=angle)
+    return np.array(time), np.array(angle_data)
+
+def filter_angle_data(angle_data, sigma=2):
+    return gaussian_filter1d(angle_data, sigma=sigma)
+
+def get_available_angles(csv_file_path):
+    with open(csv_file_path, 'r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        headers = csv_reader.fieldnames
+        angles = [h for h in headers if h != 'time']
+        return angles
+
+def plot_filtered_angle(csv_file_path, angle, output_dir, sigma=2):
+    # Load and filter data
+    time, angle_data = load_angle_data(csv_file_path, angle)
+    filtered_data = filter_angle_data(angle_data, sigma)
+    
+    # Get the display name for the angle
+    display_name = ANGLE_DISPLAY_NAMES.get(angle, angle)
+    
+    # Create plot
+    plt.figure(figsize=(10, 6))
+    # Only plot the filtered data
+    plt.plot(time, filtered_data, label=display_name, linewidth=2)
     plt.xlabel('Time (s)')
-    plt.ylabel(f'{angle} (degrees)')
-    plt.title(f'{angle} vs Time')
+    plt.ylabel(f'{display_name} (degrees)')
+    plt.title(f'The {display_name} vs Time')
     plt.legend()
-
+    plt.grid(True, alpha=0.3)
+    
     # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
-
+    
     # Save the plot
     plot_filename = os.path.join(output_dir, f'{angle}_plot.png')
     plt.savefig(plot_filename)
-
+    
     # Show the plot
     plt.show()
-
+    
     print(f"Plot saved to: {plot_filename}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: python plotAngle.py <session_id> <trial_name> <angle_name>")
+        print("Usage: python plotFilteredAngle.py <session_id> <trial_name> <angle_name>")
         sys.exit(1)
 
     session_id = sys.argv[1].strip()
@@ -49,6 +115,15 @@ if __name__ == "__main__":
     if not os.path.exists(csv_file_path):
         print(f"Error: CSV file not found: {csv_file_path}")
         sys.exit(1)
+        
+    # If angle_name is "list", show available angles
+    if angle_name.lower() == "list":
+        available_angles = get_available_angles(csv_file_path)
+        print("Available angles to plot:")
+        for angle in available_angles:
+            display_name = ANGLE_DISPLAY_NAMES.get(angle, angle)
+            print(f"{angle}: {display_name}")
+        sys.exit(0)
 
-    # Plot the specified angle and save the plot
-    plot_angle(csv_file_path, angle_name, kinematics_dir)
+    # Plot the specified angle with filtering and save the plot
+    plot_filtered_angle(csv_file_path, angle_name, kinematics_dir)
