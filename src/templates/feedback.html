@@ -362,9 +362,8 @@
             <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
             <input type="email" id="email" name="email" placeholder="Enter your email to receive feedback" required>
             
-            <!-- Include hidden fields for session URL and trial name if they're already in the form -->
-            <input type="hidden" name="session_url" value="{{ request.form.get('session_url', '') }}">
-            <input type="hidden" name="trial_name" value="{{ request.form.get('trial_name', '') }}">
+            <input type="hidden" name="session_url" value="{{ opencap_url }}">
+            <input type="hidden" name="trial_name" value="{{ session.get('trial_name', '') }}">
         </div>
         <button type="submit">
             <i class="fas fa-share"></i> Share Data with Coach

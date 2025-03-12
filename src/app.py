@@ -174,6 +174,18 @@ def start_analyze():
         scores_str = result.stdout.strip()
         session['analysis_result'] = scores_str
         
+        # Save the analysis results to a file for later access by coaches
+        data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session["session_id"]}')
+        analysis_folder = os.path.join(data_folder, 'Analysis')
+        
+        # Create the Analysis folder if it doesn't exist
+        if not os.path.exists(analysis_folder):
+            os.makedirs(analysis_folder)
+            
+        # Save the analysis results to a file
+        with open(os.path.join(analysis_folder, f'{trial_name}_analysis.txt'), 'w') as file:
+            file.write(scores_str)
+        
         try:
             # Convert string representation of list to actual list
             scores = ast.literal_eval(scores_str)
@@ -188,21 +200,92 @@ def start_analyze():
     except subprocess.CalledProcessError as e:
         return render_template("index.html", error=f"There was an error processing the session URL: {str(e)}")
 
-
 @app.route('/coach-view-analysis', methods=['POST'])
 def coach_view_analysis():
+    if 'token' not in session or session.get('position') != 'coach':
+        return redirect(url_for('coach_login'))
     
+    # Get data from the form
     session_url = request.form.get('session_url')
     trial_name = request.form.get('trial_name')
+    user_email = request.form.get('user_email')
+    username = request.form.get('username')
     
     if not session_url or not trial_name:
         flash("Missing session URL or trial name")
         return redirect(url_for('coach_dashboard'))
     
-    # use sessionurl and trial name to run the analysis the same way, and direct them to coachFeedback.html, with the feedback container.
+    # Extract session ID from URL if it's a full URL
+    session_id = session_url.split('/')[-1] if '/' in session_url else session_url
     
-    return 
-    
+    try:
+        # Connect to database to get any stored analysis results
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        # Query for this specific user and session
+        cursor.execute('''
+            SELECT * FROM shared_sessions 
+            WHERE username = ? AND session_url = ? AND trial_name = ?
+        ''', (username, session_url, trial_name))
+        
+        session_data = cursor.fetchone()
+        conn.close()
+        
+        if not session_data:
+            flash("Session data not found for this user")
+            return redirect(url_for('coach_dashboard'))
+
+        # Prepare details for coach feedback page
+        analysis_details = {
+            'username': username,
+            'email': user_email,
+            'session_url': session_url,
+            'trial_name': trial_name
+        }
+        
+        # Set session variables that might be needed for the feedback template
+        session['session_id'] = session_id
+        session['trial_name'] = trial_name
+        
+        # Try to find previously generated analysis results
+        try:
+            # Look for analysis files based on session_id and trial_name
+            data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session_id}')
+            analysis_file = os.path.join(data_folder, 'Analysis', f'{trial_name}_analysis.txt')
+            
+            # If analysis file exists, read it
+            if os.path.exists(analysis_file):
+                with open(analysis_file, 'r') as file:
+                    analysis_result = file.read()
+                session['analysis_result'] = analysis_result
+                
+                # Generate feedback from the stored analysis
+                try:
+                    scores = ast.literal_eval(analysis_result)
+                    feedback_data = compile_feedback(scores)
+                    session['feedback'] = feedback_data
+                except Exception as e:
+                    flash(f"Could not generate feedback from stored analysis: {str(e)}")
+            else:
+                # If no saved analysis, inform the coach
+                flash("No saved analysis found for this session. The paddler needs to re-run their analysis.")
+                session['analysis_result'] = "No analysis data available"
+                session['feedback'] = None
+        except Exception as e:
+            flash(f"Error retrieving analysis: {str(e)}")
+            session['analysis_result'] = "Error retrieving analysis"
+            session['feedback'] = None
+        
+        return render_template("coachFeedback.html", 
+                              analysis_details=analysis_details,
+                              analysis_result=session.get('analysis_result', ''), 
+                              feedback=session.get('feedback'))
+        
+    except Exception as e:
+        flash(f"Error loading session: {str(e)}")
+        return redirect(url_for('coach_dashboard'))
 
 @app.route('/share-data', methods=['POST'])
 def share_data():
@@ -211,26 +294,42 @@ def share_data():
     
     email = request.form.get('email')
     username = session.get('username', "Unknown User")
-    # session =.get after user runs start_analysis
-    session_url = request.form.get('session_url')
-    trial_name = request.form.get('trial_name')
     
-    #  # Use arbitrary values for testing
-    # session_url = "https://app.opencap.ai/session/test-session-123"
-    # trial_name = "test-trial-paddler"
-    
+    # Get session_url and trial_name from form, falling back to session values if needed
+    session_url = request.form.get('session_url') or session.get('session_id', '')
+    if session_url and not session_url.startswith('http'):
+        session_url = f"https://app.opencap.ai/session/{session_url}"
+        
+    trial_name = request.form.get('trial_name') or session.get('trial_name', '')
 
     # Email validation
     email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     if not re.match(email_regex, email):
-        return render_template("index.html", 
-                              error_share="Please enter a valid email address with proper domain (e.g., example@domain.com).")
+        return render_template("feedback.html", 
+                              error_share="Please enter a valid email address with proper domain (e.g., example@domain.com).",
+                              feedback=session.get('feedback'),
+                              analysis_result=session.get('analysis_result'),
+                              opencap_url=f"https://app.opencap.ai/session/{session.get('session_id', '')}")
+    
+    # Save analysis results to file if we have them
+    analysis_result = session.get('analysis_result', '')
+    if analysis_result:
+        data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session.get("session_id")}')
+        analysis_folder = os.path.join(data_folder, 'Analysis')
+        
+        # Create the Analysis folder if it doesn't exist
+        if not os.path.exists(analysis_folder):
+            os.makedirs(analysis_folder)
+            
+        # Save the analysis results to a file
+        with open(os.path.join(analysis_folder, f'{trial_name}_analysis.txt'), 'w') as file:
+            file.write(analysis_result)
     
     # Store in database
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-        # Check if an entry already exists for the user
+    # Check if an entry already exists for the user
     cursor.execute("SELECT * FROM shared_sessions WHERE username = ?", (username,))
     existing_entry = cursor.fetchone()
     
@@ -251,10 +350,13 @@ def share_data():
     conn.commit()
     conn.close()
     
-    # Return to index with success data to display
+    # Return to feedback with success message
     return render_template("feedback.html", 
                           success_info="Session shared successfully!",
-                          share_success=True)
+                          share_success=True,
+                          feedback=session.get('feedback'),
+                          analysis_result=session.get('analysis_result'),
+                          opencap_url=f"https://app.opencap.ai/session/{session.get('session_id', '')}")
 
 @app.route('/coach-dashboard')
 def coach_dashboard():

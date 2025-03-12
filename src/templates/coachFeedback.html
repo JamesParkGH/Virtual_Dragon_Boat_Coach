@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Dashboard - Virtual Dragon Boat Coach</title>
+    <title>Coach Feedback - Virtual Dragon Boat Coach</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -16,7 +16,7 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{{ url_for('coach_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                     <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
                     <li><a href="{{ url_for('resources') }}"><i class="fas fa-book"></i> Resources</a></li>
                     <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
@@ -25,50 +25,602 @@
         </div>
     </header>
     <main>
-        <!-- # TODO: feedback and analysis page, but with analysis generated from coach_view_analysis(): -->
-        <div class="container feedback-container">
-            <h2>Provide Feedback</h2>
-            <p>Enter your additional feedback for this paddler. This feedback will be sent to their email.</p>
+        <section class="feedback-section">
+            <div class="page-header">
+                <h1><i class="fas fa-chart-line"></i> Technique Analysis for {{ analysis_details.username }}</h1>
+                <p class="subtitle">Review paddling technique and provide coaching feedback</p>
+            </div>
             
-            <form action="{{ url_for('send_feedback') }}" method="POST">
-                <input type="hidden" name="recipient_email" value="{{ analysis_details.email if analysis_details else '' }}">
-                <input type="hidden" name="recipient_username" value="{{ analysis_details.username if analysis_details else '' }}">
-                
-                <div class="form-group">
-                    <label for="feedback-text"><strong>Feedback:</strong></label>
-                    <textarea id="feedback-text" name="feedback" class="feedback-textarea" placeholder="Enter your coaching feedback here..." rows="8"></textarea>
+            <div class="user-details panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-user"></i> Paddler Details</h2>
                 </div>
-                
-                <div class="form-actions">
-                    <button type="submit" class="btn-send">
-                        <i class="fas fa-paper-plane"></i> Send Feedback
-                    </button>
+                <div class="panel-body">
+                    <p><strong>Username:</strong> {{ analysis_details.username }}</p>
+                    <p><strong>Email:</strong> {{ analysis_details.email }}</p>
+                    <p><strong>Session URL:</strong> <a href="{{ analysis_details.session_url }}" target="_blank">{{ analysis_details.session_url }}</a></p>
+                    <p><strong>Trial Name:</strong> {{ analysis_details.trial_name }}</p>
                 </div>
-            </form>
-        </div>
-        <div class="container feedback-container">
-            <h2>Provide Feedback</h2>
-            <p>Enter your additional feedback for this paddler. This feedback will be sent to their email.</p>
+            </div>
             
-            <form action="{{ url_for('send_feedback') }}" method="POST">
-                <input type="hidden" name="recipient_email" value="{{ analysis_details.email if analysis_details else '' }}">
-                <input type="hidden" name="recipient_username" value="{{ analysis_details.username if analysis_details else '' }}">
-                
-                <div class="form-group">
-                    <label for="feedback-text"><strong>Feedback:</strong></label>
-                    <textarea id="feedback-text" name="feedback" class="feedback-textarea" placeholder="Enter your coaching feedback here..." rows="8"></textarea>
+            <!-- Show flash messages -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-info">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% if analysis_result and analysis_result != "No analysis data available" and analysis_result != "Error retrieving analysis" %}
+                <!-- Raw Analysis Results -->
+                <div class="panel analysis-results">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-chart-line"></i> Analysis Results</h2>
+                    </div>
+                    <div class="panel-body">
+                        <pre>{{ analysis_result }}</pre>
+                    </div>
                 </div>
-                
-                <div class="form-actions">
-                    <button type="submit" class="btn-send">
-                        <i class="fas fa-paper-plane"></i> Send Feedback
-                    </button>
+            {% endif %}
+
+            <!-- Feedback Results -->
+            {% if feedback %}
+                <div class="feedback-dashboard">
+                    <div class="section-header">
+                        <h2><i class="fas fa-clipboard-check"></i> Technique Feedback</h2>
+                        <p>Review technique performance and suggested improvements</p>
+                    </div>
+                    
+                    <div class="feedback-grid">
+                        <!-- Top Arm Feedback -->
+                        {% if feedback.top_arm %}
+                        <div class="feedback-category card">
+                            <div class="card-header" data-rating="{{ feedback.top_arm.rating|lower }}">
+                                <div class="header-content">
+                                    <h3><i class="fas fa-hand-point-up"></i> Top Arm</h3>
+                                    <span class="rating rating-{{ feedback.top_arm.rating|lower }}">{{ feedback.top_arm.rating }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="main-points">
+                                    {% for point in feedback.top_arm.main_points %}
+                                        <p><i class="fas fa-angle-right"></i> {{ point }}</p>
+                                    {% endfor %}
+                                </div>
+                                
+                                {% if feedback.top_arm.rating != 'Good' %}
+                                    <div class="improvement-points">
+                                        <h4><i class="fas fa-tools"></i> Improvement Points</h4>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-exclamation-triangle"></i> Limiting Factors</h5>
+                                            <ul>
+                                                {% for factor in feedback.top_arm.improvement_points.limiting_factors %}
+                                                    <li>{{ factor }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
+                                            <ul>
+                                                {% for injury in feedback.top_arm.improvement_points.potential_injuries %}
+                                                    <li>{{ injury }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-lightbulb"></i> Technical Feedback</h5>
+                                            <ul>
+                                                {% for tech in feedback.top_arm.improvement_points.technical_feedback %}
+                                                    <li>{{ tech }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
+                                            <ul>
+                                                {% for exercise in feedback.top_arm.improvement_points.corrective_exercises %}
+                                                    <li>{{ exercise }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Bottom Arm Feedback -->
+                        {% if feedback.bottom_arm %}
+                        <div class="feedback-category card">
+                            <div class="card-header" data-rating="{{ feedback.bottom_arm.rating|lower }}">
+                                <div class="header-content">
+                                    <h3><i class="fas fa-hand-point-down"></i> Bottom Arm</h3>
+                                    <span class="rating rating-{{ feedback.bottom_arm.rating|lower }}">{{ feedback.bottom_arm.rating }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="main-points">
+                                    {% for point in feedback.bottom_arm.main_points %}
+                                        <p><i class="fas fa-angle-right"></i> {{ point }}</p>
+                                    {% endfor %}
+                                </div>
+                                
+                                {% if feedback.bottom_arm.rating != 'Good' %}
+                                    <div class="improvement-points">
+                                        <h4><i class="fas fa-tools"></i> Improvement Points</h4>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-exclamation-triangle"></i> Limiting Factors</h5>
+                                            <ul>
+                                                {% for factor in feedback.bottom_arm.improvement_points.limiting_factors %}
+                                                    <li>{{ factor }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
+                                            <ul>
+                                                {% for injury in feedback.bottom_arm.improvement_points.potential_injuries %}
+                                                    <li>{{ injury }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-lightbulb"></i> Technical Feedback</h5>
+                                            <ul>
+                                                {% for tech in feedback.bottom_arm.improvement_points.technical_feedback %}
+                                                    <li>{{ tech }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
+                                            <ul>
+                                                {% for exercise in feedback.bottom_arm.improvement_points.corrective_exercises %}
+                                                    <li>{{ exercise }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Posture Feedback -->
+                        {% if feedback.posture %}
+                        <div class="feedback-category card">
+                            <div class="card-header" data-rating="{{ feedback.posture.rating|lower }}">
+                                <div class="header-content">
+                                    <h3><i class="fas fa-user"></i> Posture</h3>
+                                    <span class="rating rating-{{ feedback.posture.rating|lower }}">{{ feedback.posture.rating }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="main-points">
+                                    {% for point in feedback.posture.main_points %}
+                                        <p><i class="fas fa-angle-right"></i> {{ point }}</p>
+                                    {% endfor %}
+                                </div>
+                                
+                                {% if feedback.posture.rating != 'Good' %}
+                                    <div class="improvement-points">
+                                        <h4><i class="fas fa-tools"></i> Improvement Points</h4>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-exclamation-triangle"></i> Limiting Factors</h5>
+                                            <ul>
+                                                {% for factor in feedback.posture.improvement_points.limiting_factors %}
+                                                    <li>{{ factor }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
+                                            <ul>
+                                                {% for injury in feedback.posture.improvement_points.potential_injuries %}
+                                                    <li>{{ injury }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-lightbulb"></i> Technical Feedback</h5>
+                                            <ul>
+                                                {% for tech in feedback.posture.improvement_points.technical_feedback %}
+                                                    <li>{{ tech }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
+                                            <ul>
+                                                {% for exercise in feedback.posture.improvement_points.corrective_exercises %}
+                                                    <li>{{ exercise }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Paddle Angle Feedback -->
+                        {% if feedback.paddle_angle %}
+                        <div class="feedback-category card">
+                            <div class="card-header" data-rating="{{ feedback.paddle_angle.rating|lower }}">
+                                <div class="header-content">
+                                    <h3><i class="fas fa-ruler-combined"></i> Paddle Angle</h3>
+                                    <span class="rating rating-{{ feedback.paddle_angle.rating|lower }}">{{ feedback.paddle_angle.rating }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="main-points">
+                                    {% for point in feedback.paddle_angle.main_points %}
+                                        <p><i class="fas fa-angle-right"></i> {{ point }}</p>
+                                    {% endfor %}
+                                </div>
+                                
+                                {% if feedback.paddle_angle.rating != 'Good' %}
+                                    <div class="improvement-points">
+                                        <h4><i class="fas fa-tools"></i> Improvement Points</h4>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-exclamation-triangle"></i> Limiting Factors</h5>
+                                            <ul>
+                                                {% for factor in feedback.paddle_angle.improvement_points.limiting_factors %}
+                                                    <li>{{ factor }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        {% if feedback.paddle_angle.improvement_points.potential_injuries %}
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
+                                            <ul>
+                                                {% for injury in feedback.paddle_angle.improvement_points.potential_injuries %}
+                                                    <li>{{ injury }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-lightbulb"></i> Technical Feedback</h5>
+                                            <ul>
+                                                {% for tech in feedback.paddle_angle.improvement_points.technical_feedback %}
+                                                    <li>{{ tech }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="improvement-section">
+                                            <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
+                                            <ul>
+                                                {% for exercise in feedback.paddle_angle.improvement_points.corrective_exercises %}
+                                                    <li>{{ exercise }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-            </form>
-        </div>
+            {% else %}
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-exclamation-circle"></i> No Feedback Available</h2>
+                    </div>
+                    <div class="panel-body">
+                        <p>No automated feedback could be generated for this session. The paddler may need to re-run their analysis.</p>
+                        <p>You can still provide personalized feedback below based on your observations.</p>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <div class="panel coach-feedback-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-comment-dots"></i> Provide Coach Feedback</h2>
+                </div>
+                <div class="panel-body">
+                    <p>Enter your personalized feedback for this paddler. This feedback will be sent to their email.</p>
+                    
+                    <form action="{{ url_for('send_feedback') }}" method="POST">
+                        <input type="hidden" name="recipient_email" value="{{ analysis_details.email }}">
+                        <input type="hidden" name="recipient_username" value="{{ analysis_details.username }}">
+                        
+                        <div class="form-group">
+                            <label for="feedback-text"><strong>Feedback:</strong></label>
+                            <textarea id="feedback-text" name="feedback" class="feedback-textarea" placeholder="Enter your coaching feedback here..." rows="8"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="focus-areas"><strong>Focus Areas:</strong></label>
+                            <textarea id="focus-areas" name="focus_areas" class="feedback-textarea" placeholder="Specific areas for the paddler to focus on..." rows="4"></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send Feedback
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
     </main>
     <footer>
         <p>&copy; 2025 Virtual Dragon Boat Coach. All rights reserved.</p>
     </footer>
+
+    <style>
+    /* Feedback Page Specific Styles */
+    .feedback-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .page-header h1 {
+        font-size: 2.2rem;
+        font-weight: 600;
+        color: #8B0000; /* Maroon color matching logo */
+        margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.1rem;
+        color: #666;
+        margin-top: 0;
+    }
+    
+    /* Panel styles */
+    .panel {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    
+    .panel-header {
+        padding: 1rem 1.5rem;
+        background-color: #8B0000; 
+        color: rgb(255, 255, 255);
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    
+    .panel-header h2 {
+        font-size: 1.5rem;
+        margin: 0;
+        font-weight: 500;
+        color: white;
+    }
+    
+    .panel-body {
+        padding: 1.5rem;
+    }
+    
+    /* Feedback results */
+    .feedback-dashboard {
+        margin-top: 3rem;
+    }
+    
+    .section-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-header p {
+        color: #666;
+        margin-top: 0;
+    }
+    
+    .feedback-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+        gap: 2rem;
+    }
+    
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        background: white;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    .card-header[data-rating="good"] {
+        background-color: #2ecc71;
+        color: white;
+    }
+    
+    .card-header[data-rating="moderate"] {
+        background-color: #f1c40f;
+        color: #333;
+    }
+    
+    .card-header[data-rating="bad"] {
+        background-color: #e74c3c;
+        color: white;
+    }
+    
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header h3 {
+        font-size: 1.3rem;
+        margin: 0;
+        font-weight: 500;
+    }
+    
+    .rating {
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        display: inline-block;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .main-points {
+        margin-bottom: 1.5rem;
+    }
+    
+    .main-points p {
+        margin-bottom: 0.7rem;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .main-points p i {
+        margin-right: 0.5rem;
+        margin-top: 0.3rem;
+        color: #8B0000;
+    }
+    
+    .improvement-points h4 {
+        font-size: 1.2rem;
+        margin: 1.5rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+        color: #333;
+    }
+    
+    .improvement-section {
+        margin-bottom: 1.2rem;
+        background-color: #f9f9f9;
+        padding: 1rem;
+        border-radius: 5px;
+    }
+    
+    .improvement-section h5 {
+        font-size: 1rem;
+        color: #555;
+        margin-top: 0;
+        margin-bottom: 0.7rem;
+        font-weight: 500;
+    }
+    
+    .improvement-section ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .improvement-section li {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Coach feedback form */
+    .coach-feedback-panel {
+        margin-top: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .feedback-textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        resize: vertical;
+    }
+    
+    .form-actions {
+        text-align: right;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .btn-primary {
+        background-color: #8B0000;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: #6b0000;
+    }
+    
+    /* Alerts */
+    .alert {
+        padding: 1rem;
+        border-radius: 5px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .alert-info {
+        background-color: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .feedback-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    </style>
 </body>
 </html>
