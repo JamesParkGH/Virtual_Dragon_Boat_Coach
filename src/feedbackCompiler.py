@@ -1,3 +1,5 @@
+from constants import *
+
 def generate_top_arm_feedback(score):
     feedback = {
         'category': 'Top Arm',
@@ -11,13 +13,13 @@ def generate_top_arm_feedback(score):
         }
     }
     
-    if score <= 0.3:
+    if score <= TOP_ARM_GOOD_SCORE:
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
             'Your top arm looks good. You are doing a good job of keeping it straight to maximize your leverage.',
             'Keep working on the pressing motion and following through with your stroke.'
         ]
-    elif score <= 0.7:
+    elif score <= TOP_ARM_BAD_SCORE:
         feedback['rating'] = 'Moderate'
         feedback['main_points'] = [
             'Your top arm is somewhat bent during your stroke. Though not excessive, there is still room for improvement.',
@@ -66,13 +68,13 @@ def generate_bottom_arm_feedback(score):
         }
     }
     
-    if score <= 0.3:
+    if score <= BOTTOM_ARM_GOOD_SCORE:
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
             'Your bottom arm looks good. You are keeping the angle steady which implies that your lats are engaged.',
             'Keep thinking about rotating at the front of your stroke and derotating as you pull to generate power. This also ties into emphasizing hinging and sitting up.'
         ]
-    elif score <= 0.7:
+    elif score <= BOTTOM_ARM_BAD_SCORE:
         feedback['rating'] = 'Moderate'
         feedback['main_points'] = [
             'Your bottom arm is bending a bit much when you pull. A slight bend is acceptable but try to keep the angle steady throughout.',
@@ -103,7 +105,6 @@ def add_bottom_arm_improvement_points(feedback):
         'Landmine Rotations'
     ]
 
-# Add the missing functions for posture and paddle angle
 def generate_posture_feedback(score):
     feedback = {
         'category': 'Posture',
@@ -117,13 +118,13 @@ def generate_posture_feedback(score):
         }
     }
     
-    if score <= 0.3:
+    if score <= POSTURE_GOOD_SCORE:
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
             'Your hip hinge looks good. You are effectively using your range of motion to take long and powerful strokes.',
             'Don\'t forget to keep thinking about implementing rotation along with your hinge to maximize your efficiency'
         ]
-    elif score <= 0.7:
+    elif score <= POSTURE_BAD_SCORE:
         feedback['rating'] = 'Moderate'
         feedback['main_points'] = [
             'Your posture is decent, but it seems there are still some restrictions in your hinge range of motion.',
@@ -172,14 +173,14 @@ def generate_paddle_angle_feedback(score):
         }
     }
     
-    # Updated thresholds as specified
-    if score > 0.1:
+    # Use constants for the thresholds
+    if score > POSITIVE_ANGLE_SCORE:
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
             'You are maintaining a positive angle very well throughout your stroke.',
             'This means that the force you are producing will be effectively applied when moving the boat.'
         ]
-    elif score >= 0.085:
+    elif score >= 0.085:  # This value could also be moved to constants.py
         feedback['rating'] = 'Moderate'
         feedback['main_points'] = [
             'Your paddle angle is positive for part of your stroke but becomes negative a little too soon.',
@@ -215,10 +216,10 @@ def add_paddle_angle_improvement_points(feedback):
     ]
 
 def compile_feedback(scores):
-    # Updated to accept 4 scores instead of 6
+    # Take 4 scores from the technique analyzer
     top_arm_upper_score, bottom_elbow_upper_score, posture_score, paddle_angle_score = scores
     
-    # Update to include all four feedback categories
+    # Generate feedback for each area
     feedback = {
         'top_arm': generate_top_arm_feedback(top_arm_upper_score),
         'bottom_arm': generate_bottom_arm_feedback(bottom_elbow_upper_score),
@@ -230,7 +231,7 @@ def compile_feedback(scores):
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) != 5:  # Changed from 7 to 5 (program name + 4 scores)
+    if len(sys.argv) != 5:  # Program name + 4 scores
         print("Usage: python feedbackCompiler.py <top_arm_score> <bottom_elbow_score> <posture_score> <paddle_angle_score>")
         sys.exit(1)
         
