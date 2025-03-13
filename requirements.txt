@@ -4,3 +4,7 @@ numpy
 matplotlib
 scipy
 google-api-python-client
+python-decouple
+requests
+flask
+gunicorn
