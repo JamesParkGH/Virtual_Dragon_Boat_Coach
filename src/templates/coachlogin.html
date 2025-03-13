@@ -8,11 +8,11 @@
         
         <!-- Login Type Toggle -->
         <div class="login-toggle" style="display: flex; justify-content: center; margin-bottom: 1.5rem;">
-            <a href="/login" class="toggle-btn active" style="padding: 0.5rem 1rem; text-decoration: none; border-bottom: 2px solid var(--primary-color); color: var(--primary-color); font-weight: 600; margin: 0 0.5rem;">Member Login</a>
-            <a href="/coach-login" class="toggle-btn" style="padding: 0.5rem 1rem; text-decoration: none; border-bottom: 2px solid transparent; color: #666; margin: 0 0.5rem;">Coach Login</a>
+            <a href="/login" class="toggle-btn" style="padding: 0.5rem 1rem; text-decoration: none; border-bottom: 2px solid transparent; color: #666; margin: 0 0.5rem;">Member Login</a>
+            <a href="/coach-login" class="toggle-btn active" style="padding: 0.5rem 1rem; text-decoration: none; border-bottom: 2px solid var(--primary-color); color: var(--primary-color); font-weight: 600; margin: 0 0.5rem;">Coach Login</a>
         </div>
         
-        <form action="/login" method="POST">
+        <form action="/coach-login" method="POST">
             <div class="form-group">
                 <label for="username"><i class="fas fa-user"></i> Username</label>
                 <input type="text" id="username" name="username" placeholder="Enter your username" required>
@@ -23,7 +23,6 @@
             </div>
             <button type="submit"><i class="fas fa-sign-in-alt"></i> Sign In</button>
         </form>
-        <p class="text-center" style="margin-top: 1.5rem;">Don't have an account? <a href="https://app.opencap.ai/register-nmbl" style="color: var(--primary-color); font-weight: 600;" target="_blank">Create an Account</a></p>
         {% if error %}
             <p class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
         {% elif success %}

@@ -1,10 +1,9 @@
+flask
+requests
+python-decouple
 ultralytics
 opencv-python
 numpy
 matplotlib
 scipy
 google-api-python-client
-python-decouple
-requests
-flask
-gunicorn
