@@ -104,16 +104,16 @@ def coach_login():
         vdbc_password = request.form.get('password')
 
         if not vdbc_username or not vdbc_password:
-            return render_template("coachLogin.html", error="Please enter both username and password.")
+            return render_template("coachlogin.html", error="Please enter both username and password.")
 
         if vdbc_username == COACH_USERNAME and vdbc_password == COACH_PASSWORD:
             session['token'] = "coach_token"  # Store a hardcoded token in session
             session['position'] = 'coach'  # Store user position in session
             return redirect(url_for('coach_dashboard'))
         else:
-            return render_template("coachLogin.html", error="Login failed: This does not match coach credentials.")
+            return render_template("coachlogin.html", error="Login failed: This does not match coach credentials.")
 
-    return render_template("coachLogin.html", success=success)
+    return render_template("coachlogin.html", success=success)
 
 @app.route('/logout')
 def logout():
