@@ -1,3 +1,6 @@
+flask
+requests
+python-decouple
 ultralytics
 opencv-python
 numpy
