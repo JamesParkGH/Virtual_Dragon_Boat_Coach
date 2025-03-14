@@ -137,7 +137,7 @@ def start_analyze():
     try:
         # Download session data
         subprocess.run([
-            'python', 'BatchDownload.py',
+            'python', 'batchDownload.py',
             session_url.strip(),
             session['token']  # Pass token to the script
         ], check=True)
