@@ -53,15 +53,15 @@ def techniqueAnalyzer(trc_file, mot_file):
 
     #Identify indices (y and z not used for now)
     if right_side:
-        bottom_wrist_x_index = trc_df.iloc[:,11]    #right side
-        bottom_wrist_y_index = trc_df.iloc[:,12]    
-        top_wrist_x_index = trc_df.iloc[:,20]
-        top_wrist_y_index = trc_df.iloc[:,21]
+        bottom_wrist_x_index = 11    #right side
+        bottom_wrist_y_index = 12   
+        top_wrist_x_index = 20
+        top_wrist_y_index = 21
     else:
-        bottom_wrist_x_index = trc_df.iloc[:,20]    #left side
-        bottom_wrist_y_index = trc_df.iloc[:,21]
-        top_wrist_x_index = trc_df.iloc[:,11]
-        top_wrist_y_index = trc_df.iloc[:,12]
+        bottom_wrist_x_index = 20    #left side
+        bottom_wrist_y_index = 21
+        top_wrist_x_index = 11
+        top_wrist_y_index = 12
 
     positive_frames = 0
     pull_frames = 0
@@ -137,8 +137,8 @@ def techniqueAnalyzer(trc_file, mot_file):
             pull_frames += 1
     # Paddle angle threshold check (trc_file: top/bottom wrist x+y components)
     # Duration of angle being positive (time ratio between positive_frames:total_frames)
-        x_diff = top_wrist_x_index.iloc[frame] - bottom_wrist_x_index.iloc[frame]
-        y_diff = top_wrist_y_index.iloc[frame] - bottom_wrist_y_index.iloc[frame]
+        x_diff = trc_df.iloc[:,top_wrist_x_index].iloc[frame] - trc_df.iloc[:,bottom_wrist_x_index].iloc[frame]
+        y_diff = trc_df.iloc[:,top_wrist_y_index].iloc[frame] - trc_df.iloc[:,bottom_wrist_y_index].iloc[frame]
         theta = math.degrees(math.atan(y_diff/x_diff))
         if theta <= 10 and stroke_phases[frame]=="pull":
             positive_frames += 1

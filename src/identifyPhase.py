@@ -45,6 +45,8 @@ def identifyPhase(trc_file_path):
             
             phase_list.append(phase)
 
+        # More paddling phases: Exit, Set up, Catch?
+        # 
         # for i in range(1, stroke_count):
         #     # Split up range of each stroke
         #     for frame in range(stroke_frames[i-1], stroke_frames[i]):

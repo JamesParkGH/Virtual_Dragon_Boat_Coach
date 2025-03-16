@@ -87,11 +87,7 @@ def start_analyze():
         session['trial_name'] = trial_name.strip()
 
         subprocess.run([
-<<<<<<< HEAD
-            'python', 'motCoverter.py',
-=======
             'python', 'motConverter.py',
->>>>>>> 7b57ca5064415b11ba27b24675b693591248473a
             session_url.strip().split('/')[-1],  # Extract session ID from URL
             trial_name.strip()  # Pass trial name to convertCSV
         ], check=True)
