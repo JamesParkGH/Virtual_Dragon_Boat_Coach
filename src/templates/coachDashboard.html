@@ -44,10 +44,8 @@
                         <h3>{{ username }}</h3>
                         {% for session in sessions %}
                             <div class="user-session">
-                                <p><strong>Email:</strong> {{ session.email }}</p>
                                 <form action="{{ url_for('coach_view_analysis') }}" method="POST">
                                     <input type="hidden" name="username" value="{{ username }}">
-                                    <input type="hidden" name="user_email" value="{{ session.email }}">
                                     <input type="hidden" name="session_url" value="{{ session.session_url }}">
                                     <input type="hidden" name="trial_name" value="{{ session.trial_name }}">
                                     <button type="submit" class="btn-view">

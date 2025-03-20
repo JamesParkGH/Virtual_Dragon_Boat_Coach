@@ -16,7 +16,6 @@ def init_db():
         username TEXT NOT NULL,
         session_url TEXT NOT NULL,
         trial_name TEXT NOT NULL,
-        email TEXT
     )
     ''')
     
