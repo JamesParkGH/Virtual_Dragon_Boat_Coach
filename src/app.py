@@ -473,15 +473,10 @@ def feedback():
 
     # Get the feedback from the session
     feedback_data = session.get('feedback', None)
-    
-    # Get current user and session info
     username = session.get('username', '')
     session_id = session.get('session_id', '')
     trial_name = session.get('trial_name', '')
     session_url = session.get('session_url')
-    
-    # Get the feedback from the session
-    feedback_data = session.get('feedback', None)
 
     opencap_url = f"https://app.opencap.ai/session/{session_id}"
 
