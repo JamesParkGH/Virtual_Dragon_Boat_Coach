@@ -53,7 +53,29 @@ def index():
 def home():
     if 'token' not in session:
         return redirect(url_for('login'))
-    return render_template("index.html")
+    
+    username = session.get('username', '')
+    user_sessions = []
+    
+    # Fetch user's sessions from the database
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id, username, session_url, trial_name, coach_feedback 
+            FROM shared_sessions 
+            WHERE username = ?
+            ORDER BY id DESC
+        """, (username,))
+        
+        user_sessions = cursor.fetchall()
+        conn.close()
+    except Exception as e:
+        flash(f"Error retrieving your sessions: {str(e)}")
+    
+    return render_template("index.html", user_sessions=user_sessions)
 
 @app.route('/about')
 def about():
