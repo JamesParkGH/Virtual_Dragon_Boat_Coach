@@ -7,13 +7,10 @@ import math
 from identifyPaddlingSide import identifyPaddlingSide
 from strokeCounter import strokeCounter
 from identifyPhase import identifyPhase
-<<<<<<< HEAD
 from dataPreprocessing import dataPreprocessing
 
 from topArmAnalyzer import *
 
-=======
->>>>>>> 2fa82c879816e554613655051a58494a66c3fcdf
 from constants import *
 
 def techniqueAnalyzer(trc_file, mot_file):
@@ -64,7 +61,6 @@ def techniqueAnalyzer(trc_file, mot_file):
             # Reset update indicators on each stroke
             top_arm_updated = False
             bottom_elbow_updated = False
-<<<<<<< HEAD
             posture_count_updated = True
 
             # Posture/hinge check
@@ -73,15 +69,6 @@ def techniqueAnalyzer(trc_file, mot_file):
 
             # hinge_lower_count = False
             # hinge_upper_count = False
-=======
-
-            # Posture/hinge check
-            if hinge_lower_count and hinge_upper_count:
-                posture_count += 1
-
-            hinge_lower_count = False
-            hinge_upper_count = False
->>>>>>> 2fa82c879816e554613655051a58494a66c3fcdf
 
             # Check positive frame ratio
             if frame > stroke_frames[0]:
@@ -95,7 +82,6 @@ def techniqueAnalyzer(trc_file, mot_file):
 
 
     # Top arm UPPER threshold check (top flex, top add, top rot)
-<<<<<<< HEAD
         # if top_arm_updated==False and 180-mot_df['arm_flex_top'].values[frame] > TOP_ARM_FLEX_THRESHOLD and 180-mot_df['arm_add_top'].values[frame] < TOP_ARM_ADD_THRESHOLD and 180-mot_df['arm_rot_top'].values[frame] > TOP_ARM_ROT_THRESHOLD and 180-mot_df['elbow_flex_top'].values[frame] < TOP_ELBOW_THRESHOLD:
         #     top_arm_count += 1
         #     top_arm_updated = True
@@ -115,18 +101,6 @@ def techniqueAnalyzer(trc_file, mot_file):
 
     # Bottom arm UPPER threshold check (bottom elbow)
         if bottom_elbow_updated==False and 180-mot_df['elbow_flex_bottom'].values[frame] < BOTTOM_ELBOW_THRESHOLD:
-=======
-        if top_arm_updated==False and 180-df['arm_flex_top'].values[frame] > TOP_ARM_FLEX_THRESHOLD and 180-df['arm_add_top'].values[frame] < TOP_ARM_ADD_THRESHOLD and 180-df['arm_rot_top'].values[frame] > TOP_ARM_ROT_THRESHOLD and 180-df['elbow_flex_top'].values[frame] < TOP_ELBOW_THRESHOLD:
-            top_arm_count += 1
-            top_arm_updated = True
-
-    # and stroke_phases[frame]=="recovery"
-    # and 180-df['elbow_flex_top'].values[frame] < 100
-    # Top arm LOWER threshold check (top flex, top add, top rot)
-
-    # Bottom arm UPPER threshold check (bottom elbow)
-        if bottom_elbow_updated==False and 180-df['elbow_flex_bottom'].values[frame] < BOTTOM_ELBOW_THRESHOLD:
->>>>>>> 2fa82c879816e554613655051a58494a66c3fcdf
             bottom_elbow_count += 1
             bottom_elbow_updated = True
 
@@ -135,7 +109,6 @@ def techniqueAnalyzer(trc_file, mot_file):
 
     # Spine posture threshold check (lumbar extension, bending)
     # Incorporate hip hinge -> should get lower than 70 degrees
-<<<<<<< HEAD
         if posture_count_updated==False and 180-mot_df['lumbar_extension'].values[frame] > LUMBAR_EXTENSION_THRESHOLD and 180-mot_df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
             # if hip_hinge_updated==False and 180-mot_df['hip_flexion_top'].values[frame] < 70 and 180-mot_df['hip_flexion_bottom'].values[frame] < 70:
             #     hip_hinge_count += 1
@@ -148,20 +121,6 @@ def techniqueAnalyzer(trc_file, mot_file):
 
         # if hinge_upper_updated==False and 180-mot_df['hip_flexion_top'].values[frame] > 105 and 180-mot_df['hip_flexion_bottom'].values[frame] > 105:# and 180-mot_df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
         #     hinge_upper_count = True
-=======
-        # if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > LUMBAR_EXTENSION_THRESHOLD and 180-df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
-        #     # if hip_hinge_updated==False and 180-df['hip_flexion_top'].values[frame] < 70 and 180-df['hip_flexion_bottom'].values[frame] < 70:
-        #     #     hip_hinge_count += 1
-        #     #     hip_hinge_updated = True
-        #     posture_count += 1
-        #     posture_count_updated = True
-        
-        if hinge_lower_updated==False and 180-df['hip_flexion_top'].values[frame] < HIP_FLEXION_THRESHOLD and 180-df['hip_flexion_bottom'].values[frame] < HIP_FLEXION_THRESHOLD and 180-df['lumbar_bending'].values[frame] > LUMBAR_BENDING_THRESHOLD:
-            hinge_lower_count = True
-
-        if hinge_upper_updated==False and 180-df['hip_flexion_top'].values[frame] > 105 and 180-df['hip_flexion_bottom'].values[frame] > 105:# and 180-df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
-            hinge_upper_count = True
->>>>>>> 2fa82c879816e554613655051a58494a66c3fcdf
 
 
     # Track number of pulling frames
