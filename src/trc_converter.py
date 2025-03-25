@@ -29,7 +29,7 @@ def trc_to_csv(trc_file_path, csv_file_path):
     print(f"Converted {trc_file_path} to {csv_file_path} successfully.")
 
 # File paths
-trc_file_path = "James_1.trc"
+trc_file_path = "Richard_AB1.trc"
 csv_file_path = trc_file_path.replace('.trc', '_trc.csv')
 
 # Convert .trc to .csv

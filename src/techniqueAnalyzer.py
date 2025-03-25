@@ -3,27 +3,20 @@ import os
 import pandas as pd
 import re
 import math
+
 from identifyPaddlingSide import identifyPaddlingSide
 from strokeCounter import strokeCounter
 from identifyPhase import identifyPhase
+from dataPreprocessing import dataPreprocessing
+
+from topArmAnalyzer import *
+
 from constants import *
 
 def techniqueAnalyzer(trc_file, mot_file):
     right_side = identifyPaddlingSide(trc_file)
 
-    # put necessary columns into new csv
-    df = pd.read_csv(mot_file)
-    df = df[['time', 'hip_flexion_r', 'knee_angle_r', 'hip_flexion_l', 'knee_angle_l', 'lumbar_extension', 'lumbar_bending', 'arm_flex_r', 'arm_add_r', 'arm_rot_r', 'elbow_flex_r', 'arm_flex_l', 'arm_add_l', 'arm_rot_l', 'elbow_flex_l']]
-
-    # reassign left/right to top/bottom accordingly based on right_side
-    if right_side:
-        df.rename(columns=lambda x: re.sub(r"[_r]{2}$", "_bottom", x), inplace=True)
-        df.rename(columns=lambda x: re.sub(r"[_l]{2}$", "_top", x), inplace=True)
-        
-    else:
-        df.rename(columns=lambda x: re.sub(r"[_l]{2}$", "_bottom", x), inplace=True)
-        df.rename(columns=lambda x: re.sub(r"[_r]{2}$", "_top", x), inplace=True)
-
+    mot_df, neck_x_index, top_wrist_x_index, top_shoulder_x_index, top_elbow_x_index, top_hip_x_index, top_knee_x_index, bottom_wrist_x_index, bottom_shoulder_x_index, bottom_elbow_x_index, bottom_hip_x_index, bottom_knee_x_index = dataPreprocessing(trc_file, mot_file)
 
     # track number of threshold violations
     # need to make sure not over counting -> only increment by 1 per cycle
@@ -48,20 +41,8 @@ def techniqueAnalyzer(trc_file, mot_file):
     hinge_upper_updated = False
 
 
-    # Paddle angle
+    # # Paddle angle
     trc_df = pd.read_csv(trc_file, sep=",", engine="python", header=None)
-
-    #Identify indices (y and z not used for now)
-    if right_side:
-        bottom_wrist_x_index = 11    #right side
-        bottom_wrist_y_index = 12   
-        top_wrist_x_index = 20
-        top_wrist_y_index = 21
-    else:
-        bottom_wrist_x_index = 20    #left side
-        bottom_wrist_y_index = 21
-        top_wrist_x_index = 11
-        top_wrist_y_index = 12
 
     positive_frames = 0
     pull_frames = 0
@@ -80,13 +61,14 @@ def techniqueAnalyzer(trc_file, mot_file):
             # Reset update indicators on each stroke
             top_arm_updated = False
             bottom_elbow_updated = False
+            posture_count_updated = True
 
             # Posture/hinge check
-            if hinge_lower_count and hinge_upper_count:
-                posture_count += 1
+            # if hinge_lower_count and hinge_upper_count:
+            #     posture_count += 1
 
-            hinge_lower_count = False
-            hinge_upper_count = False
+            # hinge_lower_count = False
+            # hinge_upper_count = False
 
             # Check positive frame ratio
             if frame > stroke_frames[0]:
@@ -100,16 +82,25 @@ def techniqueAnalyzer(trc_file, mot_file):
 
 
     # Top arm UPPER threshold check (top flex, top add, top rot)
-        if top_arm_updated==False and 180-df['arm_flex_top'].values[frame] > TOP_ARM_FLEX_THRESHOLD and 180-df['arm_add_top'].values[frame] < TOP_ARM_ADD_THRESHOLD and 180-df['arm_rot_top'].values[frame] > TOP_ARM_ROT_THRESHOLD and 180-df['elbow_flex_top'].values[frame] < TOP_ELBOW_THRESHOLD:
-            top_arm_count += 1
-            top_arm_updated = True
+        # if top_arm_updated==False and 180-mot_df['arm_flex_top'].values[frame] > TOP_ARM_FLEX_THRESHOLD and 180-mot_df['arm_add_top'].values[frame] < TOP_ARM_ADD_THRESHOLD and 180-mot_df['arm_rot_top'].values[frame] > TOP_ARM_ROT_THRESHOLD and 180-mot_df['elbow_flex_top'].values[frame] < TOP_ELBOW_THRESHOLD:
+        #     top_arm_count += 1
+        #     top_arm_updated = True
 
-    # and stroke_phases[frame]=="recovery"
-    # and 180-df['elbow_flex_top'].values[frame] < 100
-    # Top arm LOWER threshold check (top flex, top add, top rot)
+        if top_arm_updated==False:
+            top_elbow_count, top_ratio_count = topArmAnalyzer(trc_df, mot_df, frame, top_wrist_x_index, top_shoulder_x_index)
+
+            if top_elbow_count + top_ratio_count > 0:
+                top_arm_count += 1
+                top_arm_updated = True
+
+    # NEW top arm
+    # Top arm movement in x-axis during pull (top hand relative to top shoulder)
+    # Elbow angle + arm rotation angular velocity
+    # Height top hand over head?
+
 
     # Bottom arm UPPER threshold check (bottom elbow)
-        if bottom_elbow_updated==False and 180-df['elbow_flex_bottom'].values[frame] < BOTTOM_ELBOW_THRESHOLD:
+        if bottom_elbow_updated==False and 180-mot_df['elbow_flex_bottom'].values[frame] < BOTTOM_ELBOW_THRESHOLD:
             bottom_elbow_count += 1
             bottom_elbow_updated = True
 
@@ -118,18 +109,18 @@ def techniqueAnalyzer(trc_file, mot_file):
 
     # Spine posture threshold check (lumbar extension, bending)
     # Incorporate hip hinge -> should get lower than 70 degrees
-        # if posture_count_updated==False and 180-df['lumbar_extension'].values[frame] > LUMBAR_EXTENSION_THRESHOLD and 180-df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
-        #     # if hip_hinge_updated==False and 180-df['hip_flexion_top'].values[frame] < 70 and 180-df['hip_flexion_bottom'].values[frame] < 70:
-        #     #     hip_hinge_count += 1
-        #     #     hip_hinge_updated = True
-        #     posture_count += 1
-        #     posture_count_updated = True
+        if posture_count_updated==False and 180-mot_df['lumbar_extension'].values[frame] > LUMBAR_EXTENSION_THRESHOLD and 180-mot_df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
+            # if hip_hinge_updated==False and 180-mot_df['hip_flexion_top'].values[frame] < 70 and 180-mot_df['hip_flexion_bottom'].values[frame] < 70:
+            #     hip_hinge_count += 1
+            #     hip_hinge_updated = True
+            posture_count += 1
+            posture_count_updated = True
         
-        if hinge_lower_updated==False and 180-df['hip_flexion_top'].values[frame] < HIP_FLEXION_THRESHOLD and 180-df['hip_flexion_bottom'].values[frame] < HIP_FLEXION_THRESHOLD and 180-df['lumbar_bending'].values[frame] > LUMBAR_BENDING_THRESHOLD:
-            hinge_lower_count = True
+        # if hinge_lower_updated==False and 180-mot_df['hip_flexion_top'].values[frame] < HIP_FLEXION_THRESHOLD and 180-mot_df['hip_flexion_bottom'].values[frame] < HIP_FLEXION_THRESHOLD and 180-mot_df['lumbar_bending'].values[frame] > LUMBAR_BENDING_THRESHOLD:
+        #     hinge_lower_count = True
 
-        if hinge_upper_updated==False and 180-df['hip_flexion_top'].values[frame] > 105 and 180-df['hip_flexion_bottom'].values[frame] > 105:# and 180-df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
-            hinge_upper_count = True
+        # if hinge_upper_updated==False and 180-mot_df['hip_flexion_top'].values[frame] > 105 and 180-mot_df['hip_flexion_bottom'].values[frame] > 105:# and 180-mot_df['lumbar_bending'].values[frame] < LUMBAR_BENDING_THRESHOLD:
+        #     hinge_upper_count = True
 
 
     # Track number of pulling frames
@@ -138,7 +129,7 @@ def techniqueAnalyzer(trc_file, mot_file):
     # Paddle angle threshold check (trc_file: top/bottom wrist x+y components)
     # Duration of angle being positive (time ratio between positive_frames:total_frames)
         x_diff = trc_df.iloc[:,top_wrist_x_index].iloc[frame] - trc_df.iloc[:,bottom_wrist_x_index].iloc[frame]
-        y_diff = trc_df.iloc[:,top_wrist_y_index].iloc[frame] - trc_df.iloc[:,bottom_wrist_y_index].iloc[frame]
+        y_diff = trc_df.iloc[:,top_wrist_x_index+1].iloc[frame] - trc_df.iloc[:,bottom_wrist_x_index+1].iloc[frame]
         theta = math.degrees(math.atan(y_diff/x_diff))
         if theta <= 10 and stroke_phases[frame]=="pull":
             positive_frames += 1

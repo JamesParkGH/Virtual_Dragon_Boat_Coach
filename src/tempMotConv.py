@@ -45,7 +45,7 @@ def mot_to_csv(mot_file_path, csv_file_path):
         for row in data:
             csv_writer.writerow(row)
 
-mot_file_path = "James_1.mot"
+mot_file_path = "Richard_AB1.mot"
 csv_file_path = mot_file_path.replace('.mot', '_mot.csv')
 
 mot_to_csv(mot_file_path, csv_file_path)

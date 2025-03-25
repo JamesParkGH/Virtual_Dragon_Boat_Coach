@@ -14,7 +14,6 @@ def dataPreprocessing(trc, mot):
     trc_df = pd.read_csv(trc, sep=",", engine="python", header=None)
 
     neck_x_index = trc_df.iloc[:,2]
-    
 
     # reassign left/right to top/bottom accordingly based on right_side
     if right_side:
