@@ -74,7 +74,9 @@ def generate_bottom_arm_feedback(score):
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
             'Your bottom arm looks good. You are keeping the angle steady which implies that your lats are engaged.',
+            'The elbow is also tracking outwards effectively, allowing for a better press off the back of your stroke.',
             'Keep thinking about rotating at the front of your stroke and derotating as you pull to generate power. This also ties into emphasizing hinging and sitting up.'
+
         ]
     elif score <= BOTTOM_ARM_BAD_SCORE:
         feedback['rating'] = 'Moderate'
@@ -94,12 +96,13 @@ def generate_bottom_arm_feedback(score):
     return feedback
 
 def add_bottom_arm_improvement_points(feedback):
-    feedback['improvement_points']['limiting_factors'] = ['Poor lat engagement']
+    feedback['improvement_points']['limiting_factors'] = ['Poor lat engagement','Unnecessary exertion during recovery ']
     feedback['improvement_points']['potential_injuries'] = ['Tenosynovitis', "Golfer's elbow"]
     feedback['improvement_points']['technical_feedback'] = [
         'Keep the angle in the bottom arm steady.',
         'Think about pulling downwards instead of pulling towards you. This will favour lat engagement over bicep engagement and help keep your arm straighter as you pull.',
-        'You can also focus more on sitting up and derotating with your stroke. Imagine that your arms are just strings that attach to the paddle and generate your power by moving your body. Your arms should feel very relaxed throughout.'
+        'You can also focus more on sitting up and derotating with your stroke. Imagine that your arms are just strings that attach to the paddle and generate your power by moving your body. Your arms should feel very relaxed throughout.',
+        'Make sure to point the elbow outwards and relax the bottom wrist during your recovery. If you’re doing it properly, the elbow should be further away from your body than the hand holding the paddle. One cue is to imagine that you are wearing a wristwatch and are trying to point it forwards as your hand move from the back of your stroke to your A-frame.'
     ]
     feedback['improvement_points']['corrective_exercises'] = [
         'Single arm lat pullovers (Or other exercises for engaging the lat with a straight arm)',
@@ -107,9 +110,9 @@ def add_bottom_arm_improvement_points(feedback):
         'Landmine Rotations'
     ]
 
-def generate_posture_feedback(score):
+def generate_rotation_feedback(score):
     feedback = {
-        'category': 'Posture',
+        'category': 'Rotation',
         'rating': '',
         'score': score,
         'main_points': [],
@@ -121,44 +124,44 @@ def generate_posture_feedback(score):
         }
     }
     
-    if score <= POSTURE_GOOD_SCORE:
+    if score <= ROTATION_GOOD_SCORE:
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
-            'Your hip hinge looks good. You are effectively using your range of motion to take long and powerful strokes.',
-            'Don\'t forget to keep thinking about implementing rotation along with your hinge to maximize your efficiency'
+            'You are rotating well with your stroke. This helps you keep consistent pressure on your blade as you pull. ',
+            'Don\'t forget to keep thinking about sitting up along with your rotation to maximize the use of your body. '
         ]
-    elif score <= POSTURE_BAD_SCORE:
+    elif score <= ROTATION_BAD_SCORE:
         feedback['rating'] = 'Moderate'
         feedback['main_points'] = [
-            'Your posture is decent, but it seems there are still some restrictions in your hinge range of motion.',
-            'Having better range of motion in your hips will help you generate more power in each stroke through sitting up and using your bodyweight. This is a more efficient use of energy and will help your endurance.'
+            'Your rotation is decent, but it seems there are still some restrictions in your range of motion.',
+            'Having better range of motion as you rotate into your catch will increase the length of your stroke without the need to “over-reach”. This sets you up with more potential to de-rotate as you pull to add torque to your stroke.'
         ]
-        add_posture_improvement_points(feedback)
+        add_rotation_improvement_points(feedback)
     else:
         feedback['rating'] = 'Bad'
         feedback['main_points'] = [
-            'Your posture when paddling is too stiff. This noticeable through a limited ability to hinge forwards along with lots of bending in your lower back.',
-            'Having limited range of motion in your hinge prevents you from generating power by using your bodyweight. It will also decrease the efficiency of your energy expenditure since you will need to fight against your natural range of motion with every stroke.'
+            'Your rotation at your catch is very limited. Your shoulders are too square when they should be somewhat staggered and stacked. ',
+            'Having limited range of motion in your rotation prevents you from generating torque by using your bodyweight. It will also force you to “over-reach” to gain get more length, leading you to fight against your natural range of motion with every stroke and increase your risk of injury.'
         ]
-        add_posture_improvement_points(feedback)
+        add_rotation_improvement_points(feedback)
     
     return feedback
 
-def add_posture_improvement_points(feedback):
+def add_rotation_improvement_points(feedback):
     feedback['improvement_points']['limiting_factors'] = [
-        'Hamstring tightness',
+        'Limited thoracic rotation',
         'Limited hip mobility',
         'Lower back tightness'
     ]
     feedback['improvement_points']['potential_injuries'] = ['Lower back pain']
     feedback['improvement_points']['technical_feedback'] = [
-        'The hinging motion should be initiated at the hips, not by bending from the lower back. Your spine should remain as neutral as possible when hinging forwards.',
-        'When going forwards into your catch, imagine a string pulling you from your belly button bring you forwards while keeping your chin up. This will naturally help keep the chest open instead of crunched downwards to maintain the neutral spine throughout',
-        'When working on your hinge, don\'t think too hard about needing to reach as far as you can with your arms. Reaching only with your arms will cause poor posture. Find a range of motion where you can comfortably keep your chest upright while getting your body forwards instead.'
+        'Rotation and de-rotation should be initiated at the hips, not by twisting from the upper back. Allow your paddle-side shoulder and hip to move forward together as you catch and move back together as you drive off your leg and sit up when pulling.',
+        'When going forwards into your catch, imagine the paddling side of your body swinging open like a door. Your torso should move as a single unit without any twisting. You should notice that your paddle-side knee bends slightly, meaning that your hip has come forward. As you enter your catch, imagine that you are trying to show your upper back to someone watching you from the side; they should be able to see your top shoulder clearly.',
+        'When working on your rotation, don\'t think too hard about needing to reach as far as you can with your arms. Reaching only with your arms will cause poor posture. Find a range of motion where you can comfortably keep your chest upright while getting your body forwards instead. '
     ]
     feedback['improvement_points']['corrective_exercises'] = [
-        'Romanian Deadlifts',
-        'Pike Compressions (hip flexor strength)',
+        'Landmine Rotations',
+        'Seated Wall Angels',
         'Kettlebell Hip Shift',
         'Elephant Walks'
     ]
@@ -210,7 +213,7 @@ def add_paddle_angle_improvement_points(feedback):
     feedback['improvement_points']['technical_feedback'] = [
         'Having the paddle angle become negative too quickly is related to aspects of rotation and derotation',
         'If you are not rotated enough at the catch, your paddle angle will be closer to being neutral or negative as you begin pulling. Think about turning your torso as you recover so your top shoulder stays back to force rotation as you enter your A-frame. Another cue is to imagine that there is someone watching you paddle from the side, and you are trying to show them your entire back.',
-        'Another cause of the paddle angle becoming negative too quickly is from not sitting up enough as you pull. By moving your body back throughout the stroke, your bottom hand can stay in front of you for longer to maintain a positive angle.'
+        'Another cause of the paddle angle becoming negative too quickly is from not sitting up enough as you pull. By moving your body up and back throughout the stroke, your bottom hand can stay in front of you for longer to maintain a positive angle. Note that you should be trying to find pressure on your paddle by sitting up first, rather pulling with your arms immediately after catching.'
     ]
     feedback['improvement_points']['corrective_exercises'] = [
         'Kettlebell Windmills',
