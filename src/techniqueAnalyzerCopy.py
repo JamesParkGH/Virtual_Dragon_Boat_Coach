@@ -19,6 +19,8 @@ from constants import *
 def techniqueAnalyzer(trc_file, mot_file):
     right_side = identifyPaddlingSide(trc_file)
 
+    trc_df = pd.read_csv(trc_file, sep=",", engine="python", header=None)
+
     mot_df, neck_x_index, top_wrist_x_index, top_shoulder_x_index, top_elbow_x_index, top_hip_x_index, top_knee_x_index, bottom_wrist_x_index, bottom_shoulder_x_index, bottom_elbow_x_index, bottom_hip_x_index, bottom_knee_x_index = dataPreprocessing(trc_file, mot_file)
 
     # track number of threshold violations
@@ -26,59 +28,24 @@ def techniqueAnalyzer(trc_file, mot_file):
     # need elapsed number of strokes
     stroke_count, stroke_frames = strokeCounter(trc_file)
     stroke_count -= 1   # Gives intervals instead of end markers
-
     stroke_phases = identifyPhase(trc_file)
 
-    # Cannot exceed curr_stroke
+    # Count poor technique instances (cannot exceed # strokes)
     top_arm_count = 0
-    top_arm_updated = False
 
     bottom_elbow_count = 0
-    bottom_elbow_updated = False
 
     rotation_count = 0
-    rotation_count_updated = False
 
-    posture_count = 0
-    hinge_lower_count = False
-    hinge_upper_count = False
-    posture_count_updated = False
-    hinge_lower_updated = False
-    hinge_upper_updated = False
-
-
-    # # Paddle angle
-    trc_df = pd.read_csv(trc_file, sep=",", engine="python", header=None)
-
-    positive_frames = 0
-    pull_frames = 0
     paddle_angle_ratios = []
-
-
-    curr_stroke = 0
+    negative_count = 0
     
-    # loop through df
+    # loop through each stroke as identified with strokeCounter
     # Start at first full stroke (stroke_frames[0])
     for frame in range(len(stroke_frames)-1):
         # Track current frame range
         frame_l = stroke_frames[frame]
         frame_u = stroke_frames[frame+1]
-
-        # Reset update indicators on each stroke
-        top_arm_updated = False
-        bottom_elbow_updated = False
-        posture_count_updated = True
-
-        # Check positive frame ratio
-        # if frame > stroke_frames[0]:
-        #     paddle_angle_ratios.append(positive_frames/pull_frames)
-
-        positive_frames = 0
-        pull_frames = 0
-
-        # inc stroke count
-        curr_stroke += 1
-
 
         ### Top Arm Analysis ###
         top_elbow_angle_count, top_ratio_count, elbow_hammer_count = topArmAnalyzer(trc_df, mot_df, frame_l, frame_u, stroke_phases, top_wrist_x_index, top_shoulder_x_index, top_elbow_x_index)
@@ -105,7 +72,11 @@ def techniqueAnalyzer(trc_file, mot_file):
             rotation_count += 1
 
         ### Paddle Angle Analysis ###
-        positive_ratio = paddleAngleAnalyzer(trc_df, mot_df, stroke_phases, bottom_wrist_x_index, top_wrist_x_index)
+        positive_ratio, small_bodied_count = paddleAngleAnalyzer(trc_df, mot_df, frame_l, frame_u, stroke_phases, bottom_wrist_x_index, top_wrist_x_index)
+
+        paddle_angle_ratios.append(positive_ratio)
+        if small_bodied_count and positive_ratio > POSITIVE_ANGLE_SCORE:
+            negative_count += 1
 
     ##############################################################
     ### Analysis ###
@@ -116,7 +87,7 @@ def techniqueAnalyzer(trc_file, mot_file):
 
     rotation_score = rotation_count/stroke_count
 
-    paddle_angle_score = positive_ratio
+    paddle_angle_score = negative_count/stroke_count
     
     return [top_arm_score, bottom_arm_score, rotation_score, paddle_angle_score]
 

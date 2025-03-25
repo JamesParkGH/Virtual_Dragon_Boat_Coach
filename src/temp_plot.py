@@ -16,8 +16,8 @@ def plot_angle(trc_file, mot_file):
     trc_point3_data = []
     length = []
 
-    angle1 = 'lumbar_bending'
-    angle2 = 'lumbar_extension'
+    angle1 = 'hip_flexion_r'
+    angle2 = 'knee_angle_r'
     
 
     trc_df = pd.read_csv(trc_file , sep=",", engine="python", header=None)
@@ -60,11 +60,11 @@ def plot_angle(trc_file, mot_file):
     # print(variance(trc_point2_data))
     # print(variance(trc_point3_data))
 
-    # fig, (ax1, ax2) = plt.subplots(1,2)
-    # ax1.plot(time, angle1_data, label=angle1)
-    # ax1.set_title(f'{angle1} vs Time')
-    # ax2.plot(time, angle2_data, label=angle2)
-    # ax2.set_title(f'{angle2} vs Time')
+    fig, (ax1, ax2) = plt.subplots(1,2)
+    ax1.plot(time, angle1_data, label=angle1)
+    ax1.set_title(f'{angle1} vs Time')
+    ax2.plot(time, angle2_data, label=angle2)
+    ax2.set_title(f'{angle2} vs Time')
 
 
     # fig, (ax1, ax2, ax3) = plt.subplots(1,3)
@@ -75,15 +75,15 @@ def plot_angle(trc_file, mot_file):
     # ax3.plot(time, trc_point3_data)
     # ax3.set_title('Shoulder_z vs Time')
     
-    fig, ax = plt.subplots(1,1)
-    ax.plot(time, length)
-    ax.set_title('Spine Length vs Time')
+    # fig, ax = plt.subplots(1,1)
+    # ax.plot(time, length)
+    # ax.set_title('Spine Length vs Time')
 
     # Show the plot
     plt.show()
 
 # plot_angle("IainDBAC1_trc.csv", "IainDBAC1_mot.csv")
-# plot_angle("Richard_AB1_trc.csv", "Richard_AB1_mot.csv")
+plot_angle("Richard_AB1_trc.csv", "Richard_AB1_mot.csv")
 # plot_angle("Frank_paddling_trc.csv", "Frank_paddling_mot.csv")
-plot_angle("James_1_trc.csv", "James_1_mot.csv")
+# plot_angle("James_1_trc.csv", "James_1_mot.csv")
 # plot_angle("Ed_paddling_trc.csv", "Ed_paddling_mot.csv")
