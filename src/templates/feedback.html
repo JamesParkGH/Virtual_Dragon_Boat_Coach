@@ -154,30 +154,30 @@
                 </div>
                 {% endif %}
                 
-                <!-- Posture Feedback -->
-                {% if feedback.posture %}
+                <!-- Rotation Feedback -->
+                {% if feedback.rotation %}
                 <div class="feedback-category card">
-                    <div class="card-header" data-rating="{{ feedback.posture.rating|lower }}">
+                    <div class="card-header" data-rating="{{ feedback.rotation.rating|lower }}">
                         <div class="header-content">
-                            <h3><i class="fas fa-user"></i> Posture <span class="score-badge">{{ ((1 - feedback.posture.score) * 100)|int }}%</span></h3>
-                            <span class="rating rating-{{ feedback.posture.rating|lower }}">{{ feedback.posture.rating }}</span>
+                            <h3><i class="fas fa-sync-alt"></i> Rotation <span class="score-badge">{{ ((1 - feedback.rotation.score) * 100)|int }}%</span></h3>
+                            <span class="rating rating-{{ feedback.rotation.rating|lower }}">{{ feedback.rotation.rating }}</span>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="main-points">
-                            {% for point in feedback.posture.main_points %}
+                            {% for point in feedback.rotation.main_points %}
                                 <p><i class="fas fa-angle-right"></i> {{ point }}</p>
                             {% endfor %}
                         </div>
                         
-                        {% if feedback.posture.rating != 'Good' %}
+                        {% if feedback.rotation.rating != 'Good' %}
                             <div class="improvement-points">
                                 <h4><i class="fas fa-tools"></i> Improvement Points</h4>
                                 
                                 <div class="improvement-section">
                                     <h5><i class="fas fa-exclamation-triangle"></i> Limiting Factors</h5>
                                     <ul>
-                                        {% for factor in feedback.posture.improvement_points.limiting_factors %}
+                                        {% for factor in feedback.rotation.improvement_points.limiting_factors %}
                                             <li>{{ factor }}</li>
                                         {% endfor %}
                                     </ul>
@@ -186,7 +186,7 @@
                                 <div class="improvement-section">
                                     <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                     <ul>
-                                        {% for injury in feedback.posture.improvement_points.potential_injuries %}
+                                        {% for injury in feedback.rotation.improvement_points.potential_injuries %}
                                             <li>{{ injury }}</li>
                                         {% endfor %}
                                     </ul>
@@ -195,7 +195,7 @@
                                 <div class="improvement-section">
                                     <h5><i class="fas fa-lightbulb"></i> Technical Feedback</h5>
                                     <ul>
-                                        {% for tip in feedback.posture.improvement_points.technical_feedback %}
+                                        {% for tip in feedback.rotation.improvement_points.technical_feedback %}
                                             <li>{{ tip }}</li>
                                         {% endfor %}
                                     </ul>
@@ -204,7 +204,7 @@
                                 <div class="improvement-section">
                                     <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
                                     <ul>
-                                        {% for exercise in feedback.posture.improvement_points.corrective_exercises %}
+                                        {% for exercise in feedback.rotation.improvement_points.corrective_exercises %}
                                             <li>{{ exercise }}</li>
                                         {% endfor %}
                                     </ul>
