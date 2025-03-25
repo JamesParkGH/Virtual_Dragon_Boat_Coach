@@ -55,6 +55,11 @@
                                     </div>
                                     <div class="vdbc-coach-feedback-content">
                                         <p>"{{ user_session.coach_feedback }}"</p>
+                                        {% if user_session.feedback_timestamp %}
+                                            <div class="vdbc-feedback-timestamp">
+                                                <i class="fas fa-clock"></i> {{ user_session.feedback_timestamp }}
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             {% else %}

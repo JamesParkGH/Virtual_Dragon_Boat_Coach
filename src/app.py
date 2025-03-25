@@ -1,5 +1,4 @@
 import os
-import re
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import subprocess
@@ -8,7 +7,7 @@ import ast
 from decouple import config
 from utilsAPI import get_api_url
 from feedbackCompiler import compile_feedback
-import smtplib
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
@@ -27,7 +26,8 @@ def init_db():
         username TEXT NOT NULL,
         session_url TEXT NOT NULL,
         trial_name TEXT NOT NULL,
-        coach_feedback TEXT
+        coach_feedback TEXT,
+        feedback_timestamp TEXT
     )
     ''')
     
@@ -64,7 +64,7 @@ def home():
         cursor = conn.cursor()
         
         cursor.execute("""
-            SELECT id, username, session_url, trial_name, coach_feedback 
+            SELECT id, username, session_url, trial_name, coach_feedback, feedback_timestamp
             FROM shared_sessions 
             WHERE username = ?
             ORDER BY id DESC
@@ -367,6 +367,7 @@ def send_feedback():
     session_url = request.form.get('session_url', '').strip()
     trial_name = request.form.get('trial_name', '').strip()
     feedback = request.form.get('feedback', '').strip()
+    feedback_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     if not username or not feedback or not session_url or not trial_name:
         flash("Missing required fields")
@@ -383,9 +384,9 @@ def send_feedback():
         # Update the record with coach's feedback
         cursor.execute('''
             UPDATE shared_sessions
-            SET coach_feedback = ?
+            SET coach_feedback = ?, feedback_timestamp = ?
             WHERE username = ? AND session_url = ? AND trial_name = ?
-        ''', (feedback, username, session_url, trial_name))
+        ''', (feedback, feedback_timestamp, username, session_url, trial_name))
         
         conn.commit()
         success_message = f"Feedback saved successfully for {username}"

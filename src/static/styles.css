@@ -527,6 +527,25 @@ footer p {
   margin-top: 0.1rem;
 }
 
+.coach-session-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coach-trial-name {
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+}
+
+.coach-trial-name i {
+  color: var(--primary-color);
+}
+
 .vdbc-coach-feedback-header {
   padding: 0.5rem 1rem;
   font-weight: bold;
@@ -548,6 +567,24 @@ footer p {
 .vdbc-coach-feedback-content p {
   margin: 0;
   color: #444;
+}
+
+.vdbc-feedback-timestamp {
+  font-size: 0.8rem;
+  color: #777;
+  font-style: italic;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.vdbc-feedback-timestamp i {
+  color: #999;
 }
 
 /* No feedback message */
