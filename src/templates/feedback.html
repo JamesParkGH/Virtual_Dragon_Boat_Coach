@@ -7,22 +7,21 @@
         <p class="subtitle">Review your paddling technique report and analyze your results </p>
     </div>
     
-        {% if error %}
-            <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-        {% endif %}
+    {% if error %}
+        <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+    {% endif %}
 
-        <!-- Analysis Results -->
-        {% if image_filename %}
-            <div class="panel analysis-results">
-                <div class="panel-header">
-                    <h2><i class="fas fa-chart-line"></i> Analysis Results</h2>
-                </div>
-                <div class="panel-body">
-                    <img src="{{ url_for('static', filename='Feedback/' ~ image_filename) }}" alt="Analysis Result Graph" class="img-fluid">
-                </div>
+    <!-- Analysis Results -->
+    {% if image_filename %}
+        <div class="panel analysis-results">
+            <div class="panel-header">
+                <h2><i class="fas fa-chart-line"></i> Analysis Results</h2>
             </div>
-        {% endif %}
-    </div>
+            <div class="panel-body">
+                <img src="{{ url_for('static', filename='Feedback/' ~ image_filename) }}" alt="Analysis Result Graph" class="img-fluid">
+            </div>
+        </div>
+    {% endif %}
 
     <!-- Feedback Results -->
     {% if feedback %}
@@ -291,7 +290,7 @@
         </div>
         <div class="panel-body">
             <div class="form-controls">
-                <form action="/generate-graph" method="POST" id="feedbackForm">
+                <form id="feedbackForm">
                     <div class="form-group">
                         <label for="angle-name"><i class="fas fa-chart-line"></i> Select Angle to Graph</label>
                         <div class="input-button-group">
@@ -339,7 +338,9 @@
                                     <option value="lumbar_rotation">Lumbar Rotation</option>
                                 </optgroup>
                             </select>
-                            <button type="submit" class="btn btn-primary control-btn"><i class="fas fa-chart-bar"></i> Generate Graph</button>
+                            <button type="submit" class="btn btn-primary control-btn">
+                                <i class="fas fa-chart-bar"></i> Generate Graph
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -349,11 +350,22 @@
             </div>
         </div>
     </div>
+    
+    <!-- Graph container -->
+    <div id="graph-container" class="panel analysis-results" style="display: none;">
+        <div class="panel-header">
+            <h2><i class="fas fa-chart-line"></i> <span id="graph-title">Analysis Graph</span></h2>
+        </div>
+        <div class="panel-body graph-display">
+            <img id="graph-image" src="" alt="Analysis Result Graph" class="img-fluid">
+        </div>
+    </div>
 </div>
 
 <!-- Data Sharing Container -->
- <div class="container">
-    <h2>Share Data with Coach</h3>
+<div class="container">
+    <!-- Fixed h2 closing tag -->
+    <h2>Share Data with Coach</h2>
     <p>Enter your email to receive feedback from a coach on your analysis.</p>
     
     <form action="/share-data" method="POST">
@@ -754,5 +766,64 @@
         background-color: rgba(255, 255, 255, 0.3);
         color: white;
     }
-    </style>
+    .graph-display {
+        text-align: center;
+        padding: 1.5rem;
+        background-color: #f9f9f9;
+        border-radius: 0 0 10px 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .graph-display img {
+        max-width: 100%;  
+        width: 100%;  
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 1px solid #eee;
+        border-radius: 8px;
+    }
+    #graph-container {
+        margin: 2rem auto;
+        max-width: 100% !important;  
+        width: 100%;               
+    }
+    
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        width: 100%; 
+        max-width: 1200px;  
+        margin: 0 auto;    
+    }
+    
+    .dashboard-container + .container {
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+    }
+    
+    @media (min-width: 992px) {
+        #graph-container {
+            max-width: 90%;
+            margin: 0 auto;
+        }
+    }
+    
+    .loading-indicator {
+        display: inline-block;
+        margin-right: 8px;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% endblock %}
