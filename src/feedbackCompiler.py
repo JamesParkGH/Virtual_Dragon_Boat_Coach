@@ -181,7 +181,7 @@ def generate_paddle_angle_feedback(score):
     }
     
     # Use constants for the thresholds
-    if score > POSITIVE_ANGLE_SCORE:
+    if score <= POSITIVE_ANGLE_SCORE:
         feedback['rating'] = 'Good'
         feedback['main_points'] = [
             'You are maintaining a positive angle very well throughout your stroke.',
