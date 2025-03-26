@@ -171,7 +171,7 @@ def coach_login():
 
 @app.route('/logout')
 def logout():
-    session.pop('token', None)  # Remove token from session
+    session.clear()
     return redirect(url_for('login'))
 
 @app.route('/start-analyze', methods=['POST'])
