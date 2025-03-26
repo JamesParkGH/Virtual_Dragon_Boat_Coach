@@ -38,7 +38,6 @@
             {% if grouped_sessions %}
                 <div>
                     {% for username, sessions in grouped_sessions.items() %}
-                    {% for username, sessions in grouped_sessions.items() %}
                     <div class="container">
                         <h3>{{ username }}</h3>
                         {% for session in sessions %}
@@ -60,7 +59,6 @@
                         {% endfor %}
                     </div>
                 {% endfor %}
-                    {% endfor %}
                 </div>
             {% else %}
                 <p>No data shared yet.</p>
