@@ -18,9 +18,36 @@
     </form>
 
     <div id="loadingMessage" style="display:none;">
-        <div style="text-align: center; margin-top: 2rem;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i>
-            <p style="margin-top: 1rem;">Processing your paddling technique... Please wait.</p>
+        <div class="loading-container">
+            <div class="loading-header">
+                <!-- Dragon icon removed -->
+                <h3>Processing Your Technique</h3>
+            </div>
+            <p class="loading-text">Please wait while we analyze your paddling motion...</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-paddle">
+                    <i class="fas fa-rowing"></i>
+                </div>
+            </div>
+            
+            <div class="loading-steps">
+                <div class="step active">
+                    <i class="fas fa-file-import"></i>
+                    <span>Importing Data</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analyzing Motion</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Generating Feedback</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -82,11 +109,11 @@
     <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 1.5rem;">
         <div style="flex: 1; min-width: 250px;">
             <h3><i class="fas fa-upload"></i> 1. Upload Session</h3>
-            <p>Enter your OpenCap session URL and give it a name.</p>
+            <p>Enter your OpenCap session URL and your trial name.</p>
         </div>
         <div style="flex: 1; min-width: 250px;">
             <h3><i class="fas fa-chart-line"></i> 2. Analyze Technique</h3>
-            <p>Our system analyzes your paddling biomechanics.</p>
+            <p>Our system analyzes your paddling technique.</p>
         </div>
         <div style="flex: 1; min-width: 250px;">
             <h3><i class="fas fa-comments"></i> 3. Get Feedback</h3>
@@ -95,10 +122,177 @@
     </div>
 </div>
 
-<script>
-    // Show loading message when the form is submitted
-    document.getElementById('processForm').onsubmit = function() {
-        document.getElementById('loadingMessage').style.display = 'block';
+<style>
+    .loading-container {
+        text-align: center;
+        margin: 2.5rem auto;
+        padding: 2rem;
+        max-width: 600px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     }
-</script>
+    
+    .loading-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .loading-header h3 {
+        margin: 0;
+        color: #8B0000;
+        font-size: 1.5rem;
+    }
+    
+    .loading-text {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        color: #555;
+    }
+    
+    .progress-container {
+        position: relative;
+        margin: 2rem 0;
+        height: 30px;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 12px;
+        background-color: #e0e0e0;
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .progress-bar-fill {
+        position: absolute;
+        height: 100%;
+        background: linear-gradient(90deg, #8B0000, #bc0000);
+        width: 0%;
+        border-radius: 6px;
+        animation: progress-animation 10s forwards;
+    }
+    
+    .progress-paddle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 30px;
+        width: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: paddle-animation 10s forwards;
+    }
+    
+    .progress-paddle i {
+        color: #8B0000;
+        font-size: 1.1rem;
+        animation: paddle-row 1s infinite;
+    }
+    
+    .loading-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+    }
+    
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        padding: 0.7rem;
+        color: #999;
+    }
+    
+    .step i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .step span {
+        font-size: 0.9rem;
+        text-align: center;
+    }
+    
+    .step.active {
+        color: #8B0000;
+        font-weight: 500;
+    }
+    
+    @keyframes progress-animation {
+        0% { width: 0%; }
+        30% { width: 33%; }
+        60% { width: 66%; }
+        100% { width: 100%; }
+    }
+    
+    @keyframes paddle-animation {
+        0% { left: 0%; }
+        30% { left: calc(33% - 15px); }
+        60% { left: calc(66% - 15px); }
+        100% { left: calc(100% - 15px); }
+    }
+    
+    @keyframes paddle-row {
+        0% { transform: rotate(-10deg); }
+        50% { transform: rotate(10deg); }
+        100% { transform: rotate(-10deg); }
+    }
+    
+    .processing {
+        animation: processing-pulse 1.5s infinite, scale-pulse 1s infinite;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    @keyframes processing-pulse {
+        0% { background-color: #8B0000; }
+        50% { background-color: #6b0000; }
+        100% { background-color: #8B0000; }
+    }
+    
+    .loading-indicator {
+        display: inline-block;
+        margin-right: 8px;
+        animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        50% { transform: rotate(180deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .processing::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: translateX(-100%);
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+</style>
 {% endblock %}

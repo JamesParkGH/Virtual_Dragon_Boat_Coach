@@ -1,13 +1,129 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="resources-section">
-    <h1>Resources</h1>
-    <p>Here you'll find training materials, guides, and helpful tips to enhance your paddling experience.</p>
-    <ul>
-        <li><a href="#">Paddling Techniques Guide</a></li>
-        <li><a href="#">Injury Prevention Tips</a></li>
-        <li><a href="#">Competition Preparation Checklist</a></li>
-    </ul>
-</section>
+<div class="resource_container">
+    <!-- Sidebar Menu -->
+    <nav class="sidebar">
+        <h4>Contents</h4>
+        <ul>
+            <li><a href="#section1">Preparation</a></li>
+            <li><a href="#section2">Recording A Session with OpenCap</a>
+            <ul>
+                <li><a href="#section2-1">Set Up</a></li>
+                <li><a href="#section2-2">Calibration</a></li>
+                <li><a href="#section2-3">Recording</a></li>
+            </ul></li>
+            <li><a href="#section3">VDBC Website</a>
+            <ul>
+                <li><a href="#section3-1">Technique Analysis</a></li>
+                <li><a href="#section3-2">Feedback Breakdown</a></li>
+                <li><a href="#section3-3">Coach Page</a></li>
+            </ul></li>
+            <li><a href="#section4">Video Walkthrough</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="resource_content">
+        <section id="section1">
+            <h2>Preparation</h2>
+            <p>To use VDBC, prepare the following equipment:</p>
+            <ul class="resource_list">
+                <li>An OpenCap account. Users can register for free on the OpenCap official website: <a href="https://app.opencap.ai/login" target="_blank">https://app.opencap.ai/login</a> </li>
+                <li>Minimum of 2 iOS devices (iPhone or iPad) with functional cameras and the OpenCap mobile application installed.</li>
+                <li>Tripods with mounts compatible with the iOS devices being used.</li>
+                <li>Checkerboard for calibration. A picture of a checkerboard on a tablet or laptop will suffice as long as the screen does not produce any glare or reflections. A standard checkerboard can be found here: <a href="https://cdn.prod.website-files.com/62468717bed6b421c89bbf36/6258dd3518244b061c1b02f5_Checkerboard_4x5_35mm.pdf" target="_blank">Checkerboard</a></li>
+                <li>Laptop with internet connection capabilities.</li>
+            </ul>
+            <p>**Note: Recording sessions should be performed with at least two people: one will be the “paddler” who will have their technique assessed and the other will be responsible for operating OpenCap.</p>
+        </section>
+
+        <section id="section2">
+            <h2>Recording A Session with OpenCap</h2>
+            <section id="section2-1">
+                <h3>Set Up</h3>
+                <ol class="resource_list">
+                    <li>From the OpenCap homepage, select the ‘Start Recording’ button.</li>
+                    <li>Scan the session’s QR code through the <strong>OpenCap mobile application</strong> on iOS devices being used for filming.</li>
+                    <li>Mount the cameras onto the tripods and place them 1-2 meters from the ergometer at 30-45° off the line facing forward from the paddler.</li>
+                    <ul class="resource_list">
+                        <li>Try to minimize the number of people in the background of each camera’s field of view.</li>
+                        <li>Ensure that the cameras will capture all the body parts of the paddler while they are paddling.</li>
+                    </ul>
+                </ol>
+            </section>
+            <br>
+
+            <section id="section2-2">
+                <h3>Calibraiton</h3>
+                <p>Following video is a general OpenCap calibration tutorial:</p>
+                <iframe width="420" height="315" src="https://www.youtube.com/embed/T6TkFLEfQ0Y"></iframe>
+                <ol class="resource_list">
+                    <li>Place the checkerboard in the field of view of both cameras. This can be on the seat of the ergometer and facing directly forwards.</li>
+                        <ul class="resource_list"><li>Note: The checkerboard must be placed horizontally and should NOT point directly at any of the cameras.</li></ul>
+                    <li>Input the checkerboard parameters.</li>
+                        <ul class="resource_list"><li>The <strong>default checkerboard (provided)</strong> is 4 rows, 5 columns and 35mm square size</li></ul>
+                    <li>Select the ‘Calibrate’ option. You may need to wait for a few moments before getting a response from the system.</li>
+                    <li>If the calibration was successful, you will be brought to a new page. If it failed, carefully review the previous instructions and try again.</li>    
+                </ol>
+            </section>
+            <br>
+
+            <section id="section2-3">
+                <h3>Recording</h3>
+                <p>Following video is a general OpenCap recording tutorial:</p>
+                <iframe width="420" height="315" src="https://www.youtube.com/embed/h4jaSZwcrm8"></iframe>
+                <ol class="resource_list">
+                    <li>Enter the paddler’s basic information including height (m), weight (kg), gender and an identifier for this paddler.</li>
+                    <li>In the ‘Data sharing agreement’ section, select any of the options in the dropdown according to your preference.</li>
+                    <li>Have the paddler stand in a neutral pose in the field of view of both cameras to record a 2 second neutral pose video. They should be standing at approximately where the calibration checkerboard was placed (you will need to move the machine out of the way).</li>
+                        <ul class="resource_list"><li>Ensure the paddler does not move until a pop-up appears on the screen indicating they can do so.</li></ul>
+                    <li>If successful you will be brought to the next page. Otherwise, carefully review the previous instructions and try again.</li>
+                    <li>On the new page, start recording a new trial by entering a trial name in the field near the top-left corner of the page.</li>
+                    <li>Have the paddler begin taking strokes and select ‘Start recording’ after a few seconds to give them time to get accustomed to the machine. Stop the recording after around 10 to 15 seconds.</li>
+                        <ul class="resource_list"><li>Note: While recording the paddler CANNOT switch sides or stop paddling. If this occurs, please start a new trial</li></ul>
+                    <li>After the recording is stopped, wait for the trial to finish processing. This may take some time. When finished, the coloured circle beside the trial name should change from yellow to green.</li>
+                    <li>From the ‘Share session’ option on the left side of the page, indicate that you wish to share the session URL publicly. This URL will be used later.</li>
+                </ol>
+            </section>
+        </section>
+
+        <section id="section3">
+            <h2>VDBC Website</h2>
+            <section id="section3-1">
+                <h3>Technique Analysis</h3>
+                <ol class="resource_list">
+                    <li>From the VDBC login page, enter your OpenCap credentials to log in.</li>
+                    <li>Input the session URL and the trial name that you wish to process, then select ‘Start Analysis’.</li>
+                    <li>Your feedback will be provided in 4 sections: top arm, bottom arm, general posture and paddle angle.</li>
+                    <li>To review the videos of your paddling and the skeleton simulation of your technique, select the ‘Run OpenCap’ button at the bottom of the page. This will bring you to the OpenCap page of the corresponding trial.</li>
+                    <li>To plot joint angle graphs, select the feedback point of interest from the dropdown menu, then click the ‘Generate Graphs’ button. This will produce the relevant graphs of the data collected for that technical point.</li>
+                </ol>
+            </section>
+            <br>
+
+            <section id="section3-2">
+                <h3>Feedback Breakdown</h3>
+                <p>Your paddling is broken down into 4 categories: top arm, bottom arm, general posture and paddle angle. For each category, there are three ranks: Good, Moderate, and Bad.</p>
+                <p>The feedback section begins with a general comment on your paddling technique, highlighting both strengths and areas for improvement based on the analyzed session. Below this, you will find personalized tips on how to enhance your paddling skill if your technique is rated as Moderate or Poor. Additionally, the system provides warnings about potential injuries associated with your current paddling form, helping you take proactive steps to reduce risks of injury.</p>
+            </section>
+
+            <section id="section3-3">
+                <h3>Coach Page</h3>
+                <p>This section is exclusively for coaches. Each coach will have unique login credentials, allowing them to access and review practice sessions submitted by paddlers. Coaches can analyze the sessions and provide personalized feedback to help paddlers improve their technique and performance.</p>
+                <ol class="resource_list">
+                    <li>All the sessions submitted by paddlers that are not reviewed will be shown in the request panel.</li>
+                    <li>By clicking on the Review button, the session feedback from the VDBC system will be displayed. Below the feedback is a coach feedback input section where coach can input their feedback to the session.</li>
+                    <li>Once a session is reviewed by coach, it will be moved to the reviewed panel.</li>
+                </ol>
+            </section>
+        </section>
+
+        <section id="section4">
+            <h2>Video Walkthrough</h2>
+            <p>This video provides a complete and detailed walkthrough of the VDBC system. !!!!!!!!!!!!!!!Remember to replace the link with our own video!!!!!!!!!!!!!!!!</p>
+            <iframe width="420" height="315" src="https://www.youtube.com/embed/h4jaSZwcrm8"></iframe>
+        </section>
+    </main>
+</div>
 {% endblock %}

@@ -8,6 +8,9 @@ from decouple import config
 from utilsAPI import get_api_url
 from feedbackCompiler import compile_feedback
 from datetime import datetime
+import smtplib
+from flask import jsonify
+import time
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
@@ -36,6 +39,43 @@ def init_db():
 
 # Call this function when the app starts
 init_db()
+
+# Dictionary mapping angle values to display names
+ANGLE_DISPLAY_NAMES = {
+    "pelvis_tilt": "Pelvis Tilt",
+    "pelvis_list": "Pelvis List",
+    "pelvis_rotation": "Pelvis Rotation",
+    "pelvis_tx": "Pelvis TX",
+    "pelvis_ty": "Pelvis TY",
+    "pelvis_tz": "Pelvis TZ",
+    "hip_flexion_r": "Right Hip Flexion",
+    "hip_adduction_r": "Right Hip Adduction",
+    "hip_rotation_r": "Right Hip Rotation",
+    "knee_angle_r": "Right Knee Angle",
+    "ankle_angle_r": "Right Ankle Angle",
+    "subtalar_angle_r": "Right Subtalar Angle",
+    "mtp_angle_r": "Right MTP Angle",
+    "arm_flex_r": "Right Arm Flexion",
+    "arm_add_r": "Right Arm Adduction",
+    "arm_rot_r": "Right Arm Rotation",
+    "elbow_flex_r": "Right Elbow Flexion",
+    "pro_sup_r": "Right Pro Sup",
+    "hip_flexion_l": "Left Hip Flexion",
+    "hip_adduction_l": "Left Hip Adduction",
+    "hip_rotation_l": "Left Hip Rotation",
+    "knee_angle_l": "Left Knee Angle",
+    "ankle_angle_l": "Left Ankle Angle",
+    "subtalar_angle_l": "Left Subtalar Angle",
+    "mtp_angle_l": "Left MTP Angle",
+    "arm_flex_l": "Left Arm Flexion",
+    "arm_add_l": "Left Arm Addion",
+    "arm_rot_l": "Left Arm Rotation",
+    "elbow_flex_l": "Left Elbow Flexion",
+    "pro_sup_l": "Left Pro Sup",
+    "lumbar_extension": "Lumbar Extension",
+    "lumbar_bending": "Lumbar Bending",
+    "lumbar_rotation": "Lumbar Rotation"
+}
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -501,7 +541,15 @@ def feedback():
     trial_name = session.get('trial_name', '')
     session_url = session.get('session_url')
 
-    opencap_url = f"https://app.opencap.ai/session/{session_id}"
+    opencap_url = f"https://app.opencap.ai/session/{session.get('session_id', '')}"
+    
+    if 'graph_filename' in session:
+        session.pop('graph_filename', None)
+
+    return render_template("feedback.html", 
+                          analysis_result=analysis_result, 
+                          feedback=feedback_data,
+                          opencap_url=opencap_url)
 
     # Check for coach feedback
     coach_feedback = None
@@ -536,7 +584,7 @@ def generate_graph():
     angle_name = request.form.get('angle_name')
 
     if not angle_name or angle_name.strip() == '':
-        return render_template("feedback.html", error="Please select an angle name.")
+        return jsonify({'success': False, 'error': "Please select an angle name."})
     
     try:
         # Plot the angle
@@ -547,16 +595,23 @@ def generate_graph():
             angle_name.strip()  # Pass angle name to plotAngle
         ], check=True)
         
-        # Add the graph to the session
-        session['graph_filename'] = f"{session['trial_name']}_{angle_name.strip()}.png"
+        # Generate graph filename
+        graph_filename = f"{session['trial_name']}_{angle_name.strip()}_plot.png"
+        
+        # Include the timestamp to prevent browser caching
+        timestamp = int(time.time())
+        
+        return jsonify({
+            'success': True, 
+            'graph_url': url_for('static', filename=f'graphs/{graph_filename}') + f'?t={timestamp}',
+            'angle_name': ANGLE_DISPLAY_NAMES.get(angle_name.strip(), angle_name.strip())
+        })
         
     except subprocess.CalledProcessError as e:
-        return render_template("feedback.html", 
-                              error=f"There was an error generating the graph: {str(e)}",
-                              feedback=session.get('feedback', None),
-                              analysis_result=session.get('analysis_result', ''))
-
-    return redirect(url_for('feedback'))
+        return jsonify({
+            'success': False, 
+            'error': f"There was an error generating the graph: {str(e)}"
+        })
 
 @app.route('/run-opensim', methods=['POST'])
 def run_opensim():
