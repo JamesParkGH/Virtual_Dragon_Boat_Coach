@@ -16,7 +16,9 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                    {% if request.path != url_for('home') %}
+                        <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                    {% endif %}
                     <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
                     <li><a href="{{ url_for('resources') }}"><i class="fas fa-book"></i> Resources</a></li>
                     {% if 'token' in session %}
