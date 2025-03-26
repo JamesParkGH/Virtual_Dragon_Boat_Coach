@@ -44,15 +44,18 @@
                         <h3>{{ username }}</h3>
                         {% for session in sessions %}
                             <div class="user-session">
-                                <p><strong>Email:</strong> {{ session.email }}</p>
                                 <form action="{{ url_for('coach_view_analysis') }}" method="POST">
-                                    <input type="hidden" name="username" value="{{ username }}">
-                                    <input type="hidden" name="user_email" value="{{ session.email }}">
-                                    <input type="hidden" name="session_url" value="{{ session.session_url }}">
-                                    <input type="hidden" name="trial_name" value="{{ session.trial_name }}">
-                                    <button type="submit" class="btn-view">
-                                        <i class="fas fa-chart-bar"></i> View Analysis
-                                    </button>
+                                    <div class="coach-session-info">
+                                        <div class="coach-trial-name">
+                                            <i class="fas fa-tag"></i> {{ session.trial_name }}
+                                        </div>
+                                        <input type="hidden" name="username" value="{{ username }}">
+                                        <input type="hidden" name="session_url" value="{{ session.session_url }}">
+                                        <input type="hidden" name="trial_name" value="{{ session.trial_name }}">
+                                        <button type="submit" class="btn-view">
+                                            <i class="fas fa-chart-bar"></i> View Analysis
+                                        </button>
+                                    </div>
                                 </form>
                             </div>
                         {% endfor %}

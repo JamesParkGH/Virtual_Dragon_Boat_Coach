@@ -31,6 +31,52 @@
     {% endif %}
 </div>
 
+{% if 'username' in session %}
+    <div class="container">
+        <h2><i class="fas fa-history"></i> Your Previous Sessions</h2>
+        
+        {% if user_sessions %}
+            <div class="vdbc-session-cards">
+                {% for user_session in user_sessions %}
+                    <div class="vdbc-session-card">
+                        <div class="vdbc-session-header">
+                            <h3><i class="fas fa-file-alt"></i> {{ user_session.trial_name }}</h3>
+                            <div class="vdbc-session-url">
+                                <a href="{{ user_session.session_url }}" target="_blank">
+                                    <i class="fas fa-link"></i> View Session
+                                </a>
+                            </div>
+                        </div>
+                        <div class="vdbc-session-body">
+                            {% if user_session.coach_feedback %}
+                                <div class="vdbc-coach-feedback-container">
+                                    <div class="vdbc-coach-feedback-header">
+                                        <i class="fas fa-comment-dots"></i> Coach Feedback:
+                                    </div>
+                                    <div class="vdbc-coach-feedback-content">
+                                        <p>"{{ user_session.coach_feedback }}"</p>
+                                        {% if user_session.feedback_timestamp %}
+                                            <div class="vdbc-feedback-timestamp">
+                                                <i class="fas fa-clock"></i> {{ user_session.feedback_timestamp }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="vdbc-no-feedback">
+                                    <i class="fas fa-exclamation-circle"></i> No coach feedback yet
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="vdbc-no-sessions">You haven't analyzed any paddling sessions yet.</p>
+        {% endif %}
+    </div>
+{% endif %}
+
 <div class="container">
     <h2>How It Works</h2>
     <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 1.5rem;">
