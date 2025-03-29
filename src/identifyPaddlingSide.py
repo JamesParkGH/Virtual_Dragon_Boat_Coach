@@ -18,8 +18,8 @@ def identifyPaddlingSide(trc_file_path):
         return right_side
     except Exception as e:
         print(f"Error reading or processing file {trc_file_path}: {e}")
-        sys.exit(1)
-
+        #sys.exit(1)
+"""
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python identifyPaddlingSide.py <trc_file_path>")
@@ -34,4 +34,4 @@ if __name__ == "__main__":
 
     # Identify paddling side
     right_side = identifyPaddlingSide(trc_file_path)
-    print(f"Paddling on the right side: {right_side}")
+    print(f"Paddling on the right side: {right_side}")"""

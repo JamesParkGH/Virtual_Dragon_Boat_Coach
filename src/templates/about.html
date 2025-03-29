@@ -2,9 +2,49 @@
 
 {% block content %}
 <section class="about-section">
-    <h1>About VDBC</h1>
-    <p>
-        VDBC is a web-based application designed for dragon boat paddlers to assess their technique using 3D motion data. By leveraging video-based pose tracking and motion analysis, VDBC delivers consistent feedback to help paddlers refine their form, minimize the risk of common injuries, and enhance performance. Whether you are new to the sport or an experienced athlete, you all could effectively utilize VDBC for skill development and training optimization.
-    </p>
+    <h1>About Virtual Dragon Boat Coach (VDBC)</h1>
+        <h2>What is VDBC</h2>
+        <p>
+            VDBC is a web-based application designed for dragon boat paddlers to assess their technique using 3D motion data. 
+            By leveraging video-based pose tracking and motion analysis, VDBC delivers consistent feedback to help paddlers refine their form, 
+            minimize the risk of common injuries, and enhance performance. Whether you are new to the sport or an experienced athlete, you all could 
+            effectively utilize VDBC for skill development and training optimization.
+        </p>
+
+        <h2>Motivation behind VDBC</h2>
+        <p>
+            University dragon boat clubs welcome new members and host practice events throughout the year. However, some clubs struggle with a lack of 
+            high-quality feedback during the off-season, as coaches might be unavailable during the school year due to different reasons. As a result, 
+            members must rely on feedback from individuals with limited expertise, increasing the risk of developing poor techniques. This can lead to 
+            injuries such as shoulder, wrist, and lower back strains while also hindering performance.
+        </p>
+        <p>
+            VDBC is designed to bridge this gap by enhancing communication between club members, executives, and the head coach while providing structured, 
+            individualized feedback to improve paddling technique. By refining technique, paddlers can reduce injury risk and enhance performance, ultimately 
+            contributing to the club’s financial and competitive growth.
+        </p>
+
+        <h2>How Does VDBC Work</h2>
+        <p>
+            VDBC consists of two main components: the motion tracking component and the performance (technique) analysis component. The motion tracking component 
+            captures data from a paddling practice session, while the performance analysis component evaluates the session and provides feedback.
+        </p>
+        <p>
+            Motion tracking is conducted using OpenCap, a third-party software that records joint coordinates and angles through a dual-camera setup. This data is then saved for analysis.
+        </p>
+        <p>
+            To use the technique analyzer on the VDBC website, users share the URL of their recorded session, granting the analyzer access to the session data. 
+            VDBC’s algorithm then examines the paddling motion, focusing on the arms, shoulders and hips, as well as overall posture and paddling angles. The results 
+            are presented on the VDBC website, offering detailed insights into both correct techniques and areas for improvement. For techniques that need refinement, 
+            the system provides specific recommendations along with information on potential injuries associated with improper form.
+        </p>
+        <p>
+            For more details on using VDBC, please visit the <a href="/resources">Resource page</a> for step by step guide.
+        </p>
+
+        <h2>VDBC Development Team</h2>
+        <p>
+            2025 IBEHS 5P06A Team 25
+        </p>
 </section>
 {% endblock %}
