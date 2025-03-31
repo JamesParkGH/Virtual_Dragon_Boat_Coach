@@ -99,5 +99,5 @@ if __name__ == "__main__":
     trc_file = sys.argv[1]
     mot_file = sys.argv[2]
 
-    scores = techniqueAnalyzer(trc_file, mot_file)
+    scores = techniqueAnalyzer(os.path.abspath(os.path.join(os.path.dirname(__file__), "\\Unit_tests\\Test_trc.csv")), mot_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "\\Unit_tests\\Test_mot.csv")))
     print(scores)

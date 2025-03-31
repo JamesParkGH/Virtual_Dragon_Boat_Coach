@@ -187,7 +187,7 @@ def generate_paddle_angle_feedback(score):
             'You are maintaining a positive angle very well throughout your stroke.',
             'This means that the force you are producing will be effectively applied when moving the boat.'
         ]
-    elif score >= 0.085:  # This value could also be moved to constants.py
+    elif score <= 0.7:  # This value could also be moved to constants.py
         feedback['rating'] = 'Moderate'
         feedback['main_points'] = [
             'Your paddle angle is positive for part of your stroke but becomes negative a little too soon.',
