@@ -75,7 +75,7 @@ def techniqueAnalyzer(trc_file, mot_file):
         positive_ratio, small_bodied_count = paddleAngleAnalyzer(trc_df, mot_df, frame_l, frame_u, stroke_phases, bottom_wrist_x_index, top_wrist_x_index)
 
         paddle_angle_ratios.append(positive_ratio)
-        if small_bodied_count and positive_ratio > POSITIVE_ANGLE_SCORE:
+        if small_bodied_count or positive_ratio < POSITIVE_ANGLE_THRESHOLD:
             negative_count += 1
 
     ##############################################################
