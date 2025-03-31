@@ -141,7 +141,6 @@ h1 {
 h2 {
   font-size: 1.8rem;
   color: var(--secondary-color);
-  margin-top: 1.5rem;
   margin-bottom: 1rem;
   font-weight: 600;
 }
@@ -429,6 +428,181 @@ footer p {
     margin-bottom: 0;  
   }
 
+
+/* Session list container */
+.vdbc-session-list {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.vdbc-session-list h2 {
+  margin-top: 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Session cards layout - changed from grid to vertical column */
+.vdbc-session-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Individual session card - takes full width */
+.vdbc-session-card {
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.vdbc-session-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Session card header */
+.vdbc-session-header {
+  padding: 1rem;
+  background-color: white;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vdbc-session-url {
+  margin: 0;
+}
+
+.vdbc-session-url a {
+  background-color: white;
+  color: var(--primary-color);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.vdbc-session-url a:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+.vdbc-session-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: black
+}
+
+/* Session card body */
+.vdbc-session-body {
+  padding: 1rem;
+  padding-top: 0;
+}
+
+/* Coach feedback styling */
+.vdbc-coach-feedback-container {
+  background-color: #fff2f0;
+  border-radius: 6px;
+  padding: 0.5rem 0;
+  margin-top: 0.1rem;
+}
+
+.coach-session-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coach-trial-name {
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+}
+
+.coach-trial-name i {
+  color: var(--primary-color);
+}
+
+.vdbc-coach-feedback-header {
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vdbc-coach-feedback-header i {
+  color: black
+}
+
+.vdbc-coach-feedback-content {
+  padding: 0 1rem 0.5rem 1rem;
+  font-style: italic;
+}
+
+.vdbc-coach-feedback-content p {
+  margin: 0;
+  color: #444;
+}
+
+.vdbc-feedback-timestamp {
+  font-size: 0.8rem;
+  color: #777;
+  font-style: italic;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  justify-content: flex-end;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.vdbc-feedback-timestamp i {
+  color: #999;
+}
+
+/* No feedback message */
+.vdbc-no-feedback {
+  margin-top: 1rem;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* No sessions message */
+.vdbc-no-sessions {
+  color: #666;
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
 /* Resource Page */
 .resource_container {
   display: flex;
@@ -489,8 +663,6 @@ footer p {
   padding-inline-start: 1.5rem;
 }
 
-/* About Page */
-
 /* Responsive Styles */
 @media (max-width: 768px) {
   .header-content {
@@ -526,4 +698,25 @@ footer p {
     flex-direction: column;
     gap: 0.5rem;
   }
+}
+
+.score-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  font-weight: 600;
+}
+
+.card-header[data-rating="good"] .score-badge {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.card-header[data-rating="moderate"] .score-badge {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.card-header[data-rating="bad"] .score-badge {
+  background-color: rgba(255, 255, 255, 0.3);
 }

@@ -16,7 +16,6 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
                     <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
                     <li><a href="{{ url_for('resources') }}"><i class="fas fa-book"></i> Resources</a></li>
                     <li><a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
@@ -39,26 +38,27 @@
             {% if grouped_sessions %}
                 <div>
                     {% for username, sessions in grouped_sessions.items() %}
-                    {% for username, sessions in grouped_sessions.items() %}
                     <div class="container">
                         <h3>{{ username }}</h3>
                         {% for session in sessions %}
                             <div class="user-session">
-                                <p><strong>Email:</strong> {{ session.email }}</p>
                                 <form action="{{ url_for('coach_view_analysis') }}" method="POST">
-                                    <input type="hidden" name="username" value="{{ username }}">
-                                    <input type="hidden" name="user_email" value="{{ session.email }}">
-                                    <input type="hidden" name="session_url" value="{{ session.session_url }}">
-                                    <input type="hidden" name="trial_name" value="{{ session.trial_name }}">
-                                    <button type="submit" class="btn-view">
-                                        <i class="fas fa-chart-bar"></i> View Analysis
-                                    </button>
+                                    <div class="coach-session-info">
+                                        <div class="coach-trial-name">
+                                            <i class="fas fa-tag"></i> {{ session.trial_name }}
+                                        </div>
+                                        <input type="hidden" name="username" value="{{ username }}">
+                                        <input type="hidden" name="session_url" value="{{ session.session_url }}">
+                                        <input type="hidden" name="trial_name" value="{{ session.trial_name }}">
+                                        <button type="submit" class="btn-view">
+                                            <i class="fas fa-chart-bar"></i> View Analysis
+                                        </button>
+                                    </div>
                                 </form>
                             </div>
                         {% endfor %}
                     </div>
                 {% endfor %}
-                    {% endfor %}
                 </div>
             {% else %}
                 <p>No data shared yet.</p>

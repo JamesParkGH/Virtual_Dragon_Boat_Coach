@@ -16,7 +16,21 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                    {% if 'token' in session %}
+                        {% if session.get('position') == 'coach' %}
+                            {% if request.path != url_for('coach_dashboard') %}
+                                <li><a href="{{ url_for('coach_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                            {% endif %}
+                        {% elif session.get('position') != 'coach' %}
+                            {% if request.path != url_for('home') and request.path != url_for('index') %}
+                                <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% else %}
+                        {% if request.path != url_for('login') and request.path != url_for('index') %}
+                            <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                        {% endif %}
+                    {% endif %}
                     <li><a href="{{ url_for('about') }}"><i class="fas fa-info-circle"></i> About</a></li>
                     <li><a href="{{ url_for('resources') }}"><i class="fas fa-book"></i> Resources</a></li>
                     {% if 'token' in session %}
@@ -32,5 +46,7 @@
     <footer>
         <p>&copy; 2025 Virtual Dragon Boat Coach. All rights reserved.</p>
     </footer>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
