@@ -467,7 +467,6 @@ footer p {
   display: block;
   padding: 8px;
   border-radius: 5px;
-  background: #d6cfcf;
 }
 
 .sidebar ul li a:hover {
@@ -489,6 +488,9 @@ footer p {
 .resource_list {
   padding-inline-start: 1.5rem;
 }
+
+/* About Page */
+
 /* Responsive Styles */
 @media (max-width: 768px) {
   .header-content {
