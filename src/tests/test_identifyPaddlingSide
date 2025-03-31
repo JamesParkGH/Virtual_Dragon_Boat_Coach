@@ -1,0 +1,22 @@
+import unittest
+from unittest.mock import patch, mock_open
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from identifyPaddlingSide import identifyPaddlingSide
+
+class TestidentifyPaddlingSide(unittest.TestCase):
+
+    @patch("builtins.open", new_callable=mock_open, read_data="")
+    def test_get_available_angles_empty_file(self, mock_file):
+        #Test if identifyPaddlingSide handles an empty file input
+        with self.assertRaises(IndexError):
+            identifyPaddlingSide("dummy.csv")
+
+    def test_get_available_angles_file_missing(self):
+        #Test if function raises an error for a missing file input
+        with self.assertRaises(FileNotFoundError):
+            identifyPaddlingSide("nonexistent.csv")
+
+if __name__ == "__main__":
+    unittest.main()

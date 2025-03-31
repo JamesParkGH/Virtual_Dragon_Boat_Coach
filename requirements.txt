@@ -2,9 +2,9 @@ flask
 requests
 python-decouple
 ultralytics
+google-api-python-client
 opencv-python
 numpy
 matplotlib
 scipy
-google-api-python-client
 gunicorn

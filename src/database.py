@@ -15,8 +15,7 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL,
         session_url TEXT NOT NULL,
-        trial_name TEXT NOT NULL,
-        email TEXT
+        trial_name TEXT NOT NULL
     )
     ''')
     

@@ -68,7 +68,7 @@ def get_available_angles(csv_file_path):
         angles = [h for h in headers if h != 'time']
         return angles
 
-def plot_filtered_angle(csv_file_path, angle, output_dir, sigma=2):
+def plot_filtered_angle(csv_file_path, angle, session_id, trial_name, sigma=2):
     # Load and filter data
     time, angle_data = load_angle_data(csv_file_path, angle)
     filtered_data = filter_angle_data(angle_data, sigma)
@@ -86,17 +86,29 @@ def plot_filtered_angle(csv_file_path, angle, output_dir, sigma=2):
     plt.legend()
     plt.grid(True, alpha=0.3)
     
-    # Ensure output directory exists
-    os.makedirs(output_dir, exist_ok=True)
+    # Save to static folder for web access
+    static_dir = os.path.join(os.getcwd(), 'static', 'graphs')
+    os.makedirs(static_dir, exist_ok=True)
     
-    # Save the plot
-    plot_filename = os.path.join(output_dir, f'{angle}_plot.png')
+    # Save with standard naming convention
+    plot_filename = os.path.join(static_dir, f'{trial_name}_{angle}_plot.png')
     plt.savefig(plot_filename)
-    
-    # Show the plot
-    plt.show()
+    plt.close()  # Close the figure to free memory
     
     print(f"Plot saved to: {plot_filename}")
+    
+    data_folder = os.path.join('Data', f'OpenCapData_{session_id}', 'OpenSimData', 'Kinematics')
+    os.makedirs(data_folder, exist_ok=True)
+    data_plot_filename = os.path.join(data_folder, f'{trial_name}_{angle}_plot.png')
+    plt.figure(figsize=(10, 6))
+    plt.plot(time, filtered_data, label=display_name, linewidth=2)
+    plt.xlabel('Time (s)')
+    plt.ylabel(f'{display_name} (degrees)')
+    plt.title(f'The {display_name} vs Time')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.savefig(data_plot_filename)
+    plt.close()
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
@@ -126,4 +138,4 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Plot the specified angle with filtering and save the plot
-    plot_filtered_angle(csv_file_path, angle_name, kinematics_dir)
+    plot_filtered_angle(csv_file_path, angle_name, session_id, trial_name)

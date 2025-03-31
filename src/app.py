@@ -1,5 +1,4 @@
 import os
-import re
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import subprocess
@@ -8,20 +7,15 @@ import ast
 from decouple import config
 from utilsAPI import get_api_url
 from feedbackCompiler import compile_feedback
+from datetime import datetime
 import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from flask import jsonify
+import time
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for session management
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vdbc.db')
-EMAIL_CONFIG = {
-    'SMTP_SERVER': "smtp.gmail.com",  # Change as needed
-    'SMTP_PORT': 587,  # For TLS
-    'SENDER_EMAIL': "your-app-email@example.com",  # Replace with your app's email
-    'SENDER_PASSWORD': "your-app-password"  # Replace with app password
-}
 
 def init_db():
     """Initialize the database with minimal tables."""
@@ -32,10 +26,11 @@ def init_db():
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS shared_sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
+        username TEXT NOT NULL,
         session_url TEXT NOT NULL,
         trial_name TEXT NOT NULL,
-        email TEXT NOT NULL
+        coach_feedback TEXT,
+        feedback_timestamp TEXT
     )
     ''')
     
@@ -44,6 +39,43 @@ def init_db():
 
 # Call this function when the app starts
 init_db()
+
+# Dictionary mapping angle values to display names
+ANGLE_DISPLAY_NAMES = {
+    "pelvis_tilt": "Pelvis Tilt",
+    "pelvis_list": "Pelvis List",
+    "pelvis_rotation": "Pelvis Rotation",
+    "pelvis_tx": "Pelvis TX",
+    "pelvis_ty": "Pelvis TY",
+    "pelvis_tz": "Pelvis TZ",
+    "hip_flexion_r": "Right Hip Flexion",
+    "hip_adduction_r": "Right Hip Adduction",
+    "hip_rotation_r": "Right Hip Rotation",
+    "knee_angle_r": "Right Knee Angle",
+    "ankle_angle_r": "Right Ankle Angle",
+    "subtalar_angle_r": "Right Subtalar Angle",
+    "mtp_angle_r": "Right MTP Angle",
+    "arm_flex_r": "Right Arm Flexion",
+    "arm_add_r": "Right Arm Adduction",
+    "arm_rot_r": "Right Arm Rotation",
+    "elbow_flex_r": "Right Elbow Flexion",
+    "pro_sup_r": "Right Pro Sup",
+    "hip_flexion_l": "Left Hip Flexion",
+    "hip_adduction_l": "Left Hip Adduction",
+    "hip_rotation_l": "Left Hip Rotation",
+    "knee_angle_l": "Left Knee Angle",
+    "ankle_angle_l": "Left Ankle Angle",
+    "subtalar_angle_l": "Left Subtalar Angle",
+    "mtp_angle_l": "Left MTP Angle",
+    "arm_flex_l": "Left Arm Flexion",
+    "arm_add_l": "Left Arm Addion",
+    "arm_rot_l": "Left Arm Rotation",
+    "elbow_flex_l": "Left Elbow Flexion",
+    "pro_sup_l": "Left Pro Sup",
+    "lumbar_extension": "Lumbar Extension",
+    "lumbar_bending": "Lumbar Bending",
+    "lumbar_rotation": "Lumbar Rotation"
+}
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -61,7 +93,29 @@ def index():
 def home():
     if 'token' not in session:
         return redirect(url_for('login'))
-    return render_template("index.html")
+    
+    username = session.get('username', '')
+    user_sessions = []
+    
+    # Fetch user's sessions from the database
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id, username, session_url, trial_name, coach_feedback, feedback_timestamp
+            FROM shared_sessions 
+            WHERE username = ?
+            ORDER BY id DESC
+        """, (username,))
+        
+        user_sessions = cursor.fetchall()
+        conn.close()
+    except Exception as e:
+        flash(f"Error retrieving your sessions: {str(e)}")
+    
+    return render_template("index.html", user_sessions=user_sessions)
 
 @app.route('/about')
 def about():
@@ -70,6 +124,10 @@ def about():
 @app.route('/resources')
 def resources():
     return render_template("resources.html")
+
+@app.route('/privacy_policy')
+def privacy_policy():
+    return render_template("privacy_policy.html")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -117,7 +175,7 @@ def coach_login():
 
 @app.route('/logout')
 def logout():
-    session.pop('token', None)  # Remove token from session
+    session.clear()
     return redirect(url_for('login'))
 
 @app.route('/start-analyze', methods=['POST'])
@@ -127,6 +185,7 @@ def start_analyze():
 
     session_url = request.form.get('session_url')
     trial_name = request.form.get('trial_name')
+    username = session.get('username', 'Unknown')
 
     if not session_url or session_url.strip() == '':
         return render_template("index.html", error="Please enter a valid session URL.")
@@ -195,6 +254,38 @@ def start_analyze():
             session['feedback'] = feedback_data
         except Exception as e:
             flash(f"Warning: Could not generate feedback: {str(e)}")
+        
+        #save to database after analysis
+        try:
+            # Store in database
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+
+            # Check if an entry already exists
+            cursor.execute("""
+                SELECT * FROM shared_sessions 
+                WHERE username = ? AND session_url = ? AND trial_name = ?
+            """, (username, session_url, trial_name))
+            existing_entry = cursor.fetchone()
+            
+            if existing_entry:
+                # Update the existing entry without touching the coach_feedback
+                cursor.execute('''
+                    UPDATE shared_sessions 
+                    SET session_url = ?, trial_name = ?
+                    WHERE username = ?
+                ''', (session_url, trial_name, username))
+            else:
+                # Add a new entry
+                cursor.execute('''
+                    INSERT INTO shared_sessions (username, session_url, trial_name)
+                    VALUES (?, ?, ?)
+                ''', (username, session_url, trial_name))
+            
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            flash(f"Warning: Could not save session data: {str(e)}")
 
         return redirect(url_for('feedback'))
     except subprocess.CalledProcessError as e:
@@ -208,7 +299,6 @@ def coach_view_analysis():
     # Get data from the form
     session_url = request.form.get('session_url')
     trial_name = request.form.get('trial_name')
-    user_email = request.form.get('user_email')
     username = request.form.get('username')
     
     if not session_url or not trial_name:
@@ -240,7 +330,6 @@ def coach_view_analysis():
         # Prepare details for coach feedback page
         analysis_details = {
             'username': username,
-            'email': user_email,
             'session_url': session_url,
             'trial_name': trial_name
         }
@@ -287,92 +376,124 @@ def coach_view_analysis():
         flash(f"Error loading session: {str(e)}")
         return redirect(url_for('coach_dashboard'))
 
-@app.route('/share-data', methods=['POST'])
-def share_data():
-    if 'token' not in session:
-        return redirect(url_for('login'))
-    
-    email = request.form.get('email')
-    username = session.get('username', "Unknown User")
-    
-    # Get session_url and trial_name from form, falling back to session values if needed
-    session_url = request.form.get('session_url') or session.get('session_id', '')
-    if session_url and not session_url.startswith('http'):
-        session_url = f"https://app.opencap.ai/session/{session_url}"
-        
-    trial_name = request.form.get('trial_name') or session.get('trial_name', '')
+        #  # Store in database
+#     conn = sqlite3.connect(DB_PATH)
+#     cursor = conn.cursor()
 
-    # Email validation
-    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    if not re.match(email_regex, email):
-        return render_template("feedback.html", 
-                              error_share="Please enter a valid email address with proper domain (e.g., example@domain.com).",
-                              feedback=session.get('feedback'),
-                              analysis_result=session.get('analysis_result'),
-                              opencap_url=f"https://app.opencap.ai/session/{session.get('session_id', '')}")
+#     # Check if an entry already exists for the user
+#     cursor.execute("SELECT * FROM shared_sessions WHERE username = ?", (username,))
+#     existing_entry = cursor.fetchone()
     
-    # Save analysis results to file if we have them
-    analysis_result = session.get('analysis_result', '')
-    if analysis_result:
-        data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session.get("session_id")}')
-        analysis_folder = os.path.join(data_folder, 'Analysis')
-        
-        # Create the Analysis folder if it doesn't exist
-        if not os.path.exists(analysis_folder):
-            os.makedirs(analysis_folder)
-            
-        # Save the analysis results to a file
-        with open(os.path.join(analysis_folder, f'{trial_name}_analysis.txt'), 'w') as file:
-            file.write(analysis_result)
+#     if existing_entry:
+#         # Update the existing entry
+#         cursor.execute('''
+#             UPDATE shared_sessions
+#             SET session_url = ?, trial_name = ?, email = ?
+#             WHERE username = ?
+#         ''', (session_url, trial_name, email, username))
+#     else:
+#         # Add a new entry
+#         cursor.execute('''
+#             INSERT INTO shared_sessions (username, session_url, trial_name, email)
+#             VALUES (?, ?, ?, ?)
+#         ''', (username, session_url, trial_name, email))
     
-    # Store in database
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+#     conn.commit()
+#     conn.close()
 
-    # Check if an entry already exists for the user
-    cursor.execute("SELECT * FROM shared_sessions WHERE username = ?", (username,))
-    existing_entry = cursor.fetchone()
+@app.route('/send-feedback', methods=['POST'])
+def send_feedback():
+    if 'token' not in session or session.get('position') != 'coach':
+        return redirect(url_for('coach_login'))
     
-    if existing_entry:
-        # Update the existing entry
+    # Get form data
+    username = request.form.get('recipient_username', '').strip()
+    session_url = request.form.get('session_url', '').strip()
+    trial_name = request.form.get('trial_name', '').strip()
+    feedback = request.form.get('feedback', '').strip()
+    feedback_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    if not username or not feedback or not session_url or not trial_name:
+        flash("Missing required fields")
+        return redirect(url_for('coach_dashboard'))
+    
+    success_message = None
+    error_message = None
+    
+    try:
+        # Connect to database
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        # Update the record with coach's feedback
         cursor.execute('''
             UPDATE shared_sessions
-            SET session_url = ?, trial_name = ?, email = ?
-            WHERE username = ?
-        ''', (session_url, trial_name, email, username))
-    else:
-        # Add a new entry
-        cursor.execute('''
-            INSERT INTO shared_sessions (username, session_url, trial_name, email)
-            VALUES (?, ?, ?, ?)
-        ''', (username, session_url, trial_name, email))
+            SET coach_feedback = ?, feedback_timestamp = ?
+            WHERE username = ? AND session_url = ? AND trial_name = ?
+        ''', (feedback, feedback_timestamp, username, session_url, trial_name))
+        
+        conn.commit()
+        success_message = f"Feedback saved successfully for {username}"
+        conn.close()
+        
+    except Exception as e:
+        error_message = f"Error saving feedback: {str(e)}"
     
-    conn.commit()
-    conn.close()
+    # Retrieve analysis details for rendering the page
+    try:
+        # Get session ID from URL
+        session_id = session_url.split('/')[-1] if '/' in session_url else session_url
+        
+        # Set session variables for the template
+        session['session_id'] = session_id
+        session['trial_name'] = trial_name
+        
+        # Get analysis result
+        data_folder = os.path.join(os.getcwd(), 'Data', f'OpenCapData_{session_id}')
+        analysis_file = os.path.join(data_folder, 'Analysis', f'{trial_name}_analysis.txt')
+        
+        if os.path.exists(analysis_file):
+            with open(analysis_file, 'r') as file:
+                analysis_result = file.read()
+                session['analysis_result'] = analysis_result
+                
+                scores = ast.literal_eval(analysis_result)
+                feedback_data = compile_feedback(scores)
+                session['feedback'] = feedback_data
+        else:
+            session['analysis_result'] = "No analysis data available"
+            session['feedback'] = None
+            
+    except Exception as e:
+        flash(f"Error retrieving analysis: {str(e)}")
     
-    # Return to feedback with success message
-    return render_template("feedback.html", 
-                          success_info="Session shared successfully!",
-                          share_success=True,
+    # Create analysis details for the template
+    analysis_details = {
+        'username': username,
+        'session_url': session_url,
+        'trial_name': trial_name
+    }
+    
+    return render_template("coachFeedback.html", 
+                          analysis_details=analysis_details,
+                          analysis_result=session.get('analysis_result', ''), 
                           feedback=session.get('feedback'),
-                          analysis_result=session.get('analysis_result'),
-                          opencap_url=f"https://app.opencap.ai/session/{session.get('session_id', '')}")
+                          existing_feedback=feedback,
+                          success_message=success_message,
+                          error_message=error_message)
 
 @app.route('/coach-dashboard')
 def coach_dashboard():
     if 'token' not in session or session.get('position') != 'coach':
         return redirect(url_for('coach_login'))
     
-    # Get users who have shared sessions with emails from database
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row  # This enables column access by name
     cursor = conn.cursor()
     
-    # Only select sessions where email is not null
     cursor.execute('''
-        SELECT username, session_url, trial_name, email
+        SELECT username, session_url, trial_name
         FROM shared_sessions
-        WHERE email IS NOT NULL
     ''')
     
     shared_sessions = cursor.fetchall()
@@ -387,8 +508,7 @@ def coach_dashboard():
         
         grouped_sessions[username].append({
             'session_url': session_data['session_url'],
-            'trial_name': session_data['trial_name'],
-            'email': session_data['email']
+            'trial_name': session_data['trial_name']
         })
     
     return render_template("coachDashboard.html", grouped_sessions=grouped_sessions)
@@ -414,130 +534,52 @@ def clear_database():
 def feedback():
     if 'token' not in session:
         return redirect(url_for('login'))
-
+    
     # Read the analysis result from the session
     analysis_result = session.get('analysis_result', '')
-    
+
     # Get the feedback from the session
     feedback_data = session.get('feedback', None)
+    username = session.get('username', '')
+    session_id = session.get('session_id', '')
+    trial_name = session.get('trial_name', '')
+    session_url = session.get('session_url')
 
     opencap_url = f"https://app.opencap.ai/session/{session.get('session_id', '')}"
+    
+    if 'graph_filename' in session:
+        session.pop('graph_filename', None)
 
     return render_template("feedback.html", 
                           analysis_result=analysis_result, 
                           feedback=feedback_data,
                           opencap_url=opencap_url)
 
-@app.route('/send-feedback', methods=['POST'])
-def send_feedback():
-    if 'token' not in session or session.get('position') != 'coach':
-        return redirect(url_for('coach_login'))
-    
-    # instead of request.form, need to get from session.
-    form_data = {
-        'recipient_email': request.form.get('recipient_email', '').strip(),
-        'recipient_username': request.form.get('recipient_username', '').strip(),
-        'feedback': request.form.get('feedback', '').strip(),
-        'focus_areas': request.form.get('focus_areas', '').strip()
-    }
-    
-    # Validate required fields
-    if not form_data['recipient_email'] or not form_data['feedback']:
-        flash("Email address and feedback message are required")
-        return redirect(url_for('coach_dashboard'))
-    
-    # Basic email validation
-    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    if not re.match(email_regex, form_data['recipient_email']):
-        flash("Please enter a valid email address")
-        return redirect(url_for('coach_dashboard'))
-    
-    # Pre-process the text replacements outside the f-string
-    feedback_html = form_data['feedback'].replace('\n', '<br>')
-    focus_areas_html = form_data['focus_areas'].replace('\n', '<br>') if form_data['focus_areas'] else ''
-    
-    # Create email content
-    subject = "Your Dragon Boat Paddling Feedback"
-    
-    html_content = f"""
-    <html>
-    <body>
-        <h2>Dragon Boat Technique Feedback</h2>
-        <p>Hello {form_data['recipient_username'] or 'Paddler'},</p>
-        <p>Your coach has provided the following feedback on your paddling technique:</p>
-        
-        <div style="background-color: #f5f5f5; padding: 15px; border-left: 4px solid #8B0000;">
-            <h3>Coach's Feedback:</h3>
-            <p>{feedback_html}</p>
-        </div>
-    """
-    
-    # Add focus areas section if provided
-    if focus_areas_html:
-        html_content += f"""
-        <div style="margin-top: 20px;">
-            <h3>Areas to Focus On:</h3>
-            <p>{focus_areas_html}</p>
-        </div>
-        """
-    
-    # Add footer
-    html_content += """
-        <p style="margin-top: 20px;">Keep up the good work!</p>
-        <p>Virtual Dragon Boat Coach Team</p>
-    </body>
-    </html>
-    """
-    
-    # Send email using helper function
-    success, message = send_email(
-        form_data['recipient_email'],
-        subject,
-        html_content
-    )
-    
-    if success:
-        flash(f"Feedback sent successfully to {form_data['recipient_username']} ({form_data['recipient_email']})")
-    else:
-        flash(f"Error sending email: {message}")
-    
-    return redirect(url_for('coach_dashboard'))
-
-def send_email(recipient_email, subject, html_content, sender_name="Virtual Dragon Boat Coach"):
-    """
-    Helper function to send emails
-    
-    Args:
-        recipient_email (str): Email address of the recipient
-        subject (str): Email subject line
-        html_content (str): HTML formatted email body
-        sender_name (str): Name to display as sender
-        
-    Returns:
-        tuple: (success, message) - success is boolean, message is error message if any
-    """
+    # Check for coach feedback
+    coach_feedback = None
     try:
-        # Create message container
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = subject
-        msg['From'] = f"{sender_name} <{EMAIL_CONFIG['SENDER_EMAIL']}>"
-        msg['To'] = recipient_email
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
         
-        # Attach HTML content
-        msg.attach(MIMEText(html_content, 'html'))
+        cursor.execute("""
+            SELECT coach_feedback FROM shared_sessions 
+            WHERE username = ? AND session_url = ? AND trial_name = ?
+        """, (username, session_url, trial_name))
         
-        # Connect to server and send
-        server = smtplib.SMTP(EMAIL_CONFIG['SMTP_SERVER'], EMAIL_CONFIG['SMTP_PORT'])
-        server.starttls()  # Secure the connection
-        
-        server.login(EMAIL_CONFIG['SENDER_EMAIL'], EMAIL_CONFIG['SENDER_PASSWORD'])
-        server.sendmail(EMAIL_CONFIG['SENDER_EMAIL'], recipient_email, msg.as_string())
-        server.quit()
-        
-        return True, "Email sent successfully"
+        result = cursor.fetchone()
+        if result and result['coach_feedback']:
+            coach_feedback = result['coach_feedback']
+            
+        conn.close()
     except Exception as e:
-        return False, str(e)
-                          
+        flash(f"Error retrieving coach feedback: {str(e)}")
+
+    return render_template("feedback.html", 
+                          analysis_result=analysis_result, 
+                          feedback=feedback_data,
+                          opencap_url=opencap_url,
+                          coach_feedback=coach_feedback)
 @app.route('/generate-graph', methods=['POST'])
 def generate_graph():
     if 'token' not in session:
@@ -546,7 +588,7 @@ def generate_graph():
     angle_name = request.form.get('angle_name')
 
     if not angle_name or angle_name.strip() == '':
-        return render_template("feedback.html", error="Please select an angle name.")
+        return jsonify({'success': False, 'error': "Please select an angle name."})
     
     try:
         # Plot the angle
@@ -557,16 +599,23 @@ def generate_graph():
             angle_name.strip()  # Pass angle name to plotAngle
         ], check=True)
         
-        # Add the graph to the session
-        session['graph_filename'] = f"{session['trial_name']}_{angle_name.strip()}.png"
+        # Generate graph filename
+        graph_filename = f"{session['trial_name']}_{angle_name.strip()}_plot.png"
+        
+        # Include the timestamp to prevent browser caching
+        timestamp = int(time.time())
+        
+        return jsonify({
+            'success': True, 
+            'graph_url': url_for('static', filename=f'graphs/{graph_filename}') + f'?t={timestamp}',
+            'angle_name': ANGLE_DISPLAY_NAMES.get(angle_name.strip(), angle_name.strip())
+        })
         
     except subprocess.CalledProcessError as e:
-        return render_template("feedback.html", 
-                              error=f"There was an error generating the graph: {str(e)}",
-                              feedback=session.get('feedback', None),
-                              analysis_result=session.get('analysis_result', ''))
-
-    return redirect(url_for('feedback'))
+        return jsonify({
+            'success': False, 
+            'error': f"There was an error generating the graph: {str(e)}"
+        })
 
 @app.route('/run-opensim', methods=['POST'])
 def run_opensim():
