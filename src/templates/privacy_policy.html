@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="resource_container">
+    <!-- Sidebar Menu -->
+    <nav class="sidebar">
+        <h4>Contents</h4>
+        <ul>
+            <li><a href="#section1">Data Security</a></li>
+            <li><a href="#section2">What personal information do we collect</a>
+            <li><a href="#section3">How will we use this information</a>
+            <li><a href="#section4">Data storage, retention, and destruction</a></li>
+            <li><a href="#section5">Who has access to the data</a></li>
+            <li><a href="#section6">Privacy Policy Effective Time</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="resource_content">
+        <h1>VDBC Data and Privacy Policy</h1>
+        <p>This privacy statement explains how VDBC collects, uses, disclose, and otherwise processes personal information with our VDBC platform.</p>
+        <p>Please contact us at email@email.ca if you have any questions after reading this document and viewing the corresponding links.</p>
+        <section id="section1">
+            <h2>Data Security</h2>
+            <p>The security, integrity, and confidentiality of your information are extremely important to us. </p>
+            <p>All video and processed data are encrypted. More details on data security measures can be found below:</p>
+            <ul class="resource_list">
+                <li>Encrypt all stored user data using the Advanced Encryption Standard (AES) with key lengths of 128 bits (As recommended by Canadian Government)</a> </li>
+                <li>Apply role-based access control (RBAC) to ensure only authorized personnel such as coach, administrators can access sensitive user data.</li>
+            </ul>
+            <br>
+        </section>
+        <br>
+        <hr>
+        <br>
+
+        <section id="section2">
+            <h2>What personal information do we collect</h2>
+            <p>Information about you:</p>
+            <ul class="resource_list">
+                <li>Information you provide when recording a session (i.e., session URL, session name, etc.)</a> </li>
+                <li>Your account information such as email address, user name</li>
+                <li>Device information, including IP address</a> </li>
+                <li>Site usage data</li>
+            </ul>
+        </section>
+        <br>
+        <hr>
+        <br>
+
+        <section id="section3">
+            <h2>How will we use this information</h2>
+            <p>We may use your information to:</p>
+            <ul class="resource_list">
+                <li>Deliver our dragon boat paddling technique analyzing services to you.</a> </li>
+                <li>Detect, investigate, and prevent activities that may violate our policies, pose safety issues, or be fraudulent or illegal.</li>
+                <li>Improve the VDBC technique analyzer and feedback provider algorithms.</a> </li>
+            </ul>
+        </section>
+        <br>
+        <hr>
+        <br>
+
+        <section id="section4">
+            <h2>Data storage, retention, and destruction</h2>
+            <p>All data will be stored in the VDBC sql database using AES encryption with key lengths of 128 bits. The database will have maintenance every 6 months 
+                to reinforce storage data security. If a user wishes to have their data removed, they can delete their data from the VDBC dashboard. Otherwise, data will be 
+                retained for 2 years before it is automatically deleted by the VDBC system. Data that participants marked to be important would not be automatically deleted 
+                unless it is manually deleted by the user.</p>
+        </section>
+        <br>
+        <hr>
+        <br>
+
+        <section id="section5">
+            <h2>Who has access to the data</h2>
+            <p>Role-based access control will be implemented. Normal users would have access to all of their data and non-sensitive data other users shared.  
+                Sensitive data is only accessible by the owner and authorized personnel such as VDBC administrators.</p>
+        </section>
+        <br>
+        <hr>
+        <br>
+
+        <section id="section6">
+            <h2>Privacy Policy Effective Time</h2>
+            <p>This Privacy Statement is effective as of the date it is provided to you or April, 1st, 2025 whichever is earlier.</p>
+        </section>
+        
+    </main>
+</div>
+{% endblock %}

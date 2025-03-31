@@ -125,6 +125,10 @@ def about():
 def resources():
     return render_template("resources.html")
 
+@app.route('/privacy_policy')
+def privacy_policy():
+    return render_template("privacy_policy.html")
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
