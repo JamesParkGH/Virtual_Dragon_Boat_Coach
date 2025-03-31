@@ -7,15 +7,13 @@ from database import init_db, DB_PATH
 
 class Testdatabase(unittest.TestCase):
 
+    """
+    #Be real careful with this as it remove the database for testing purpose of database initialization
     def setUp(self):
-         # Remove the database file if it exists
+         #Remove the database file if it exists for the purpose of testing database initiation
          if os.path.exists(DB_PATH):
              os.remove(DB_PATH)
-
-    def tearDown(self):
-         #Clean up after tests
-         if os.path.exists(DB_PATH):
-             os.remove(DB_PATH)
+    """
 
     def test_database_creation(self):
         #Test database creation
