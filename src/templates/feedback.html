@@ -65,7 +65,17 @@
                                     <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                     <ul>
                                         {% for injury in feedback.top_arm.improvement_points.potential_injuries %}
-                                            <li>{{ injury }}</li>
+                                            <li>
+                                                {% if "subacromial impingement" in injury.lower() %}
+                                                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK554518/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% elif "rotator cuff tear" in injury.lower() %}
+                                                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK547664/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% elif "shoulder bursitis" in injury.lower() %}
+                                                    <a href="https://www.mayoclinic.org/diseases-conditions/bursitis/symptoms-causes/syc-20353242" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% else %}
+                                                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK554518/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% endif %}
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
@@ -126,7 +136,17 @@
                                     <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                     <ul>
                                         {% for injury in feedback.bottom_arm.improvement_points.potential_injuries %}
-                                            <li>{{ injury }}</li>
+                                            <li>
+                                                {% if "tenosynovitis" in injury.lower() %}
+                                                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK544324/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% elif "golfer's elbow" in injury.lower() %}
+                                                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK519000/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% elif "tennis elbow" in injury.lower() %}
+                                                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK431092/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% else %}
+                                                    <a href="https://www.ncbi.nlm.nih.gov/books/NBK544324/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% endif %}
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
@@ -187,7 +207,15 @@
                                     <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                     <ul>
                                         {% for injury in feedback.rotation.improvement_points.potential_injuries %}
-                                            <li>{{ injury }}</li>
+                                            <li>
+                                                {% if "lower back pain" in injury.lower() %}
+                                                    <a href="https://my.clevelandclinic.org/health/diseases/7936-lower-back-pain" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% elif "upper back tension" in injury.lower() %}
+                                                    <a href="https://my.clevelandclinic.org/health/symptoms/22866-upper-back-pain" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% else %}
+                                                    <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4934575/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% endif %}
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 </div>
@@ -249,7 +277,17 @@
                                     <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                     <ul>
                                         {% for injury in feedback.paddle_angle.improvement_points.potential_injuries %}
-                                            <li>{{ injury }}</li>
+                                            <li>
+                                                {% if "lower back pain" in injury.lower() %}
+                                                    <a href="https://www.ninds.nih.gov/low-back-pain-fact-sheet" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% elif "upper back tension" in injury.lower() %}
+                                                    <a href="https://my.clevelandclinic.org/health/symptoms/22866-upper-back-pain" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% elif "shoulder strain" in injury.lower() %}
+                                                    <a href="https://www.webmd.com/first-aid/what-to-know-about-shoulder-sprains-strains" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% else %}
+                                                    <a href="https://journals.sagepub.com/doi/10.1177/0363546518767634" target="_blank" class="injury-link">{{ injury }}</a>
+                                                {% endif %}
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 </div>

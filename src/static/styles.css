@@ -720,3 +720,25 @@ footer p {
 .card-header[data-rating="bad"] .score-badge {
   background-color: rgba(255, 255, 255, 0.3);
 }
+
+/* Add this at the end of your CSS file */
+.injury-link {
+  color: #8B0000;
+  text-decoration: none;
+  border-bottom: 1px dashed #8B0000;
+  transition: all 0.2s ease;
+}
+
+.injury-link:hover {
+  color: #6b0000;
+  border-bottom: 1px solid #6b0000;
+}
+
+.injury-link::after {
+  content: "\f35d";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 0.7em;
+  margin-left: 0.3em;
+  vertical-align: super;
+}
