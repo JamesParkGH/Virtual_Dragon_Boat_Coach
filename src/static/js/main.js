@@ -16,6 +16,19 @@ function initializeFeedbackComponents() {
                 graphContainer.style.display = 'none';
             }
         });
+        
+        // Add tooltip functionality to injury links
+        const injuryLinks = document.querySelectorAll('.injury-link');
+        injuryLinks.forEach(link => {
+            link.setAttribute('title', 'Click to read research about this injury');
+            
+            // Optional: track injury link clicks
+            link.addEventListener('click', function(e) {
+                const injuryType = this.textContent.trim();
+                console.log('Injury research clicked:', injuryType);
+                // Could add analytics tracking here
+            });
+        });
     }
 }
 

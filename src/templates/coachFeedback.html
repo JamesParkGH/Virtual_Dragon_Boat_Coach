@@ -119,7 +119,17 @@
                                             <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                             <ul>
                                                 {% for injury in feedback.top_arm.improvement_points.potential_injuries %}
-                                                    <li>{{ injury }}</li>
+                                                    <li>
+                                                        {% if "subacromial impingement" in injury.lower() %}
+                                                            <a href="https://www.ncbi.nlm.nih.gov/books/NBK554518/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% elif "rotator cuff tear" in injury.lower() %}
+                                                            <a href="https://www.ncbi.nlm.nih.gov/books/NBK547664/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% elif "shoulder bursitis" in injury.lower() %}
+                                                            <a href="https://www.mayoclinic.org/diseases-conditions/bursitis/symptoms-causes/syc-20353242" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% else %}
+                                                            <a href="https://www.ncbi.nlm.nih.gov/books/NBK554518/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% endif %}
+                                                    </li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
@@ -137,7 +147,31 @@
                                             <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
                                             <ul>
                                                 {% for exercise in feedback.top_arm.improvement_points.corrective_exercises %}
-                                                    <li>{{ exercise }}</li>
+                                                    <li>
+                                                        {% if "Shoulder External Rotation" in exercise %}
+                                                            <a href="https://youtu.be/4tpl-huz060?si=Uj9ehrl4DmzE60sV" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Kettlebell Windmills" in exercise %}
+                                                            <a href="https://youtu.be/ITSmgn_BQgY?si=pwrwzeCuV_IKQ41E" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Cable Pullovers" in exercise %}
+                                                            <a href="https://youtu.be/FlS71yYOXKU?si=LJgWPYHlTLwQiOo-" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Single arm lat pullovers" in exercise %}
+                                                            <a href="https://youtu.be/ECjsD9qkmDQ?si=-4QqB3G-ZJByKF25" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Cable Woodchoppers" in exercise %}
+                                                            <a href="https://youtu.be/iWxTGXIViro?si=pPOaHPHzN0_42KG1" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Landmine Rotations" in exercise %}
+                                                            <a href="https://youtu.be/e5DP6961WEk?si=YcTR9uJsG1rPaZIx" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Seated Wall Angels" in exercise %}
+                                                            <a href="https://youtu.be/FSzcrSnLygc?si=n0jj-TwysTixSvQa" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Kettlebell Hip Shift" in exercise %}
+                                                            <a href="https://youtu.be/lrGosTxWT6A?si=EQMcFwY0lDO-gNc_" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Elephant Walks" in exercise %}
+                                                            <a href="https://youtu.be/yKcrskOi8o0?si=68mXoJOnUoqGlJ3t" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Butt Walks" in exercise %}
+                                                            <a href="https://youtu.be/N2biBYmWTmM?si=JvhN0HwY9aTDzfR4" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% else %}
+                                                            {{ exercise }}
+                                                        {% endif %}
+                                                    </li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
@@ -180,7 +214,15 @@
                                             <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                             <ul>
                                                 {% for injury in feedback.bottom_arm.improvement_points.potential_injuries %}
-                                                    <li>{{ injury }}</li>
+                                                    <li>
+                                                        {% if "tenosynovitis" in injury.lower() %}
+                                                            <a href="https://www.ncbi.nlm.nih.gov/books/NBK544324/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% elif "golfer's elbow" in injury.lower() %}
+                                                            <a href="https://www.ncbi.nlm.nih.gov/books/NBK519000/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% else %}
+                                                            <a href="https://www.ncbi.nlm.nih.gov/books/NBK544324/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% endif %}
+                                                    </li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
@@ -198,7 +240,31 @@
                                             <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
                                             <ul>
                                                 {% for exercise in feedback.bottom_arm.improvement_points.corrective_exercises %}
-                                                    <li>{{ exercise }}</li>
+                                                    <li>
+                                                        {% if "Shoulder External Rotation" in exercise %}
+                                                            <a href="https://youtu.be/4tpl-huz060?si=Uj9ehrl4DmzE60sV" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Kettlebell Windmills" in exercise %}
+                                                            <a href="https://youtu.be/ITSmgn_BQgY?si=pwrwzeCuV_IKQ41E" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Cable Pullovers" in exercise %}
+                                                            <a href="https://youtu.be/FlS71yYOXKU?si=LJgWPYHlTLwQiOo-" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Single arm lat pullovers" in exercise %}
+                                                            <a href="https://youtu.be/ECjsD9qkmDQ?si=-4QqB3G-ZJByKF25" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Cable Woodchoppers" in exercise %}
+                                                            <a href="https://youtu.be/iWxTGXIViro?si=pPOaHPHzN0_42KG1" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Landmine Rotations" in exercise %}
+                                                            <a href="https://youtu.be/e5DP6961WEk?si=YcTR9uJsG1rPaZIx" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Seated Wall Angels" in exercise %}
+                                                            <a href="https://youtu.be/FSzcrSnLygc?si=n0jj-TwysTixSvQa" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Kettlebell Hip Shift" in exercise %}
+                                                            <a href="https://youtu.be/lrGosTxWT6A?si=EQMcFwY0lDO-gNc_" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Elephant Walks" in exercise %}
+                                                            <a href="https://youtu.be/yKcrskOi8o0?si=68mXoJOnUoqGlJ3t" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Butt Walks" in exercise %}
+                                                            <a href="https://youtu.be/N2biBYmWTmM?si=JvhN0HwY9aTDzfR4" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% else %}
+                                                            {{ exercise }}
+                                                        {% endif %}
+                                                    </li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
@@ -241,7 +307,15 @@
                                             <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                             <ul>
                                                 {% for injury in feedback.rotation.improvement_points.potential_injuries %}
-                                                    <li>{{ injury }}</li>
+                                                    <li>
+                                                        {% if "lower back pain" in injury.lower() %}
+                                                            <a href="https://my.clevelandclinic.org/health/diseases/7936-lower-back-pain" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% elif "upper back tension" in injury.lower() %}
+                                                            <a href="https://my.clevelandclinic.org/health/symptoms/22866-upper-back-pain" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% else %}
+                                                            <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4934575/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% endif %}
+                                                    </li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
@@ -259,7 +333,31 @@
                                             <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
                                             <ul>
                                                 {% for exercise in feedback.rotation.improvement_points.corrective_exercises %}
-                                                    <li>{{ exercise }}</li>
+                                                    <li>
+                                                        {% if "Shoulder External Rotation" in exercise %}
+                                                            <a href="https://youtu.be/4tpl-huz060?si=Uj9ehrl4DmzE60sV" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Kettlebell Windmills" in exercise %}
+                                                            <a href="https://youtu.be/ITSmgn_BQgY?si=pwrwzeCuV_IKQ41E" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Cable Pullovers" in exercise %}
+                                                            <a href="https://youtu.be/FlS71yYOXKU?si=LJgWPYHlTLwQiOo-" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Single arm lat pullovers" in exercise %}
+                                                            <a href="https://youtu.be/ECjsD9qkmDQ?si=-4QqB3G-ZJByKF25" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Cable Woodchoppers" in exercise %}
+                                                            <a href="https://youtu.be/iWxTGXIViro?si=pPOaHPHzN0_42KG1" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Landmine Rotations" in exercise %}
+                                                            <a href="https://youtu.be/e5DP6961WEk?si=YcTR9uJsG1rPaZIx" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Seated Wall Angels" in exercise %}
+                                                            <a href="https://youtu.be/FSzcrSnLygc?si=n0jj-TwysTixSvQa" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Kettlebell Hip Shift" in exercise %}
+                                                            <a href="https://youtu.be/lrGosTxWT6A?si=EQMcFwY0lDO-gNc_" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Elephant Walks" in exercise %}
+                                                            <a href="https://youtu.be/yKcrskOi8o0?si=68mXoJOnUoqGlJ3t" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Butt Walks" in exercise %}
+                                                            <a href="https://youtu.be/N2biBYmWTmM?si=JvhN0HwY9aTDzfR4" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% else %}
+                                                            {{ exercise }}
+                                                        {% endif %}
+                                                    </li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
@@ -303,7 +401,15 @@
                                             <h5><i class="fas fa-heartbeat"></i> Potential Injuries</h5>
                                             <ul>
                                                 {% for injury in feedback.paddle_angle.improvement_points.potential_injuries %}
-                                                    <li>{{ injury }}</li>
+                                                    <li>
+                                                        {% if "lower back pain" in injury.lower() %}
+                                                            <a href="https://www.ninds.nih.gov/low-back-pain-fact-sheet" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% elif "upper back tension" in injury.lower() %}
+                                                            <a href="https://my.clevelandclinic.org/health/symptoms/22866-upper-back-pain" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% else %}
+                                                            <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4934575/" target="_blank" class="injury-link">{{ injury }}</a>
+                                                        {% endif %}
+                                                    </li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
@@ -322,7 +428,31 @@
                                             <h5><i class="fas fa-dumbbell"></i> Corrective Exercises</h5>
                                             <ul>
                                                 {% for exercise in feedback.paddle_angle.improvement_points.corrective_exercises %}
-                                                    <li>{{ exercise }}</li>
+                                                    <li>
+                                                        {% if "Shoulder External Rotation" in exercise %}
+                                                            <a href="https://youtu.be/4tpl-huz060?si=Uj9ehrl4DmzE60sV" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Kettlebell Windmills" in exercise %}
+                                                            <a href="https://youtu.be/ITSmgn_BQgY?si=pwrwzeCuV_IKQ41E" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Cable Pullovers" in exercise %}
+                                                            <a href="https://youtu.be/FlS71yYOXKU?si=LJgWPYHlTLwQiOo-" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Single arm lat pullovers" in exercise %}
+                                                            <a href="https://youtu.be/ECjsD9qkmDQ?si=-4QqB3G-ZJByKF25" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Cable Woodchoppers" in exercise %}
+                                                            <a href="https://youtu.be/iWxTGXIViro?si=pPOaHPHzN0_42KG1" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Landmine Rotations" in exercise %}
+                                                            <a href="https://youtu.be/e5DP6961WEk?si=YcTR9uJsG1rPaZIx" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Seated Wall Angels" in exercise %}
+                                                            <a href="https://youtu.be/FSzcrSnLygc?si=n0jj-TwysTixSvQa" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Kettlebell Hip Shift" in exercise %}
+                                                            <a href="https://youtu.be/lrGosTxWT6A?si=EQMcFwY0lDO-gNc_" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Elephant Walks" in exercise %}
+                                                            <a href="https://youtu.be/yKcrskOi8o0?si=68mXoJOnUoqGlJ3t" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% elif "Butt Walks" in exercise %}
+                                                            <a href="https://youtu.be/N2biBYmWTmM?si=JvhN0HwY9aTDzfR4" target="_blank" class="exercise-link">{{ exercise }}</a>
+                                                        {% else %}
+                                                            {{ exercise }}
+                                                        {% endif %}
+                                                    </li>
                                                 {% endfor %}
                                             </ul>
                                         </div>
@@ -656,6 +786,30 @@
     .card-header[data-rating="bad"] .score-badge {
         background-color: rgba(255, 255, 255, 0.3);
         color: white;
+    }
+
+    .exercise-link {
+        color: #8B0000;
+        text-decoration: underline;
+        transition: color 0.2s ease;
+    }
+    
+    .exercise-link:hover {
+        color: #5a0000;
+    }
+    
+    .injury-link, .exercise-link {
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .injury-link:after, .exercise-link:after {
+        content: "\f08e";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        margin-left: 5px;
+        font-size: 0.8em;
+        opacity: 0.7;
     }
     </style>
 </body>
