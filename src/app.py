@@ -30,7 +30,8 @@ def init_db():
         session_url TEXT NOT NULL,
         trial_name TEXT NOT NULL,
         coach_feedback TEXT,
-        feedback_timestamp TEXT
+        feedback_timestamp TEXT,
+        submission_timestamp TEXT
     )
     ''')
     
@@ -260,6 +261,9 @@ def start_analyze():
             # Store in database
             conn = sqlite3.connect(DB_PATH)
             cursor = conn.cursor()
+            
+            # Get current timestamp
+            submission_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             # Check if an entry already exists
             cursor.execute("""
@@ -272,15 +276,15 @@ def start_analyze():
                 # Update the existing entry without touching the coach_feedback
                 cursor.execute('''
                     UPDATE shared_sessions 
-                    SET session_url = ?, trial_name = ?
-                    WHERE username = ?
-                ''', (session_url, trial_name, username))
+                    SET session_url = ?, trial_name = ?, submission_timestamp = ?
+                    WHERE username = ? AND session_url = ? AND trial_name = ?
+                ''', (session_url, trial_name, submission_timestamp, username, session_url, trial_name))
             else:
                 # Add a new entry
                 cursor.execute('''
-                    INSERT INTO shared_sessions (username, session_url, trial_name)
-                    VALUES (?, ?, ?)
-                ''', (username, session_url, trial_name))
+                    INSERT INTO shared_sessions (username, session_url, trial_name, submission_timestamp)
+                    VALUES (?, ?, ?, ?)
+                ''', (username, session_url, trial_name, submission_timestamp))
             
             conn.commit()
             conn.close()
@@ -492,26 +496,34 @@ def coach_dashboard():
     cursor = conn.cursor()
     
     cursor.execute('''
-        SELECT username, session_url, trial_name
+        SELECT username, session_url, trial_name, submission_timestamp
         FROM shared_sessions
+        ORDER BY submission_timestamp DESC
     ''')
     
     shared_sessions = cursor.fetchall()
     conn.close()
     
-    # Group sessions by username
+    # Group sessions by username while maintaining order
     grouped_sessions = {}
+    # Track the order of users based on their most recent submission
+    user_order = []
+    
     for session_data in shared_sessions:
         username = session_data['username']
         if username not in grouped_sessions:
             grouped_sessions[username] = []
+            user_order.append(username)
         
         grouped_sessions[username].append({
             'session_url': session_data['session_url'],
-            'trial_name': session_data['trial_name']
+            'trial_name': session_data['trial_name'],
+            'submission_timestamp': session_data['submission_timestamp']
         })
     
-    return render_template("coachDashboard.html", grouped_sessions=grouped_sessions)
+    return render_template("coachDashboard.html", 
+                          grouped_sessions=grouped_sessions, 
+                          user_order=user_order)
 
 @app.route('/clear-database', methods=['POST'])
 def clear_database():

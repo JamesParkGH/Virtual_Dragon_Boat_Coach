@@ -44,7 +44,11 @@ def add_top_arm_improvement_points(feedback):
         'Poor range of motion in the shoulder',
         'Limited range of motion in rotation of the trunk'
     ]
-    feedback['improvement_points']['potential_injuries'] = ['Subacromial Impingement']
+    feedback['improvement_points']['potential_injuries'] = [
+        'Subacromial Impingement', 
+        'Rotator Cuff Tear', 
+        'Shoulder Bursitis',
+    ]
     feedback['improvement_points']['technical_feedback'] = [
         'Think of your top hand and elbow moving together',
         "Imagine there is a straight bar from your hand to your shoulder, so don't hammer the elbow and focus more on pressing down",
@@ -153,7 +157,7 @@ def add_rotation_improvement_points(feedback):
         'Limited hip mobility',
         'Lower back tightness'
     ]
-    feedback['improvement_points']['potential_injuries'] = ['Lower back pain']
+    feedback['improvement_points']['potential_injuries'] = ['Lower back pain', 'Upper Back Tension']
     feedback['improvement_points']['technical_feedback'] = [
         'Rotation and de-rotation should be initiated at the hips, not by twisting from the upper back. Allow your paddle-side shoulder and hip to move forward together as you catch and move back together as you drive off your leg and sit up when pulling.',
         'When going forwards into your catch, imagine the paddling side of your body swinging open like a door. Your torso should move as a single unit without any twisting. You should notice that your paddle-side knee bends slightly, meaning that your hip has come forward. As you enter your catch, imagine that you are trying to show your upper back to someone watching you from the side; they should be able to see your top shoulder clearly.',
@@ -210,6 +214,7 @@ def add_paddle_angle_improvement_points(feedback):
         'Not sitting up soon enough while pulling',
         'Pulling with the arms instead of using the body'
     ]
+    feedback['improvement_points']['potential_injuries'] = ['Lower back pain', 'Upper Back Tension']
     feedback['improvement_points']['technical_feedback'] = [
         'Having the paddle angle become negative too quickly is related to aspects of rotation and derotation',
         'If you are not rotated enough at the catch, your paddle angle will be closer to being neutral or negative as you begin pulling. Think about turning your torso as you recover so your top shoulder stays back to force rotation as you enter your A-frame. Another cue is to imagine that there is someone watching you paddle from the side, and you are trying to show them your entire back.',

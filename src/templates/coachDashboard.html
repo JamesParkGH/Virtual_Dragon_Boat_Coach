@@ -37,28 +37,34 @@
             <!-- Placeholder for members -->
             {% if grouped_sessions %}
                 <div>
-                    {% for username, sessions in grouped_sessions.items() %}
-                    <div class="container">
-                        <h3>{{ username }}</h3>
-                        {% for session in sessions %}
-                            <div class="user-session">
-                                <form action="{{ url_for('coach_view_analysis') }}" method="POST">
-                                    <div class="coach-session-info">
-                                        <div class="coach-trial-name">
-                                            <i class="fas fa-tag"></i> {{ session.trial_name }}
+                    {% for username in user_order %}
+                        {% set sessions = grouped_sessions[username] %}
+                        <div class="container">
+                            <h3>{{ username }}</h3>
+                            {% for session in sessions %}
+                                <div class="user-session">
+                                    <form action="{{ url_for('coach_view_analysis') }}" method="POST">
+                                        <div class="coach-session-info">
+                                            <div class="coach-trial-name">
+                                                <i class="fas fa-tag"></i> {{ session.trial_name }}
+                                                {% if session.submission_timestamp %}
+                                                    <div class="submission-timestamp">
+                                                        <i class="fas fa-clock"></i> {{ session.submission_timestamp }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <input type="hidden" name="username" value="{{ username }}">
+                                            <input type="hidden" name="session_url" value="{{ session.session_url }}">
+                                            <input type="hidden" name="trial_name" value="{{ session.trial_name }}">
+                                            <button type="submit" class="btn-view">
+                                                <i class="fas fa-chart-bar"></i> View Analysis
+                                            </button>
                                         </div>
-                                        <input type="hidden" name="username" value="{{ username }}">
-                                        <input type="hidden" name="session_url" value="{{ session.session_url }}">
-                                        <input type="hidden" name="trial_name" value="{{ session.trial_name }}">
-                                        <button type="submit" class="btn-view">
-                                            <i class="fas fa-chart-bar"></i> View Analysis
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
                 </div>
             {% else %}
                 <p>No data shared yet.</p>
@@ -69,5 +75,43 @@
     <footer>
         <p>&copy; 2025 Virtual Dragon Boat Coach. All rights reserved.</p>
     </footer>
+    <style>
+        .submission-timestamp {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 0.3rem;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+        
+        .coach-session-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background-color: #f8f8f8;
+            border-radius: 6px;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid #8B0000;
+        }
+        
+        .user-session {
+            margin-bottom: 0.8rem;
+        }
+        
+        .btn-view {
+            background-color: #8B0000;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-view:hover {
+            background-color: #6b0000;
+        }
+    </style>
 </body>
 </html>
